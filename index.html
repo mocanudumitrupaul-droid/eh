@@ -589,4 +589,134 @@
                 document.getElementById("intro-screen").classList.remove("hidden");
                 const video = document.getElementById("bg-video");
                 if(video) {
-                    video.play().catch(e => console.log("Autoplay as
+                    video.play().catch(e => console.log("Autoplay asigurat"));
+                }
+                authenticated = true;
+                window.addEventListener('keydown', handleIntroKeys);
+            } else {
+                document.getElementById("error").innerText = translations[currentLang].loginError;
+            }
+        }
+
+        function enterHQ() {
+            const video = document.getElementById("bg-video");
+            if(video) video.pause();
+            document.getElementById("intro-screen").classList.add("hidden");
+            document.getElementById("hq-interface").classList.remove("hidden");
+            window.removeEventListener('keydown', handleIntroKeys);
+        }
+
+        function handleIntroKeys(event) {
+            if (event.key === " " || event.key === "Enter") {
+                enterHQ();
+            }
+        }
+
+        function switchPage(pageId, buttonClicked) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            buttonClicked.classList.add('active');
+            
+            if (window.innerWidth <= 768) {
+                document.getElementById("my-sidebar").classList.add("collapsed");
+                document.body.classList.add("menu-collapsed");
+            }
+        }
+
+        function calculateProgress() {
+            const current = parseFloat(document.getElementById("bs-current").value) || 0;
+            const goal = parseFloat(document.getElementById("bs-goal").value) || 1;
+            
+            let percentage = Math.round((current / goal) * 100);
+            if (percentage > 100) percentage = 100;
+            if (percentage < 0) percentage = 0;
+
+            document.getElementById("bs-progress-bar").style.width = percentage + "%";
+            document.getElementById("bs-progress-text").innerText = percentage + "% " + translations[currentLang].bsProgressText;
+        }
+
+        function saveBloxStrikeData() {
+            const current = document.getElementById("bs-current").value;
+            const goal = document.getElementById("bs-goal").value;
+            localStorage.setItem("bsCurrentCredits", current);
+            localStorage.setItem("bsGoalCredits", goal);
+            alert(translations[currentLang].alertSaveLocal);
+        }
+
+        function loadBloxStrikeData() {
+            const savedCurrent = localStorage.getItem("bsCurrentCredits") || "0";
+            const savedGoal = localStorage.getItem("bsGoalCredits") || "10000";
+            document.getElementById("bs-current").value = savedCurrent;
+            document.getElementById("bs-goal").value = savedGoal;
+            calculateProgress();
+        }
+
+        function generateSyncCode() {
+            const current = document.getElementById("bs-current").value;
+            const goal = document.getElementById("bs-goal").value;
+            const code = btoa(JSON.stringify({ c: current, g: goal }));
+            document.getElementById("sync-code").value = code;
+            document.getElementById("sync-code").select();
+            alert(translations[currentLang].alertGenCode);
+        }
+
+        function loadSyncCode() {
+            const code = document.getElementById("sync-code").value.trim();
+            if(!code) return alert("Error");
+            try {
+                const data = JSON.parse(atob(code));
+                document.getElementById("bs-current").value = data.c;
+                document.getElementById("bs-goal").value = data.g;
+                saveBloxStrikeData();
+                calculateProgress();
+                alert(translations[currentLang].alertLoadSuccess);
+            } catch(e) {
+                alert(translations[currentLang].alertLoadError);
+            }
+        }
+
+        // INITIALIZARE ȘI MEMORARE LIMBĂ PREFERATĂ
+        window.onload = function() { 
+            const savedLang = localStorage.getItem("hqLanguage") || "ro";
+            changeLanguage(savedLang); // Setează limba salvată ultima dată
+            displayEntries(); 
+            loadBloxStrikeData();
+            updateClock();
+            setInterval(updateClock, 1000);
+        };
+
+        function saveJournalEntry() {
+            const textarea = document.getElementById("journal-input");
+            if (textarea.value.trim() === "") return;
+            let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
+            entries.unshift({ id: Date.now(), date: new Date().toLocaleString(langLocales[currentLang]), text: textarea.value });
+            localStorage.setItem("myJournalEntries", JSON.stringify(entries));
+            textarea.value = "";
+            displayEntries();
+        }
+
+        function displayEntries() {
+            const container = document.getElementById("entries-container");
+            let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
+            container.innerHTML = entries.length === 0 ? `<p>${translations[currentLang].journalEmpty}</p>` : "";
+            entries.forEach(entry => {
+                container.innerHTML += `
+                    <div class="journal-entry">
+                        <div class="entry-date">📅 ${entry.date}</div>
+                        <div style="white-space: pre-wrap;">${entry.text}</div>
+                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">${translations[currentLang].journalDeleteBtn}</button>
+                    </div>`;
+            });
+        }
+
+        function deleteEntry(id) {
+            if (confirm(translations[currentLang].journalConfirmDelete)) {
+                let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
+                localStorage.setItem("myJournalEntries", JSON.stringify(entries.filter(e => e.id !== id)));
+                displayEntries();
+            }
+        }
+    </script>
+</body>
+</html>
