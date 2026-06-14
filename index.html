@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HQ Personal - Sistem de Operare</title>
+    <style>
+        :root {
+            --bg-color: #050508;
+            --panel-color: #111118;
+            --accent-color: #8a2be2;
+            --text-color: #f0f0f5;
+            --text-dim: #707085;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* 1. ECRAN LOGIN */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .login-box {
+            background-color: var(--panel-color);
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+            border: 1px solid #1a1a26;
+        }
+        input[type="password"] {
+            padding: 12px;
+            width: 80%;
+            border-radius: 6px;
+            border: 1px solid #2a2a3a;
+            background: #09090d;
+            color: white;
+            font-size: 16px;
+            margin: 15px 0;
+            text-align: center;
+            outline: none;
+        }
+        input[type="password"]:focus { border-color: var(--accent-color); }
+
+        /* 2. ECRAN CINEMATIC (INTRO IMAGE) */
+        .intro-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            z-index: 9998;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        .intro-bg {
+            position: absolute;
+            width: 100%; height: 100%;
+            /* Imaginea ta pusă ca background pe tot ecranul, centrată perfect */
+            background: url('wp10452822.jpg') center center no-repeat;
+            background-size: contain; /* Păstrează proporțiile imaginii fără să o taie */
+            filter: brightness(0.8);
+        }
+        .intro-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: 5vh; /* Poziționează textul în partea de jos, ca în jocuri */
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 30px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        .blink-text {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--accent-color);
+            animation: blink 2s infinite;
+        }
+
+        /* 3. STRUCTURA INTERFĂȚII PRINCIPALE */
+        .sidebar {
+            width: 250px;
+            background-color: var(--panel-color);
+            border-right: 1px solid #1a1a26;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+        .sidebar-header {
+            padding: 0 20px 20px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 1px solid #1a1a26;
+            margin-bottom: 20px;
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            text-align: left;
+            padding: 15px 20px;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .menu-btn:hover, .menu-btn.active {
+            background-color: #09090d;
+            color: var(--text-color);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .page.active { display: block; }
+
+        .card {
+            background-color: var(--panel-color);
+            padding: 24px;
+            border-radius: 10px;
+            border: 1px solid #1a1a26;
+            margin-bottom: 20px;
+        }
+        h1 { margin-top: 0; color: #fff; }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            background-color: #09090d;
+            color: white;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+        .journal-list { margin-top: 30px; }
+        .journal-entry {
+            background: #09090d;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            margin-bottom: 15px;
+        }
+        .entry-date { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
+        .delete-btn { background: #ff4a4a; padding: 5px 10px; font-size: 12px; margin-top: 10px; }
+
+        /* ANIMAȚII */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="login-overlay">
+        <div class="login-box">
+            <h2>Sistem de Securitate</h2>
+            <p>Introdu cheia de acces:</p>
+            <input type="password" id="pass-input" placeholder="Parolă..." onkeypress="handleLoginKeyPress(event)">
+            <br>
+            <button onclick="login()">Deblochează</button>
+            <p id="error" style="color: #ff4a4a; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div id="intro-screen" class="intro-overlay hidden">
+        <div class="intro-bg"></div>
+        <div class="intro-content">
+            <div class="blink-text">APASĂ PE [ENTER] SAU [SPACE] PENTRU A INTRA</div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">⚔️ HQ Personal</div>
+        <button class="menu-btn" onclick="switchPage('planner', this)">📅 Planner & HQ</button>
+        <button class="menu-btn" onclick="switchPage('skills', this)">🌳 Skill Tree</button>
+        <button class="menu-btn" onclick="switchPage('quests', this)">📜 Quest Log</button>
+        <button class="menu-btn active" onclick="switchPage('journal', this)">✍️ Jurnal Secret</button>
+        <div style="margin-top: auto; padding: 20px;">
+            <button onclick="logout()" style="background:#ff4a4a; width: 100%;">Ieșire</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="planner" class="page">
+            <h1>📅 Planner & Panou de Control</h1>
+            <div class="card"><h3>Misiunea Zilei</h3><p>Zona de planificare zilnică.</p></div>
+        </div>
+
+        <div id="skills" class="page">
+            <h1>🌳 Arborele de Abilități (Skill Tree)</h1>
+            <div class="card"><h3>Dezvoltare Abilități</h3><p>Vizualizarea progresului tău.</p></div>
+        </div>
+
+        <div id="quests" class="page">
+            <h1>📜 Quest Log</h1>
+            <div class="card"><h3>Misiuni Active</h3><p>Misiuni în stil RPG.</p></div>
+        </div>
+
+        <div id="journal" class="page active">
+            <h1>✍️ Jurnal Personal Permanent</h1>
+            <div class="card">
+                <h3>Gândurile de azi...</h3>
+                <textarea id="journal-input" placeholder="Scrie ceva..."></textarea>
+                <button onclick="saveJournalEntry()">Adaugă în Jurnal</button>
+                <div class="journal-list" id="entries-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PAROLA = "SecretulMeu2026";
+        let authenticated = false;
+
+        // 1. Logica de Login
+        function login() {
+            if(document.getElementById("pass-input").value === PAROLA) {
+                document.getElementById("login-screen").classList.add("hidden");
+                // Afișează ecranul intro cinematic
+                document.getElementById("intro-screen").classList.remove("hidden");
+                authenticated = true;
+                // Ascultă tastele doar după ce login-ul e complet
+                window.addEventListener('keydown', handleIntroKeys);
+            } else {
+                document.getElementById("error").innerText = "Acces interzis.";
+            }
+        }
+
+        function handleLoginKeyPress(e) {
+            if(e.key === "Enter") login();
+        }
+
+        // 2. Logica pentru ecranul cinematic (Space / Enter)
+        function handleIntroKeys(event) {
+            if (!authenticated) return;
+            
+            if (event.key === " " || event.key === "Enter") {
+                // Ascunde ecranul cinematic cu imaginea
+                document.getElementById("intro-screen").classList.add("hidden");
+                // Elimină ascultătorul de taste ca să poți folosi Space/Enter normal în Jurnal
+                window.removeEventListener('keydown', handleIntroKeys);
+            }
+        }
+
+        // 3. Logica de navigare meniu
+        function switchPage(pageId, buttonClicked) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.menu-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active');
+            buttonClicked.classList.add('active');
+        }
+
+        function logout() {
+            authenticated = false;
+            document.getElementById("pass-input").value = "";
+            document.getElementById("login-screen").classList.remove("hidden");
+            document.getElementById("intro-screen").classList.add("hidden");
+        }
+
+        // 4. Logica Jurnal local (LocalStorage)
+        window.onload = function() { displayEntries(); };
+
+        function saveJournalEntry() {
+            const textarea = document.getElementById("journal-input");
+            const textContent = textarea.value.trim();
+            if (textContent === "") return;
+
+            let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
+            const newEntry = { id: Date.now(), date: new Date().toLocaleString('ro-RO'), text: textContent };
+            entries.unshift(newEntry);
+            localStorage.setItem("myJournalEntries", JSON.stringify(entries));
+            textarea.value = "";
+            displayEntries();
+        }
+
+        function displayEntries() {
+            const container = document.getElementById("entries-container");
+            let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
+            if (entries.length === 0) {
+                container.innerHTML = "<p style='color: var(--text-dim);'>Jurnalul este gol.</p>";
+                return;
+            }
+            container.innerHTML = "";
+            entries.forEach(entry => {
+                container.innerHTML += `
+                    <div class="journal-entry">
+                        <div class="entry-date">📅 ${entry.date}</div>
+                        <div>${entry.text}</div>
+                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">Șterge</button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteEntry(id) {
+            if (confirm("Ștergi această însemnare?")) {
+                let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
+                entries = entries.filter(entry => entry.id !== id);
+                localStorage.setItem("myJournalEntries", JSON.stringify(entries));
+                displayEntries();
+            }
+        }
+    </script>
+</body>
+</html>
