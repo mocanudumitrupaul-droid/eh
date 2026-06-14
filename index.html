@@ -28,7 +28,7 @@
 
         .hidden { display: none !important; }
 
-        /* WIDGET CEAS (Orbitron Font) */
+        /* WIDGET CEAS */
         .time-widget {
             position: fixed;
             top: 20px;
@@ -59,7 +59,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Ascunderea ceasului în modul Zen */
         body.menu-collapsed .time-widget {
             opacity: 0;
             pointer-events: none;
@@ -88,7 +87,7 @@
             box-shadow: 0 0 10px var(--accent-color);
         }
 
-        /* ECRAN LOGIN */
+        /* ECRAN LOGIN (PASUL 1) */
         .login-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -108,13 +107,13 @@
             width: 80%;
             max-width: 320px;
         }
-        input[type="password"], input[type="number"] {
+        input[type="password"], input[type="number"], input[type="text"] {
             padding: 12px;
             border-radius: 6px;
             border: 1px solid #2a2a3a;
             background: #09090d;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             outline: none;
             font-family: 'Courier Prime', monospace;
         }
@@ -126,7 +125,14 @@
             text-align: center;
         }
 
-        /* INTERFAȚA */
+        /* CONTAINERUL GLOBAL AL INTERFAȚEI (Ascuns total la început) */
+        #hq-interface {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* INTERFAȚA / SIDEBAR */
         .sidebar {
             width: 250px;
             background-color: var(--panel-color);
@@ -161,6 +167,7 @@
         .page.active { display: block; }
 
         @media (max-width: 768px) {
+            #hq-interface { flex-direction: column; }
             body { flex-direction: column; }
             .sidebar { 
                 position: fixed; 
@@ -209,7 +216,7 @@
         .entry-date { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
         .delete-btn { background: #ff4a4a; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 4px; margin-top: 10px; cursor: pointer;}
         
-        /* STILURI PENTRU BARA DE PROGRES BLOXSTRIKE */
+        /* BARA DE PROGRES BLOXSTRIKE */
         .progress-container {
             background: #09090d;
             border: 1px solid #2a2a3a;
@@ -237,7 +244,7 @@
             color: #fff;
             text-shadow: 1px 1px 2px #000;
         }
-        .save-btn {
+        .custom-btn {
             padding: 10px 20px; 
             background: var(--accent-color); 
             color: white; 
@@ -245,6 +252,75 @@
             border-radius: 6px; 
             font-weight: bold; 
             cursor: pointer;
+            font-family: 'Courier Prime', monospace;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+        .sec-btn {
+            background: #1a1a26;
+            border: 1px solid #2a2a3a;
+        }
+
+        /* ECRAN CINEMATIC (PASUL 2) */
+        .intro-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            z-index: 9998;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .intro-video {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+            z-index: 1;
+        }
+        .intro-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: 8vh;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 80%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+        .blink-text {
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--accent-color);
+            animation: blink 2s infinite;
+        }
+        .skip-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 3;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        .skip-btn:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
         }
 
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
@@ -252,13 +328,7 @@
 </head>
 <body>
 
-    <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ Meniu</button>
-
-    <div class="time-widget">
-        <div class="widget-time" id="live-time">00:00:00</div>
-        <div class="widget-date" id="live-date">LUNI, 1 IANUARIE 2026</div>
-    </div>
-
+    <!-- PASUL 1: AUTENTIFICARE -->
     <div id="login-screen" class="login-overlay">
         <div class="login-box">
             <h2>Sistem de Securitate</h2>
@@ -270,11 +340,12 @@
                    oncut="return false;" 
                    autocomplete="new-password">
             <br>
-            <button onclick="login()" style="padding: 8px 20px; background: var(--accent-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Deblochează</button>
+            <button onclick="login()" style="padding: 8px 20px; background: var(--accent-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-family: 'Courier Prime', monospace;">Deblochează</button>
             <p id="error" style="color: #ff4a4a; margin-top: 10px;"></p>
         </div>
     </div>
 
+    <!-- PASUL 2: ECRAN CINEMATIC (Apare SEPARAT doar după parolă) -->
     <div id="intro-screen" class="intro-overlay hidden" onclick="enterHQ()">
         <video class="intro-video" id="bg-video" loop muted playsinline>
             <source src="intro.mp4" type="video/mp4">
@@ -285,75 +356,101 @@
         <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();">Skip ➔</button>
     </div>
 
-    <div class="sidebar" id="my-sidebar">
-        <div class="sidebar-header">⚔️ HQ Personal</div>
-        <button class="menu-btn active" onclick="switchPage('home', this)">🏠 Principală</button>
-        <button class="menu-btn" onclick="switchPage('planner', this)">📅 Planner</button>
-        <button class="menu-btn" onclick="switchPage('skills', this)">🌳 Skills</button>
-        <button class="menu-btn" onclick="switchPage('quests', this)">📜 Quests</button>
-        <button class="menu-btn" onclick="switchPage('bloxstrike', this)">🎮 BloxStrike</button>
-        <button class="menu-btn" onclick="switchPage('journal', this)">✍️ Jurnal</button>
-    </div>
+    <!-- PASUL 3: INTERFAȚA PROPRIU-ZISĂ (Complet ascunsă până se apasă Skip) -->
+    <div id="hq-interface" class="hidden">
+        
+        <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ Meniu</button>
 
-    <div class="main-content">
-        <div id="home" class="page active">
-            <h1>🏠 Pagina Principală</h1>
-            <div class="card">
-                <h3>[ CORE_SYSTEM: ONLINE ]</h3>
-                <p style="color: var(--accent-color); font-weight: bold;">> Bun venit în baza ta centrală de operațiuni.</p>
-                <p>> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.</p>
-                <br>
-                <p style="color: var(--text-dim);">Sistem pregătit. Folosește meniul din stânga pentru navigare.</p>
+        <div class="time-widget">
+            <div class="widget-time" id="live-time">00:00:00</div>
+            <div class="widget-date" id="live-date">LUNI, 1 IANUARIE 2026</div>
+        </div>
+
+        <div class="sidebar" id="my-sidebar">
+            <div class="sidebar-header">⚔️ HQ Personal</div>
+            <button class="menu-btn active" onclick="switchPage('home', this)">🏠 Principală</button>
+            <button class="menu-btn" onclick="switchPage('planner', this)">📅 Planner</button>
+            <button class="menu-btn" onclick="switchPage('skills', this)">🌳 Skills</button>
+            <button class="menu-btn" onclick="switchPage('quests', this)">📜 Quests</button>
+            <button class="menu-btn" onclick="switchPage('bloxstrike', this)">🎮 BloxStrike</button>
+            <button class="menu-btn" onclick="switchPage('journal', this)">✍️ Jurnal</button>
+        </div>
+
+        <div class="main-content">
+            <!-- PAGINA PRINCIPALĂ -->
+            <div id="home" class="page active">
+                <h1>🏠 Pagina Principală</h1>
+                <div class="card">
+                    <h3>[ CORE_SYSTEM: ONLINE ]</h3>
+                    <p style="color: var(--accent-color); font-weight: bold;">> Bun venit în baza ta centrală de operațiuni.</p>
+                    <p>> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.</p>
+                    <br>
+                    <p style="color: var(--text-dim);">Sistem pregătit. Folosește meniul din stânga pentru navigare.</p>
+                </div>
             </div>
-        </div>
 
-        <div id="planner" class="page">
-            <h1>📅 Planner</h1>
-            <div class="card"><p>> Secțiunea de planificare pe termen lung și scurt.</p></div>
-        </div>
-        
-        <div id="skills" class="page">
-            <h1>🌳 Skill Tree</h1>
-            <div class="card"><p>> Arborele tău de abilități în stil RPG (Fancy design pending).</p></div>
-        </div>
-        
-        <div id="quests" class="page">
-            <h1>📜 Quest Log</h1>
-            <div class="card"><p>> Jurnalul de misiuni și obiective active (Fancy design pending).</p></div>
-        </div>
+            <!-- PLANNER -->
+            <div id="planner" class="page">
+                <h1>📅 Planner</h1>
+                <div class="card"><p>> Secțiunea de planificare pe termen lung și scurt.</p></div>
+            </div>
+            
+            <!-- SKILLS -->
+            <div id="skills" class="page">
+                <h1>🌳 Skill Tree</h1>
+                <div class="card"><p>> Arborele tău de abilități în stil RPG (Fancy design pending).</p></div>
+            </div>
+            
+            <!-- QUESTS -->
+            <div id="quests" class="page">
+                <h1>📜 Quest Log</h1>
+                <div class="card"><p>> Jurnalul de misiuni și obiective active (Fancy design pending).</p></div>
+            </div>
 
-        <div id="bloxstrike" class="page">
-            <h1>🎮 BloxStrike Status</h1>
-            <div class="card">
-                <h3>[ MONITORIZARE FINANCIARĂ JOC ]</h3>
-                <p>> Setează creditele tale actuale și obiectivul pe care vrei să îl atingi în joc.</p>
-                
-                <div style="margin: 20px 0;">
-                    <label>Credite Curente:</label>
-                    <input type="number" id="bs-current" class="credit-input" value="0" oninput="calculateProgress()">
+            <!-- BLOXSTRIKE TRACKER -->
+            <div id="bloxstrike" class="page">
+                <h1>🎮 BloxStrike Status</h1>
+                <div class="card">
+                    <h3>[ MONITORIZARE FINANCIARĂ JOC ]</h3>
+                    <p>> Setează creditele tale actuale și obiectivul pe care vrei să îl atingi în joc.</p>
                     
-                    <label>Obiectiv (Goal):</label>
-                    <input type="number" id="bs-goal" class="credit-input" value="10000" oninput="calculateProgress()">
+                    <div style="margin: 20px 0;">
+                        <label>Credite Curente:</label>
+                        <input type="number" id="bs-current" class="credit-input" value="0" oninput="calculateProgress()">
+                        
+                        <label>Obiectiv (Goal):</label>
+                        <input type="number" id="bs-goal" class="credit-input" value="10000" oninput="calculateProgress()">
+                    </div>
+
+                    <h4 style="margin-bottom: 5px;">Progres Misiune Economică:</h4>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="bs-progress-bar"></div>
+                        <div class="progress-text" id="bs-progress-text">0% Reușit</div>
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <button class="custom-btn" onclick="saveBloxStrikeData()">Salvează Local</button>
+                    </div>
                 </div>
 
-                <h4 style="margin-bottom: 5px;">Progres Misiune Economică:</h4>
-                <div class="progress-container">
-                    <div class="progress-bar" id="bs-progress-bar"></div>
-                    <div class="progress-text" id="bs-progress-text">0% Reușit</div>
-                </div>
-
-                <div style="margin-top: 25px;">
-                    <button class="save-btn" onclick="saveBloxStrikeData()">Salvează Datele</button>
+                <!-- MODUL DE TRANSFER DATE PC <-> TELEFON -->
+                <div class="card" style="margin-top: 20px;">
+                    <h3>[ SINCRONIZARE DISPOZITIVE ]</h3>
+                    <p>> Deoarece GitHub Pages nu are bază de date, folosește acest cod criptat pentru a muta datele de pe PC pe Telefon:</p>
+                    <input type="text" id="sync-code" placeholder="Cod de sincronizare..." style="width: 80%; max-width: 400px; margin-bottom: 10px;"><br>
+                    <button class="custom-btn sec-btn" onclick="generateSyncCode()">Generează Cod (De pe PC)</button>
+                    <button class="custom-btn sec-btn" onclick="loadSyncCode()">Încarcă Cod (Pe Telefon)</button>
                 </div>
             </div>
-        </div>
-        
-        <div id="journal" class="page">
-            <h1>✍️ Jurnal Personal</h1>
-            <div class="card">
-                <textarea id="journal-input" placeholder="Scrie o nouă filă de poveste..."></textarea>
-                <button onclick="saveJournalEntry()" style="padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 6px; font-weight: bold; margin-top: 10px; cursor: pointer;">Adaugă în Jurnal</button>
-                <div class="journal-list" id="entries-container"></div>
+            
+            <!-- JURNAL -->
+            <div id="journal" class="page">
+                <h1>✍️ Jurnal Personal</h1>
+                <div class="card">
+                    <textarea id="journal-input" placeholder="Scrie o nouă filă de poveste..."></textarea>
+                    <button onclick="saveJournalEntry()" class="custom-btn">Adaugă în Jurnal</button>
+                    <div class="journal-list" id="entries-container"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -384,7 +481,9 @@
                 document.getElementById("login-screen").classList.add("hidden");
                 document.getElementById("intro-screen").classList.remove("hidden");
                 const video = document.getElementById("bg-video");
-                if(video) video.play();
+                if(video) {
+                    video.play().catch(e => console.log("Autoplay asigurat"));
+                }
                 authenticated = true;
                 window.addEventListener('keydown', handleIntroKeys);
             } else {
@@ -392,10 +491,12 @@
             }
         }
 
+        // MODIFICAT: Afișează interfața site-ului STRICT după ce se iese din modul cinematic
         function enterHQ() {
             const video = document.getElementById("bg-video");
             if(video) video.pause();
             document.getElementById("intro-screen").classList.add("hidden");
+            document.getElementById("hq-interface").classList.remove("hidden"); // Eliberează meniul și restul paginii
             window.removeEventListener('keydown', handleIntroKeys);
         }
 
@@ -432,19 +533,43 @@
         function saveBloxStrikeData() {
             const current = document.getElementById("bs-current").value;
             const goal = document.getElementById("bs-goal").value;
-            
             localStorage.setItem("bsCurrentCredits", current);
             localStorage.setItem("bsGoalCredits", goal);
-            alert("Balanța BloxStrike a fost salvată!");
+            alert("Balanța salvată local!");
         }
 
         function loadBloxStrikeData() {
             const savedCurrent = localStorage.getItem("bsCurrentCredits") || "0";
             const savedGoal = localStorage.getItem("bsGoalCredits") || "10000";
-            
             document.getElementById("bs-current").value = savedCurrent;
             document.getElementById("bs-goal").value = savedGoal;
             calculateProgress();
+        }
+
+        // FUNCȚII NOI: Sistemul de generare coduri tip Matrix/Cyberpunk pentru transferul de date
+        function generateSyncCode() {
+            const current = document.getElementById("bs-current").value;
+            const goal = document.getElementById("bs-goal").value;
+            // Criptăm simplu datele într-un string b64 ca să arate a cod militar
+            const code = btoa(JSON.stringify({ c: current, g: goal }));
+            document.getElementById("sync-code").value = code;
+            document.getElementById("sync-code").select();
+            alert("Cod generat! Copiază-l și trimite-l pe telefon.");
+        }
+
+        function loadSyncCode() {
+            const code = document.getElementById("sync-code").value.trim();
+            if(!code) return alert("Introdu un cod valid mai întâi!");
+            try {
+                const data = JSON.parse(atob(code));
+                document.getElementById("bs-current").value = data.c;
+                document.getElementById("bs-goal").value = data.g;
+                saveBloxStrikeData();
+                calculateProgress();
+                alert("Sincronizare reușită! Datele din BloxStrike au fost importate.");
+            } catch(e) {
+                alert("Cod invalid sau corupt!");
+            }
         }
 
         window.onload = function() { 
