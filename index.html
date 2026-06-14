@@ -28,7 +28,7 @@
 
         .hidden { display: none !important; }
 
-        /* CEAS LIVE (PLUTITOR SUS-DREAPTA ÎN INTERFAȚĂ) */
+        /* CEAS LIVE */
         .time-widget {
             position: fixed;
             top: 20px;
@@ -65,7 +65,7 @@
             transform: translateY(-20px);
         }
 
-        /* BUTON TOGGLE MENIU (MOBIL/PC) */
+        /* BUTON TOGGLE MENIU */
         .toggle-menu-btn {
             position: fixed;
             top: 20px;
@@ -107,7 +107,15 @@
             border: 1px solid #1a1a26;
             width: 80%;
             max-width: 320px;
+            position: relative;
         }
+        
+        /* Caseta de limbi mutată DIRECT în login box pentru siguranță PC */
+        .login-lang-wrapper {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
         input[type="password"], input[type="number"], input[type="text"] {
             padding: 12px;
             border-radius: 6px;
@@ -132,7 +140,7 @@
             height: 100vh;
         }
 
-        /* SIDEBAR / MENIU */
+        /* SIDEBAR */
         .sidebar {
             width: 250px;
             background-color: var(--panel-color);
@@ -150,20 +158,10 @@
             z-index: 99;
         }
 
-        /* SELECTOARELE DE LIMBĂ URMĂRIRE MATRIX */
         .lang-container {
             padding: 0 20px 20px 20px;
             border-bottom: 1px solid #1a1a26;
             margin-bottom: 15px;
-        }
-        
-        /* Poziționare fixă în colțul ecranului pentru faza de Login */
-        .global-login-lang {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            width: 100px;
         }
 
         .lang-select {
@@ -242,8 +240,37 @@
         .card { background-color: var(--panel-color); padding: 24px; border-radius: 10px; border: 1px solid #1a1a26; margin-bottom: 20px; }
         textarea { width: 100%; height: 120px; background-color: #09090d; color: white; border: 1px solid #2a2a3a; border-radius: 8px; padding: 15px; box-sizing: border-box; font-size: 16px; font-family: 'Courier Prime', monospace; resize: vertical; }
         
-        .journal-list { margin-top: 20px; }
-        .journal-entry { background: #09090d; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-color); margin-bottom: 15px; }
+        /* MECANISMUL DE SERTAR (SLIDING DRAWER) PENTRU JURNAL */
+        .journal-drawer {
+            position: fixed;
+            top: 0;
+            right: -420px; /* Ascuns în afara ecranului implicit */
+            width: 400px;
+            max-width: 85vw;
+            height: 100vh;
+            background-color: #0c0c12;
+            border-left: 2px solid var(--accent-color);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+            z-index: 200;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 90px 20px 20px 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .journal-drawer.open {
+            right: 0; /* Glisează pe ecran */
+        }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1a1a26;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .journal-list { margin-top: 10px; }
+        .journal-entry { background: #111118; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-color); margin-bottom: 15px; border: 1px solid #1a1a26; }
         .entry-date { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
         .delete-btn { background: #ff4a4a; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-family: 'Courier Prime', monospace;}
         
@@ -291,7 +318,7 @@
             border: 1px solid #2a2a3a;
         }
 
-        /* FOND CINEMATIC GRADIENT CONTROLAT */
+        /* INTRO SCREEN */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; 
@@ -363,32 +390,27 @@
 </head>
 <body>
 
-    <!-- MENIU PLUTITOR SCHIMBARE LIMBA (Apare sus în dreapta la login, vizibil pe absolut orice dispozitiv) -->
-    <div id="global-login-lang-box" class="global-login-lang">
-        <select class="lang-select change-lang-matrix" onchange="changeLanguage(this.value)">
-            <option value="ro">🇷🇴 RO</option>
-            <option value="en">🇬🇧 EN</option>
-            <option value="fr">🇫🇷 FR</option>
-            <option value="ja">🇯🇵 JA</option>
-        </select>
-    </div>
-
     <!-- PASUL 1: AUTENTIFICARE -->
     <div id="login-screen" class="login-overlay">
         <div class="login-box">
+            <!-- Selectorul de limbi integrat aici rezolvă problemele de randare pe orice ecran/PC -->
+            <div class="login-lang-wrapper">
+                <select class="lang-select change-lang-matrix" style="width: auto;" onchange="changeLanguage(this.value)">
+                    <option value="ro">🇷🇴 RO</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="ja">🇯🇵 JA</option>
+                </select>
+            </div>
+
             <h2 data-i18n="loginTitle">Sistem de Securitate</h2>
             <p data-i18n="loginPrompt">Introdu cheia de acces:</p>
             
-            <!-- Securizat complet pentru tastaturi mobile -->
             <input type="password" id="pass-input" data-i18n-placeholder="loginPlaceholder" placeholder="Parolă..." 
                    onkeydown="if(event.key === 'Enter') login()"
                    autocorrect="off" 
                    autocapitalize="off" 
                    spellcheck="false"
-                   onpaste="return false;" 
-                   ondrop="return false;" 
-                   oncopy="return false;" 
-                   oncut="return false;" 
                    autocomplete="new-password">
             <br>
             <button onclick="login()" data-i18n="loginBtn" style="padding: 8px 20px; background: var(--accent-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-family: 'Courier Prime', monospace;">Deblochează</button>
@@ -420,7 +442,6 @@
         <div class="sidebar" id="my-sidebar">
             <div class="sidebar-header" data-i18n="sidebarHeader">⚔️ HQ Personal</div>
             
-            <!-- OGLINDA SELECTORULUI DIN MENIU -->
             <div class="lang-container">
                 <select class="lang-select change-lang-matrix" onchange="changeLanguage(this.value)">
                     <option value="ro">🇷🇴 Română</option>
@@ -510,7 +531,19 @@
                 <h1 data-i18n="journalTitle">✍️ Jurnal Personal</h1>
                 <div class="card">
                     <textarea id="journal-input" data-i18n-placeholder="journalPlaceholder" placeholder="Scrie o nouă filă de poveste..."></textarea>
-                    <button onclick="saveJournalEntry()" class="custom-btn" data-i18n="journalAddBtn">Adaugă în Jurnal</button>
+                    <div style="margin-top: 10px;">
+                        <button onclick="saveJournalEntry()" class="custom-btn" data-i18n="journalAddBtn">Adaugă în Jurnal</button>
+                        <!-- Butonul care acționează sertarul -->
+                        <button onclick="toggleJournalDrawer(true)" class="custom-btn sec-btn" data-i18n="journalDrawerBtn">📁 Deschide Sertar</button>
+                    </div>
+                </div>
+
+                <!-- PANOUL GLISANT (SERTARELE ISTORICULUI) -->
+                <div id="journal-drawer" class="journal-drawer">
+                    <div class="drawer-header">
+                        <h3 style="margin: 0; color: var(--accent-color);" data-i18n="journalDrawerTitle">🗄️ Sertar cu Amintiri</h3>
+                        <button onclick="toggleJournalDrawer(false)" class="custom-btn sec-btn" style="margin: 0; padding: 5px 12px; font-size: 13px;" data-i18n="journalCloseDrawer">Închide</button>
+                    </div>
                     <div class="journal-list" id="entries-container"></div>
                 </div>
             </div>
@@ -527,11 +560,12 @@
                 loginTitle: "Sistem de Securitate", loginPrompt: "Introdu cheia de acces:", loginPlaceholder: "Parolă...", loginBtn: "Deblochează", loginError: "Acces interzis.",
                 introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
                 menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
-                homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.", homeReady: "Sistem pregătit. Folosește menus din stânga pentru navigare.",
+                homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.", homeReady: "Sistem pregătit. Folosește meniul din stânga pentru navigare.",
                 plannerDesc: "> Secțiunea de planificare pe termen lung și scurt.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> Arborele tău de abilități în stil RPG.", questsTitle: "📜 Quest Log", questsDesc: "> Jurnalul de misiuni și obiective active.",
                 bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsDesc: "> Setează creditele tale actuale și obiectivul pe care vrei să îl atingi în joc.", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressTitle: "Progres Misiune Economică:", bsProgressText: "Finalizat", bsSaveBtn: "Salvează Local",
-                syncTitle: "[ SINCRONIZARE DISPOZITIVE ]", syncDesc: "> Deoarece GitHub Pages nu are bază de date, folosește acest cod criptat pentru a muta datele de pe PC pe Telefon:", syncPlaceholder: "Cod de sincronizare...", syncGenBtn: "Generează Cod (De pe PC)", syncLoadBtn: "Încarcă Cod (Pe Telefon)",
-                journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Jurnal gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
+                syncTitle: "[ SINCRONIZARE DISPOZITIVE ]", syncDesc: "> De deoarece GitHub Pages nu are bază de date, folosește acest cod criptat pentru a muta datele de pe PC pe Telefon:", syncPlaceholder: "Cod de sincronizare...", syncGenBtn: "Generează Cod (De pe PC)", syncLoadBtn: "Încarcă Cod (Pe Telefon)",
+                journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Sertar gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
+                journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide",
                 alertSaveLocal: "Balanța salvată local!", alertGenCode: "Cod generat! Copiază-l și trimite-l pe telefon.", alertLoadSuccess: "Sincronizare reușită!", alertLoadError: "Cod invalid!"
             },
             en: {
@@ -542,7 +576,8 @@
                 plannerDesc: "> Long-term and short-term planning sector.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> Your RPG-style proficiency layout.", questsTitle: "📜 Quest Log", questsDesc: "> Active missions and tactical objectives.",
                 bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ IN-GAME FINANCIAL TRACKER ]", bsDesc: "> Configure your current credits and the financial milestone you want to reach.", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Target Goal:", bsProgressTitle: "Economic Mission Progress:", bsProgressText: "Completed", bsSaveBtn: "Save Locally",
                 syncTitle: "[ DEVICE SYNCHRONIZATION ]", syncDesc: "> Since GitHub Pages is completely static, use this encrypted code to transfer your local save data:", syncPlaceholder: "Sync matrix code...", syncGenBtn: "Generate Code (From PC)", syncLoadBtn: "Load Code (On Phone)",
-                journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new mainframe memory entry...", journalAddBtn: "Add to Database", journalEmpty: "No logs found.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
+                journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new mainframe memory entry...", journalAddBtn: "Add to Database", journalEmpty: "Drawer empty.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
+                journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close",
                 alertSaveLocal: "Credits saved locally!", alertGenCode: "Code generated! Copy and load it on your second terminal.", alertLoadSuccess: "Sync successful!", alertLoadError: "Invalid decryption code!"
             },
             fr: {
@@ -553,7 +588,8 @@
                 plannerDesc: "> Planification tactique à court et long terme.", skillsTitle: "🌳 Arbre de Talents", skillsDesc: "> Votre progression d'aptitudes façon RPG.", questsTitle: "📜 Journal de Quêtes", questsDesc: "> Missions actives et objectifs stratégiques.",
                 bsTitle: "🎮 Statut BloxStrike", bsSubtitle: "[ SUIVI FINANCIER DU JEU ]", bsDesc: "> Ajustez vos crédits actuels et l'objectif financier à atteindre.", bsCurrentLabel: "Crédits Actuels:", bsGoalLabel: "Objectif Final:", bsProgressTitle: "Progression Mission Économique:", bsProgressText: "Terminé", bsSaveBtn: "Enregistrer",
                 syncTitle: "[ SYNCHRONISATION ]", syncDesc: "> GitHub Pages étant statique, utilisez ce code crypté pour cloner vos données sur un autre terminal:", syncPlaceholder: "Code matrice de sync...", syncGenBtn: "Générer Code (PC)", syncLoadBtn: "Charger Code (Mobile)",
-                journalTitle: "✍️ Journal Intime", journalPlaceholder: "Écrire une nouvelle page d'histoire...", journalAddBtn: "Consigner", journalEmpty: "Aucune entrée.", journalDeleteBtn: "Effacer", journalConfirmDelete: "Effacer ce fichier journal ?",
+                journalTitle: "✍️ Journal Intime", journalPlaceholder: "Écrire une nouvelle page d'histoire...", journalAddBtn: "Consigner", journalEmpty: "Tiroir vide.", journalDeleteBtn: "Effacer", journalConfirmDelete: "Effacer ce fichier journal ?",
+                journalDrawerBtn: "📁 Ouvrir le Tiroir", journalDrawerTitle: "🗄️ Tiroir à Souvenirs", journalCloseDrawer: "Fermer",
                 alertSaveLocal: "Données enregistrées !", alertGenCode: "Code généré ! Copiez et transférez-le.", alertLoadSuccess: "Synchronisation réussie !", alertLoadError: "Code corrompu !"
             },
             ja: {
@@ -564,7 +600,8 @@
                 plannerDesc: "> 長期および短期の計画セクター。", skillsTitle: "🌳 スキルツリー", skillsDesc: "> RPGスタイルの能力マトリックス。", questsTitle: "📜 クエストログ", questsDesc: "> アクティブな任務と戦術目標。",
                 bsTitle: "🎮 BloxStrike ステータス", bsSubtitle: "[ ゲーム内財務モニター ]", bsDesc: "> 現在のクレジットと達成したい目標値を設定します。", bsCurrentLabel: "現在クレジット:", bsGoalLabel: "目標ゴール:", bsProgressTitle: "経済ミッション進行状況:", bsProgressText: "完了", bsSaveBtn: "ローカル保存",
                 syncTitle: "[ 端末間同期 ]", syncDesc: "> サーバーがないため、この暗号化コードを使用してPCからスマホにデータを移行します:", syncPlaceholder: "同期暗号コード...", syncGenBtn: "コード生成 (PC用)", syncLoadBtn: "コード読込 (スマホ用)",
-                journalTitle: "✍️ 個人データ日記", journalPlaceholder: "新しい物語 of ページを書き留める...", journalAddBtn: "データベースに追加", journalEmpty: "ログがありません。", journalDeleteBtn: "削除", journalConfirmDelete: "このログを消去しますか？",
+                journalTitle: "✍️ 個人データ日記", journalPlaceholder: "新しい物語 of ページを書き留める...", journalAddBtn: "データベースに追加", journalEmpty: "引き出しは空です。", journalDeleteBtn: "削除", journalConfirmDelete: "このログを消去しますか？",
+                journalDrawerBtn: "📁 引き出しを開ける", journalDrawerTitle: "🗄️ 記憶の引き出し", journalCloseDrawer: "閉じる",
                 alertSaveLocal: "クレジットデータを保存しました！", alertGenCode: "コード生成完了！ コピーして別の端末で読み込んでください。", alertLoadSuccess: "同期が成功しました！", alertLoadError: "コード復号エラー！"
             }
         };
@@ -589,7 +626,6 @@
                 if (translations[lang] && translations[lang][key]) el.setAttribute('placeholder', translations[lang][key]);
             });
 
-            // PROTECȚIE MOBILĂ: Try-catch previne blocarea rulării dacă un sub-sistem mobil dă crash
             try { calculateProgress(); } catch(e) { console.log(e); }
             try { displayEntries(); } catch(e) { console.log(e); }
             try { updateClock(); } catch(e) { console.log(e); }
@@ -603,7 +639,6 @@
             document.getElementById('live-time').innerText = `${hours}:${minutes}:${seconds}`;
 
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            // Adăugat try-catch nativ pentru a rula sigur chiar și pe versiuni vechi de Safari sau Chrome Mobile
             try {
                 document.getElementById('live-date').innerText = now.toLocaleDateString(langLocales[currentLang], options);
             } catch(e) {
@@ -617,17 +652,24 @@
             document.body.classList.toggle("menu-collapsed");
         }
 
+        // CONTROL PENTRU SERTARUL JURNALULUI
+        function toggleJournalDrawer(open) {
+            const drawer = document.getElementById("journal-drawer");
+            if (open) {
+                drawer.classList.add("open");
+            } else {
+                drawer.classList.remove("open");
+            }
+        }
+
         function login() {
-            const inputVal = document.getElementById("pass-input").value.trim(); // Curăță eventualele spații de pe mobil
+            const inputVal = document.getElementById("pass-input").value.trim();
             if(inputVal === PAROLA) {
-                // Ascundem selectorul plutitor special de login când intrăm în HQ
-                document.getElementById("global-login-lang-box").classList.add("hidden");
-                
                 document.getElementById("login-screen").classList.add("hidden");
                 document.getElementById("intro-screen").classList.remove("hidden");
                 const video = document.getElementById("bg-video");
                 if(video) {
-                    video.play().catch(e => console.log("Video dezactivat/lipsă, fundal reactiv activ."));
+                    video.play().catch(e => console.log("Video dezactivat."));
                 }
                 authenticated = true;
                 window.addEventListener('keydown', handleIntroKeys);
@@ -651,6 +693,9 @@
         }
 
         function switchPage(pageId, buttonClicked) {
+            // Închide automat sertarul jurnalului dacă schimbi pagina
+            toggleJournalDrawer(false);
+
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -733,18 +778,21 @@
             localStorage.setItem("myJournalEntries", JSON.stringify(entries));
             textarea.value = "";
             displayEntries();
+            
+            // Deschide automat sertarul ca utilizatorul să vadă noua scriere adăugată!
+            toggleJournalDrawer(true);
         }
 
         function displayEntries() {
             const container = document.getElementById("entries-container");
             if (!container) return;
             let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
-            container.innerHTML = entries.length === 0 ? `<p>${translations[currentLang].journalEmpty}</p>` : "";
+            container.innerHTML = entries.length === 0 ? `<p style="color: var(--text-dim); text-align: center;">${translations[currentLang].journalEmpty}</p>` : "";
             entries.forEach(entry => {
                 container.innerHTML += `
                     <div class="journal-entry">
                         <div class="entry-date">📅 ${entry.date}</div>
-                        <div style="white-space: pre-wrap;">${entry.text}</div>
+                        <div style="white-space: pre-wrap; font-size: 14px; color: #fff;">${entry.text}</div>
                         <button class="delete-btn" onclick="deleteEntry(${entry.id})">${translations[currentLang].journalDeleteBtn}</button>
                     </div>`;
             });
