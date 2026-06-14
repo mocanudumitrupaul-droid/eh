@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HQ Personal - Sistem de Operare</title>
+    <!-- Importăm fontul digital/cyberpunk Orbitron de la Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #050508;
@@ -25,6 +27,36 @@
         }
 
         .hidden { display: none !important; }
+
+        /* WIDGET CEAS (DREAPTA SUS) */
+        .time-widget {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100; /* Stă deasupra conținutului, dar sub ecranele de login/intro */
+            background: rgba(17, 17, 24, 0.75);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+            text-align: right;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            font-family: 'Orbitron', sans-serif; /* Aplicăm fontul special */
+        }
+        .widget-time {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(138, 43, 226, 0.8);
+            letter-spacing: 1px;
+        }
+        .widget-date {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
 
         /* 1. ECRAN LOGIN */
         .login-overlay {
@@ -59,7 +91,7 @@
             outline: none;
         }
 
-        /* 2. ECRAN CINEMATIC (INTRO IMAGE) */
+        /* 2. ECRAN CINEMATIC (BACKGROUND VIDEO) */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -68,14 +100,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer; /* Arată că se poate da click */
         }
-        .intro-bg {
+        .intro-video {
             position: absolute;
+            top: 0; left: 0;
             width: 100%; height: 100%;
-            background: url('wp10452822.png') center center no-repeat;
-            background-size: contain;
-            filter: brightness(0.8);
+            object-fit: cover;
+            filter: brightness(0.6);
+            z-index: 1;
         }
         .intro-content {
             position: relative;
@@ -89,6 +121,7 @@
             border: 1px solid rgba(255,255,255,0.1);
             width: 80%;
             max-width: 400px;
+            pointer-events: none;
         }
         .blink-text {
             font-size: 15px;
@@ -97,6 +130,27 @@
             color: #ffffff;
             text-shadow: 0 0 10px var(--accent-color);
             animation: blink 2s infinite;
+        }
+        .skip-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 3;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .skip-btn:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
         }
 
         /* 3. STRUCTURA INTERFĂȚII PRINCIPALE */
@@ -109,13 +163,15 @@
             padding: 20px 0;
         }
         
-        /* Ajustare pentru telefoane (Meniul jos sau ascuns, dar momentan îl lăsăm simplu flexibil) */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #1a1a26; padding: 10px 0; }
             .sidebar-header { display: none; }
             .menu-btn { padding: 10px 15px; text-align: center; font-size: 14px; }
-            .main-content { padding: 20px; }
+            .main-content { padding: 20px; margin-top: 60px; /* Lasă loc pentru ceas pe telefon */ }
+            .time-widget { top: 10px; right: 10px; padding: 5px 12px; }
+            .widget-time { font-size: 16px; }
+            .widget-date { font-size: 9px; }
         }
 
         .sidebar-header {
@@ -158,6 +214,13 @@
 </head>
 <body>
 
+    <!-- WIDGET TIMP PERMANENT -->
+    <div class="time-widget">
+        <div class="widget-time" id="live-time">00:00:00</div>
+        <div class="widget-date" id="live-date">LUNI, 1 IANUARIE 2026</div>
+    </div>
+
+    <!-- PASUL 1: AUTENTIFICARE -->
     <div id="login-screen" class="login-overlay">
         <div class="login-box">
             <h2>Sistem de Securitate</h2>
@@ -169,13 +232,18 @@
         </div>
     </div>
 
+    <!-- PASUL 2: ECRAN CINEMATIC -->
     <div id="intro-screen" class="intro-overlay hidden" onclick="enterHQ()">
-        <div class="intro-bg"></div>
+        <video class="intro-video" id="bg-video" loop muted playsinline>
+            <source src="intro.mp4" type="video/mp4">
+        </video>
         <div class="intro-content">
-            <div class="blink-text">APASĂ ENTER / SPACE SAU ATINGE ECRANUL</div>
+            <div class="blink-text">APASĂ ENTER / SPACE SAU ATINGE FUNDALUL</div>
         </div>
+        <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();">Skip ➔</button>
     </div>
 
+    <!-- PASUL 3: INTERFAȚA -->
     <div class="sidebar">
         <div class="sidebar-header">⚔️ HQ Personal</div>
         <button class="menu-btn" onclick="switchPage('planner', this)">📅 Planner</button>
@@ -203,10 +271,30 @@
         const PAROLA = "SecretulMeu2026";
         let authenticated = false;
 
+        // FUNCTIA PENTRU CEAS DIGITAL (Se rulează în fiecare secundă)
+        function updateClock() {
+            const now = new Date();
+            
+            // Formatăm ora, minutele și secundele să aibă mereu 2 cifre (ex: 09 în loc de 9)
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('live-time').innerText = `${hours}:${minutes}:${seconds}`;
+
+            // Formatăm data în limba română
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            let dateString = now.toLocaleDateString('ro-RO', options);
+            
+            document.getElementById('live-date').innerText = dateString;
+        }
+
         function login() {
             if(document.getElementById("pass-input").value === PAROLA) {
                 document.getElementById("login-screen").classList.add("hidden");
                 document.getElementById("intro-screen").classList.remove("hidden");
+                const video = document.getElementById("bg-video");
+                if(video) video.play();
                 authenticated = true;
                 window.addEventListener('keydown', handleIntroKeys);
             } else {
@@ -214,8 +302,9 @@
             }
         }
 
-        // Funcția de intrare (comună pentru tastatură și atingere ecran)
         function enterHQ() {
+            const video = document.getElementById("bg-video");
+            if(video) video.pause();
             document.getElementById("intro-screen").classList.add("hidden");
             window.removeEventListener('keydown', handleIntroKeys);
         }
@@ -233,7 +322,12 @@
             buttonClicked.classList.add('active');
         }
 
-        window.onload = function() { displayEntries(); };
+        // Pornim ceasul și încărcăm jurnalul la deschiderea site-ului
+        window.onload = function() { 
+            displayEntries(); 
+            updateClock();
+            setInterval(updateClock, 1000); // Actualizează ceasul la fiecare 1000ms (1 secundă)
+        };
 
         function saveJournalEntry() {
             const textarea = document.getElementById("journal-input");
@@ -253,7 +347,7 @@
                 container.innerHTML += `
                     <div class="journal-entry">
                         <div class="entry-date">📅 ${entry.date}</div>
-                        <div>${entry.text}</div>
+                        <div style="white-space: pre-wrap;">${entry.text}</div>
                         <button class="delete-btn" onclick="deleteEntry(${entry.id})">Șterge</button>
                     </div>`;
             });
