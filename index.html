@@ -90,7 +90,8 @@
         /* ECRAN LOGIN (PASUL 1) */
         .login-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh;
             background-color: var(--bg-color);
             display: flex;
             justify-content: center;
@@ -125,7 +126,7 @@
             text-align: center;
         }
 
-        /* CONTAINERUL GLOBAL AL INTERFAȚEI (Ascuns total la început) */
+        /* CONTAINERUL GLOBAL AL INTERFAȚEI */
         #hq-interface {
             display: flex;
             width: 100%;
@@ -261,22 +262,25 @@
             border: 1px solid #2a2a3a;
         }
 
-        /* ECRAN CINEMATIC (PASUL 2) */
+        /* OPTIMIZAT: ECRAN CINEMATIC (PASUL 2) - ACUM COMPLET FORȚAT FULLSCREEN */
         .intro-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh;
             background-color: #000;
             z-index: 9998;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
         .intro-video {
             position: absolute;
             top: 0; left: 0;
-            width: 100%; height: 100%;
+            width: 100vw; height: 100vh;
             object-fit: cover;
-            filter: brightness(0.6);
+            filter: brightness(0.5);
             z-index: 1;
         }
         .intro-content {
@@ -284,43 +288,45 @@
             z-index: 2;
             text-align: center;
             margin-top: auto;
-            margin-bottom: 8vh;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 25px;
+            margin-bottom: 10vh;
+            background: rgba(5, 5, 8, 0.85);
+            padding: 18px 30px;
             border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-            width: 80%;
-            max-width: 400px;
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            width: 85%;
+            max-width: 450px;
             pointer-events: none;
         }
         .blink-text {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: #ffffff;
             text-shadow: 0 0 10px var(--accent-color);
             animation: blink 2s infinite;
         }
         .skip-btn {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            bottom: 30px;
+            right: 30px;
             z-index: 3;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(17, 17, 24, 0.9);
+            border: 1px solid rgba(138, 43, 226, 0.5);
             color: white;
-            padding: 8px 16px;
+            padding: 10px 20px;
             font-size: 14px;
-            border-radius: 4px;
+            border-radius: 6px;
             transition: 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
+            font-family: 'Courier Prime', monospace;
         }
         .skip-btn:hover {
             background: var(--accent-color);
             border-color: var(--accent-color);
-            box-shadow: 0 0 10px var(--accent-color);
+            box-shadow: 0 0 15px var(--accent-color);
         }
 
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
@@ -345,9 +351,10 @@
         </div>
     </div>
 
-    <!-- PASUL 2: ECRAN CINEMATIC (Apare SEPARAT doar după parolă) -->
+    <!-- PASUL 2: ECRAN CINEMATIC (Perfect întins pe tot ecranul, PC & Telefon) -->
     <div id="intro-screen" class="intro-overlay hidden" onclick="enterHQ()">
-        <video class="intro-video" id="bg-video" loop muted playsinline>
+        <!-- Sfat: Dacă folosești o imagine fixă în loc de video, poți schimba tag-ul de mai jos cu un <img> sau adăuga un poster -->
+        <video class="intro-video" id="bg-video" loop muted playsinline poster="background-fallback.jpg">
             <source src="intro.mp4" type="video/mp4">
         </video>
         <div class="intro-content">
@@ -356,7 +363,7 @@
         <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();">Skip ➔</button>
     </div>
 
-    <!-- PASUL 3: INTERFAȚA PROPRIU-ZISĂ (Complet ascunsă până se apasă Skip) -->
+    <!-- PASUL 3: INTERFAȚA PROPRIU-ZISĂ -->
     <div id="hq-interface" class="hidden">
         
         <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ Meniu</button>
@@ -398,20 +405,20 @@
             <!-- SKILLS -->
             <div id="skills" class="page">
                 <h1>🌳 Skill Tree</h1>
-                <div class="card"><p>> Arborele tău de abilități în stil RPG (Fancy design pending).</p></div>
+                <div class="card"><p>> Arborele tău de abilități în stil RPG.</p></div>
             </div>
             
             <!-- QUESTS -->
             <div id="quests" class="page">
                 <h1>📜 Quest Log</h1>
-                <div class="card"><p>> Jurnalul de misiuni și obiective active (Fancy design pending).</p></div>
+                <div class="card"><p>> Jurnalul de misiuni și obiective active.</p></div>
             </div>
 
             <!-- BLOXSTRIKE TRACKER -->
             <div id="bloxstrike" class="page">
                 <h1>🎮 BloxStrike Status</h1>
                 <div class="card">
-                    <h3>[ CREDIT BALANCE ]</h3>
+                    <h3>[ MONITORIZARE FINANCIARĂ JOC ]</h3>
                     <p>> Setează creditele tale actuale și obiectivul pe care vrei să îl atingi în joc.</p>
                     
                     <div style="margin: 20px 0;">
@@ -445,7 +452,7 @@
             
             <!-- JURNAL -->
             <div id="journal" class="page">
-                <h1>✍️ Jurnal </h1>
+                <h1>✍️ Jurnal Personal</h1>
                 <div class="card">
                     <textarea id="journal-input" placeholder="Scrie o nouă filă de poveste..."></textarea>
                     <button onclick="saveJournalEntry()" class="custom-btn">Adaugă în Jurnal</button>
@@ -482,7 +489,7 @@
                 document.getElementById("intro-screen").classList.remove("hidden");
                 const video = document.getElementById("bg-video");
                 if(video) {
-                    video.play().catch(e => console.log("Autoplay asigurat"));
+                    video.play().catch(e => console.log("Autoplay pregătit"));
                 }
                 authenticated = true;
                 window.addEventListener('keydown', handleIntroKeys);
@@ -491,12 +498,11 @@
             }
         }
 
-        // MODIFICAT: Afișează interfața site-ului STRICT după ce se iese din modul cinematic
         function enterHQ() {
             const video = document.getElementById("bg-video");
             if(video) video.pause();
             document.getElementById("intro-screen").classList.add("hidden");
-            document.getElementById("hq-interface").classList.remove("hidden"); // Eliberează meniul și restul paginii
+            document.getElementById("hq-interface").classList.remove("hidden");
             window.removeEventListener('keydown', handleIntroKeys);
         }
 
@@ -546,11 +552,9 @@
             calculateProgress();
         }
 
-        // FUNCȚII NOI: Sistemul de generare coduri tip Matrix/Cyberpunk pentru transferul de date
         function generateSyncCode() {
             const current = document.getElementById("bs-current").value;
             const goal = document.getElementById("bs-goal").value;
-            // Criptăm simplu datele într-un string b64 ca să arate a cod militar
             const code = btoa(JSON.stringify({ c: current, g: goal }));
             document.getElementById("sync-code").value = code;
             document.getElementById("sync-code").select();
@@ -566,9 +570,9 @@
                 document.getElementById("bs-goal").value = data.g;
                 saveBloxStrikeData();
                 calculateProgress();
-                alert("Sincronizare reușită! Datele din BloxStrike au fost importate.");
+                alert("Sincronizare reușită!");
             } catch(e) {
-                alert("Cod invalid sau corupt!");
+                alert("Cod invalid!");
             }
         }
 
