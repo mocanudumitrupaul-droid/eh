@@ -87,7 +87,7 @@
             box-shadow: 0 0 10px var(--accent-color);
         }
 
-        /* ECRAN LOGIN (PASUL 1) */
+        /* ECRAN LOGIN */
         .login-overlay {
             position: fixed;
             top: 0; left: 0; 
@@ -151,6 +151,29 @@
             z-index: 99;
         }
 
+        /* SELECTORUL DE LIMBĂ */
+        .lang-container {
+            padding: 0 20px 20px 20px;
+            border-bottom: 1px solid #1a1a26;
+            margin-bottom: 15px;
+        }
+        .lang-select {
+            width: 100%;
+            background: #09090d;
+            color: var(--text-color);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Courier Prime', monospace;
+            cursor: pointer;
+            outline: none;
+            font-size: 13px;
+        }
+        .lang-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px var(--accent-color);
+        }
+
         .main-content {
             flex: 1;
             padding: 40px;
@@ -185,12 +208,10 @@
         }
 
         .sidebar-header {
-            padding: 0 20px 20px 20px;
+            padding: 0 20px 10px 20px;
             font-size: 18px;
             font-weight: bold;
             color: var(--accent-color);
-            border-bottom: 1px solid #1a1a26;
-            margin-bottom: 20px;
         }
         .menu-btn {
             background: none;
@@ -215,7 +236,7 @@
         .journal-list { margin-top: 20px; }
         .journal-entry { background: #09090d; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-color); margin-bottom: 15px; }
         .entry-date { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
-        .delete-btn { background: #ff4a4a; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 4px; margin-top: 10px; cursor: pointer;}
+        .delete-btn { background: #ff4a4a; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-family: 'Courier Prime', monospace;}
         
         /* BARA DE PROGRES BLOXSTRIKE */
         .progress-container {
@@ -262,7 +283,7 @@
             border: 1px solid #2a2a3a;
         }
 
-        /* OPTIMIZAT: ECRAN CINEMATIC (PASUL 2) - ACUM COMPLET FORȚAT FULLSCREEN */
+        /* ECRAN CINEMATIC */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; 
@@ -334,39 +355,35 @@
 </head>
 <body>
 
-    <!-- PASUL 1: AUTENTIFICARE -->
     <div id="login-screen" class="login-overlay">
         <div class="login-box">
-            <h2>Sistem de Securitate</h2>
-            <p>Introdu cheia de acces:</p>
-            <input type="password" id="pass-input" placeholder="Parolă..." 
+            <h2 data-i18n="loginTitle">Sistem de Securitate</h2>
+            <p data-i18n="loginPrompt">Introdu cheia de acces:</p>
+            <input type="password" id="pass-input" data-i18n-placeholder="loginPlaceholder" placeholder="Parolă..." 
                    onpaste="return false;" 
                    ondrop="return false;" 
                    oncopy="return false;" 
                    oncut="return false;" 
                    autocomplete="new-password">
             <br>
-            <button onclick="login()" style="padding: 8px 20px; background: var(--accent-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-family: 'Courier Prime', monospace;">Deblochează</button>
+            <button onclick="login()" data-i18n="loginBtn" style="padding: 8px 20px; background: var(--accent-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-family: 'Courier Prime', monospace;">Deblochează</button>
             <p id="error" style="color: #ff4a4a; margin-top: 10px;"></p>
         </div>
     </div>
 
-    <!-- PASUL 2: ECRAN CINEMATIC (Perfect întins pe tot ecranul, PC & Telefon) -->
     <div id="intro-screen" class="intro-overlay hidden" onclick="enterHQ()">
-        <!-- Sfat: Dacă folosești o imagine fixă în loc de video, poți schimba tag-ul de mai jos cu un <img> sau adăuga un poster -->
-        <video class="intro-video" id="bg-video" loop muted playsinline poster="background-fallback.jpg">
+        <video class="intro-video" id="bg-video" loop muted playsinline>
             <source src="intro.mp4" type="video/mp4">
         </video>
         <div class="intro-content">
-            <div class="blink-text">APASĂ ENTER / SPACE SAU ATINGE FUNDALUL</div>
+            <div class="blink-text" data-i18n="introBlink">APASĂ ENTER / SPACE SAU ATINGE FUNDALUL</div>
         </div>
-        <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();">Skip ➔</button>
+        <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();"><span data-i18n="skipBtn">Skip</span> ➔</button>
     </div>
 
-    <!-- PASUL 3: INTERFAȚA PROPRIU-ZISĂ -->
     <div id="hq-interface" class="hidden">
         
-        <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ Meniu</button>
+        <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ <span data-i18n="menuText">Meniu</span></button>
 
         <div class="time-widget">
             <div class="widget-time" id="live-time">00:00:00</div>
@@ -374,88 +391,91 @@
         </div>
 
         <div class="sidebar" id="my-sidebar">
-            <div class="sidebar-header">⚔️ HQ Personal</div>
-            <button class="menu-btn active" onclick="switchPage('home', this)">🏠 Principală</button>
-            <button class="menu-btn" onclick="switchPage('planner', this)">📅 Planner</button>
-            <button class="menu-btn" onclick="switchPage('skills', this)">🌳 Skills</button>
-            <button class="menu-btn" onclick="switchPage('quests', this)">📜 Quests</button>
-            <button class="menu-btn" onclick="switchPage('bloxstrike', this)">🎮 BloxStrike</button>
-            <button class="menu-btn" onclick="switchPage('journal', this)">✍️ Jurnal</button>
+            <div class="sidebar-header" data-i18n="sidebarHeader">⚔️ HQ Personal</div>
+            
+            <div class="lang-container">
+                <select id="lang-select" class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="ro">🇷🇴 Română</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                </select>
+            </div>
+
+            <button class="menu-btn active" onclick="switchPage('home', this)" data-i18n="menuHome">🏠 Principală</button>
+            <button class="menu-btn" onclick="switchPage('planner', this)" data-i18n="menuPlanner">📅 Planner</button>
+            <button class="menu-btn" onclick="switchPage('skills', this)" data-i18n="menuSkills">🌳 Skills</button>
+            <button class="menu-btn" onclick="switchPage('quests', this)" data-i18n="menuQuests">📜 Quests</button>
+            <button class="menu-btn" onclick="switchPage('bloxstrike', this)" data-i18n="menuBloxStrike">🎮 BloxStrike</button>
+            <button class="menu-btn" onclick="switchPage('journal', this)" data-i18n="menuJournal">✍️ Jurnal</button>
         </div>
 
         <div class="main-content">
-            <!-- PAGINA PRINCIPALĂ -->
             <div id="home" class="page active">
-                <h1>🏠 Pagina Principală</h1>
+                <h1 data-i18n="homeTitle">🏠 Pagina Principală</h1>
                 <div class="card">
-                    <h3>[ CORE_SYSTEM: ONLINE ]</h3>
-                    <p style="color: var(--accent-color); font-weight: bold;">> Bun venit în baza ta centrală de operațiuni.</p>
-                    <p>> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.</p>
+                    <h3 data-i18n="homeSubtitle">[ CORE_SYSTEM: ONLINE ]</h3>
+                    <p style="color: var(--accent-color); font-weight: bold;" data-i18n="homeWelcome">> Bun venit în baza ta centrală de operațiuni.</p>
+                    <p data-i18n="homeDesc">> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.</p>
                     <br>
-                    <p style="color: var(--text-dim);">Sistem pregătit. Folosește meniul din stânga pentru navigare.</p>
+                    <p style="color: var(--text-dim);" data-i18n="homeReady">Sistem pregătit. Folosește meniul din stânga pentru navigare.</p>
                 </div>
             </div>
 
-            <!-- PLANNER -->
             <div id="planner" class="page">
-                <h1>📅 Planner</h1>
-                <div class="card"><p>> Secțiunea de planificare pe termen lung și scurt.</p></div>
+                <h1 data-i18n="menuPlanner">📅 Planner</h1>
+                <div class="card"><p data-i18n="plannerDesc">> Secțiunea de planificare pe termen lung și scurt.</p></div>
             </div>
             
-            <!-- SKILLS -->
             <div id="skills" class="page">
-                <h1>🌳 Skill Tree</h1>
-                <div class="card"><p>> Arborele tău de abilități în stil RPG.</p></div>
+                <h1 data-i18n="skillsTitle">🌳 Skill Tree</h1>
+                <div class="card"><p data-i18n="skillsDesc">> Arborele tău de abilități în stil RPG.</p></div>
             </div>
             
-            <!-- QUESTS -->
             <div id="quests" class="page">
-                <h1>📜 Quest Log</h1>
-                <div class="card"><p>> Jurnalul de misiuni și obiective active.</p></div>
+                <h1 data-i18n="questsTitle">📜 Quest Log</h1>
+                <div class="card"><p data-i18n="questsDesc">> Jurnalul de misiuni și obiective active.</p></div>
             </div>
 
-            <!-- BLOXSTRIKE TRACKER -->
             <div id="bloxstrike" class="page">
-                <h1>🎮 BloxStrike Status</h1>
+                <h1 data-i18n="bsTitle">🎮 BloxStrike Status</h1>
                 <div class="card">
-                    <h3>[ MONITORIZARE FINANCIARĂ JOC ]</h3>
-                    <p>> Setează creditele tale actuale și obiectivul pe care vrei să îl atingi în joc.</p>
+                    <h3 data-i18n="bsSubtitle">[ MONITORIZARE FINANCIARĂ JOC ]</h3>
+                    <p data-i18n="bsDesc">> Setează creditele tale actuale și obiectivul pe care vrei să îl atingi în joc.</p>
                     
                     <div style="margin: 20px 0;">
-                        <label>Credite Curente:</label>
+                        <label data-i18n="bsCurrentLabel">Credite Curente:</label>
                         <input type="number" id="bs-current" class="credit-input" value="0" oninput="calculateProgress()">
                         
-                        <label>Obiectiv (Goal):</label>
+                        <label data-i18n="bsGoalLabel">Obiectiv (Goal):</label>
                         <input type="number" id="bs-goal" class="credit-input" value="10000" oninput="calculateProgress()">
                     </div>
 
-                    <h4 style="margin-bottom: 5px;">Progres Misiune Economică:</h4>
+                    <h4 style="margin-bottom: 5px;" data-i18n="bsProgressTitle">Progres Misiune Economică:</h4>
                     <div class="progress-container">
                         <div class="progress-bar" id="bs-progress-bar"></div>
                         <div class="progress-text" id="bs-progress-text">0% Reușit</div>
                     </div>
 
                     <div style="margin-top: 25px;">
-                        <button class="custom-btn" onclick="saveBloxStrikeData()">Salvează Local</button>
+                        <button class="custom-btn" onclick="saveBloxStrikeData()" data-i18n="bsSaveBtn">Salvează Local</button>
                     </div>
                 </div>
 
-                <!-- MODUL DE TRANSFER DATE PC <-> TELEFON -->
                 <div class="card" style="margin-top: 20px;">
-                    <h3>[ SINCRONIZARE DISPOZITIVE ]</h3>
-                    <p>> Deoarece GitHub Pages nu are bază de date, folosește acest cod criptat pentru a muta datele de pe PC pe Telefon:</p>
-                    <input type="text" id="sync-code" placeholder="Cod de sincronizare..." style="width: 80%; max-width: 400px; margin-bottom: 10px;"><br>
-                    <button class="custom-btn sec-btn" onclick="generateSyncCode()">Generează Cod (De pe PC)</button>
-                    <button class="custom-btn sec-btn" onclick="loadSyncCode()">Încarcă Cod (Pe Telefon)</button>
+                    <h3 data-i18n="syncTitle">[ SINCRONIZARE DISPOZITIVE ]</h3>
+                    <p data-i18n="syncDesc">> Deoarece GitHub Pages nu are bază de date, folosește acest cod criptat pentru a muta datele de pe PC pe Telefon:</p>
+                    <input type="text" id="sync-code" data-i18n-placeholder="syncPlaceholder" placeholder="Cod de sincronizare..." style="width: 80%; max-width: 400px; margin-bottom: 10px;"><br>
+                    <button class="custom-btn sec-btn" onclick="generateSyncCode()" data-i18n="syncGenBtn">Generează Cod (De pe PC)</button>
+                    <button class="custom-btn sec-btn" onclick="loadSyncCode()" data-i18n="syncLoadBtn">Încarcă Cod (Pe Telefon)</button>
                 </div>
             </div>
             
-            <!-- JURNAL -->
             <div id="journal" class="page">
-                <h1>✍️ Jurnal Personal</h1>
+                <h1 data-i18n="journalTitle">✍️ Jurnal Personal</h1>
                 <div class="card">
-                    <textarea id="journal-input" placeholder="Scrie o nouă filă de poveste..."></textarea>
-                    <button onclick="saveJournalEntry()" class="custom-btn">Adaugă în Jurnal</button>
+                    <textarea id="journal-input" data-i18n-placeholder="journalPlaceholder" placeholder="Scrie o nouă filă de poveste..."></textarea>
+                    <button onclick="saveJournalEntry()" class="custom-btn" data-i18n="journalAddBtn">Adaugă în Jurnal</button>
                     <div class="journal-list" id="entries-container"></div>
                 </div>
             </div>
@@ -465,6 +485,85 @@
     <script>
         const PAROLA = "SecretulMeu2026";
         let authenticated = false;
+        let currentLang = "ro";
+
+        // DICȚIONARUL DE TRADUCERI CORECTE ȘI ADAPTATE CYBERPUNK
+        const translations = {
+            ro: {
+                loginTitle: "Sistem de Securitate", loginPrompt: "Introdu cheia de acces:", loginPlaceholder: "Parolă...", loginBtn: "Deblochează", loginError: "Acces interzis.",
+                introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
+                menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
+                homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.", homeReady: "Sistem pregătit. Folosește meniul din stânga pentru navigare.",
+                plannerDesc: "> Secțiunea de planificare pe termen lung și scurt.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> Arborele tău de abilități în stil RPG.", questsTitle: "📜 Quest Log", questsDesc: "> Jurnalul de misiuni și obiective active.",
+                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsDesc: "> Setează creditele tale actuale și obiectivul pe care vrei să îl atingi în joc.", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressTitle: "Progres Misiune Economică:", bsProgressText: "Finalizat", bsSaveBtn: "Salvează Local",
+                syncTitle: "[ SINCRONIZARE DISPOZITIVE ]", syncDesc: "> De deoarece GitHub Pages nu are bază de date, folosește acest cod criptat pentru a muta datele de pe PC pe Telefon:", syncPlaceholder: "Cod de sincronizare...", syncGenBtn: "Generează Cod (De pe PC)", syncLoadBtn: "Încarcă Cod (Pe Telefon)",
+                journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Jurnal gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
+                alertSaveLocal: "Balanța salvată local!", alertGenCode: "Cod generat! Copiază-l și trimite-l pe telefon.", alertLoadSuccess: "Sincronizare reușită!", alertLoadError: "Cod invalid!"
+            },
+            en: {
+                loginTitle: "Security System", loginPrompt: "Enter access key:", loginPlaceholder: "Password...", loginBtn: "Unlock", loginError: "Access denied.",
+                introBlink: "PRESS ENTER / SPACE OR TOUCH THE BACKGROUND", skipBtn: "Skip", menuText: "Menu", sidebarHeader: "⚔️ Personal HQ",
+                menuHome: "🏠 Main Base", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
+                homeTitle: "🏠 Main Page", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Welcome to your central operations base.", homeDesc: "> This is your empty mainframe space. In the future, you can add your active status, motivational quotes, quick links, or a monitoring dashboard here.", homeReady: "System ready. Use the left menu to navigate.",
+                plannerDesc: "> Long-term and short-term planning sector.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> Your RPG-style proficiency layout.", questsTitle: "📜 Quest Log", questsDesc: "> Active missions and tactical objectives.",
+                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ IN-GAME FINANCIAL TRACKER ]", bsDesc: "> Configure your current credits and the financial milestone you want to reach.", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Target Goal:", bsProgressTitle: "Economic Mission Progress:", bsProgressText: "Completed", bsSaveBtn: "Save Locally",
+                syncTitle: "[ DEVICE SYNCHRONIZATION ]", syncDesc: "> Since GitHub Pages is completely static, use this encrypted code to transfer your local save data:", syncPlaceholder: "Sync matrix code...", syncGenBtn: "Generate Code (From PC)", syncLoadBtn: "Load Code (On Phone)",
+                journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new mainframe memory entry...", journalAddBtn: "Add to Database", journalEmpty: "No logs found.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
+                alertSaveLocal: "Credits saved locally!", alertGenCode: "Code generated! Copy and load it on your second terminal.", alertLoadSuccess: "Sync successful!", alertLoadError: "Invalid decryption code!"
+            },
+            fr: {
+                loginTitle: "Système de Sécurité", loginPrompt: "Entrez la clé d'accès:", loginPlaceholder: "Mot de passe...", loginBtn: "Déverrouiller", loginError: "Accès interdit.",
+                introBlink: "APPUYEZ SUR ENTRÉE / ESPACE OU TOUCHEZ L'ÉCRAN", skipBtn: "Passer", menuText: "Menu", sidebarHeader: "⚔️ QG Personnel",
+                menuHome: "🏠 Base Principale", menuPlanner: "📅 Agenda", menuSkills: "🌳 Talents", menuQuests: "📜 Quêtes", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
+                homeTitle: "🏠 Accueil", homeSubtitle: "[ SYSTEME_CENTRAL: EN LIGNE ]", homeWelcome: "> Bienvenue dans votre base d'opérations centrale.", homeDesc: "> C'est votre espace vierge principal. Ici, vous pourrez ajouter vos statuts, citations, liens rapides ou panneaux de contrôle.", homeReady: "Système prêt. Utilisez le menu de gauche pour naviguer.",
+                plannerDesc: "> Planification tactique à court et long terme.", skillsTitle: "🌳 Arbre de Talents", skillsDesc: "> Votre progression d'aptitudes façon RPG.", questsTitle: "📜 Journal de Quêtes", questsDesc: "> Missions actives et objectifs stratégiques.",
+                bsTitle: "🎮 Statut BloxStrike", bsSubtitle: "[ SUIVI FINANCIER DU JEU ]", bsDesc: "> Ajustez vos crédits actuels et l'objectif financier à atteindre.", bsCurrentLabel: "Crédits Actuels:", bsGoalLabel: "Objectif Final:", bsProgressTitle: "Progression Mission Économique:", bsProgressText: "Terminé", bsSaveBtn: "Enregistrer",
+                syncTitle: "[ SYNCHRONISATION ]", syncDesc: "> GitHub Pages étant statique, utilisez ce code crypté pour cloner vos données sur un autre terminal:", syncPlaceholder: "Code matrice de sync...", syncGenBtn: "Générer Code (PC)", syncLoadBtn: "Charger Code (Mobile)",
+                journalTitle: "✍️ Journal Intime", journalPlaceholder: "Écrire une nouvelle page d'histoire...", journalAddBtn: "Consigner", journalEmpty: "Aucune entrée.", journalDeleteBtn: "Effacer", journalConfirmDelete: "Effacer ce fichier journal ?",
+                alertSaveLocal: "Données enregistrées !", alertGenCode: "Code généré ! Copiez et transférez-le.", alertLoadSuccess: "Synchronisation réussie !", alertLoadError: "Code corrompu !"
+            },
+            ja: {
+                loginTitle: "セキュリティシステム", loginPrompt: "アクセスキーを入力してください:", loginPlaceholder: "パスワード...", loginBtn: "ロック解除", loginError: "アクセス拒否。",
+                introBlink: "ENTER / SPACE を押すか背景をタップしてください", skipBtn: "スキップ", menuText: "メニュー", sidebarHeader: "⚔️ 個人本部",
+                menuHome: "🏠 メイン基地", menuPlanner: "📅 計画書", menuSkills: "🌳 スキルツリー", menuQuests: "📜 クエストログ", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ 日記帳",
+                homeTitle: "🏠 メイン画面", homeSubtitle: "[ コアシステム: オンライン ]", homeWelcome: "> 中央作戦基地へようこそ。", homeDesc: "> ここはメインの空きストレージ領域です。将来的に現在のステータス、インスピレーション名言、クイックリンク、または監視パネルを追加できます。", homeReady: "システム準備完了。左側のメニューで移動してください。",
+                plannerDesc: "> 長期および短期の計画セクター。", skillsTitle: "🌳 スキルツリー", skillsDesc: "> RPGスタイルの能力マトリックス。", questsTitle: "📜 クエストログ", questsDesc: "> アクティブな任務と戦術目標。",
+                bsTitle: "🎮 BloxStrike ステータス", bsSubtitle: "[ ゲーム内財務モニター ]", bsDesc: "> 現在のクレジットと達成したい目標値を設定します。", bsCurrentLabel: "現在クレジット:", bsGoalLabel: "目標ゴール:", bsProgressTitle: "経済ミッション進行状況:", bsProgressText: "完了", bsSaveBtn: "ローカル保存",
+                syncTitle: "[ 端末間同期 ]", syncDesc: "> サーバーがないため、この暗号化コードを使用してPCからスマホにデータを移行します:", syncPlaceholder: "同期暗号コード...", syncGenBtn: "コード生成 (PC用)", syncLoadBtn: "コード読込 (スマホ用)",
+                journalTitle: "✍️ 個人データ日記", journalPlaceholder: "新しい物語のページを書き留める...", journalAddBtn: "データベースに追加", journalEmpty: "ログがありません。", journalDeleteBtn: "削除", journalConfirmDelete: "このログを消去しますか？",
+                alertSaveLocal: "クレジットデータを保存しました！", alertGenCode: "コード生成完了！ コピーして別の端末で読み込んでください。", alertLoadSuccess: "同期が成功しました！", alertLoadError: "コード復号エラー！"
+            }
+        };
+
+        const langLocales = { ro: 'ro-RO', en: 'en-US', fr: 'fr-FR', ja: 'ja-JP' };
+
+        // FUNCȚIA DE SCHIMBARE DINAMICĂ A LIMBII
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem("hqLanguage", lang);
+            document.getElementById("lang-select").value = lang;
+
+            // Traducere texte normale
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+
+            // Traducere placeholder-e la inputuri
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    el.setAttribute('placeholder', translations[lang][key]);
+                }
+            });
+
+            // Actualizare componente live dependente de limba selectată
+            calculateProgress();
+            displayEntries();
+            updateClock();
+        }
 
         function updateClock() {
             const now = new Date();
@@ -474,7 +573,8 @@
             document.getElementById('live-time').innerText = `${hours}:${minutes}:${seconds}`;
 
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('live-date').innerText = now.toLocaleDateString('ro-RO', options);
+            // MODIFICAT: Ceasul își schimbă acum formatul textului în mod nativ după limba selectată!
+            document.getElementById('live-date').innerText = now.toLocaleDateString(langLocales[currentLang], options);
         }
 
         function toggleSidebar() {
@@ -489,131 +589,4 @@
                 document.getElementById("intro-screen").classList.remove("hidden");
                 const video = document.getElementById("bg-video");
                 if(video) {
-                    video.play().catch(e => console.log("Autoplay pregătit"));
-                }
-                authenticated = true;
-                window.addEventListener('keydown', handleIntroKeys);
-            } else {
-                document.getElementById("error").innerText = "Acces interzis.";
-            }
-        }
-
-        function enterHQ() {
-            const video = document.getElementById("bg-video");
-            if(video) video.pause();
-            document.getElementById("intro-screen").classList.add("hidden");
-            document.getElementById("hq-interface").classList.remove("hidden");
-            window.removeEventListener('keydown', handleIntroKeys);
-        }
-
-        function handleIntroKeys(event) {
-            if (event.key === " " || event.key === "Enter") {
-                enterHQ();
-            }
-        }
-
-        function switchPage(pageId, buttonClicked) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            buttonClicked.classList.add('active');
-            
-            if (window.innerWidth <= 768) {
-                document.getElementById("my-sidebar").classList.add("collapsed");
-                document.body.classList.add("menu-collapsed");
-            }
-        }
-
-        function calculateProgress() {
-            const current = parseFloat(document.getElementById("bs-current").value) || 0;
-            const goal = parseFloat(document.getElementById("bs-goal").value) || 1;
-            
-            let percentage = Math.round((current / goal) * 100);
-            if (percentage > 100) percentage = 100;
-            if (percentage < 0) percentage = 0;
-
-            document.getElementById("bs-progress-bar").style.width = percentage + "%";
-            document.getElementById("bs-progress-text").innerText = percentage + "% Finalizat";
-        }
-
-        function saveBloxStrikeData() {
-            const current = document.getElementById("bs-current").value;
-            const goal = document.getElementById("bs-goal").value;
-            localStorage.setItem("bsCurrentCredits", current);
-            localStorage.setItem("bsGoalCredits", goal);
-            alert("Balanța salvată local!");
-        }
-
-        function loadBloxStrikeData() {
-            const savedCurrent = localStorage.getItem("bsCurrentCredits") || "0";
-            const savedGoal = localStorage.getItem("bsGoalCredits") || "10000";
-            document.getElementById("bs-current").value = savedCurrent;
-            document.getElementById("bs-goal").value = savedGoal;
-            calculateProgress();
-        }
-
-        function generateSyncCode() {
-            const current = document.getElementById("bs-current").value;
-            const goal = document.getElementById("bs-goal").value;
-            const code = btoa(JSON.stringify({ c: current, g: goal }));
-            document.getElementById("sync-code").value = code;
-            document.getElementById("sync-code").select();
-            alert("Cod generat! Copiază-l și trimite-l pe telefon.");
-        }
-
-        function loadSyncCode() {
-            const code = document.getElementById("sync-code").value.trim();
-            if(!code) return alert("Introdu un cod valid mai întâi!");
-            try {
-                const data = JSON.parse(atob(code));
-                document.getElementById("bs-current").value = data.c;
-                document.getElementById("bs-goal").value = data.g;
-                saveBloxStrikeData();
-                calculateProgress();
-                alert("Sincronizare reușită!");
-            } catch(e) {
-                alert("Cod invalid!");
-            }
-        }
-
-        window.onload = function() { 
-            displayEntries(); 
-            loadBloxStrikeData();
-            updateClock();
-            setInterval(updateClock, 1000);
-        };
-
-        function saveJournalEntry() {
-            const textarea = document.getElementById("journal-input");
-            if (textarea.value.trim() === "") return;
-            let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
-            entries.unshift({ id: Date.now(), date: new Date().toLocaleString('ro-RO'), text: textarea.value });
-            localStorage.setItem("myJournalEntries", JSON.stringify(entries));
-            textarea.value = "";
-            displayEntries();
-        }
-
-        function displayEntries() {
-            const container = document.getElementById("entries-container");
-            let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
-            container.innerHTML = entries.length === 0 ? "<p>Jurnal gol.</p>" : "";
-            entries.forEach(entry => {
-                container.innerHTML += `
-                    <div class="journal-entry">
-                        <div class="entry-date">📅 ${entry.date}</div>
-                        <div style="white-space: pre-wrap;">${entry.text}</div>
-                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">Șterge</button>
-                    </div>`;
-            });
-        }
-
-        function deleteEntry(id) {
-            if (confirm("Ștergi postarea?")) {
-                let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
-                localStorage.setItem("myJournalEntries", JSON.stringify(entries.filter(e => e.id !== id)));
-                displayEntries();
-            }
-        }
-    </script>
-</body>
-</html>
+                    video.play().catch(e => console.log("Autoplay as
