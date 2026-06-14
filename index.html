@@ -28,7 +28,7 @@
 
         .hidden { display: none !important; }
 
-        /* WIDGET CEAS */
+        /* CEAS LIVE (PLUTITOR SUS-DREAPTA ÎN INTERFAȚĂ) */
         .time-widget {
             position: fixed;
             top: 20px;
@@ -65,7 +65,7 @@
             transform: translateY(-20px);
         }
 
-        /* BUTON TOGGLE MENIU */
+        /* BUTON TOGGLE MENIU (MOBIL/PC) */
         .toggle-menu-btn {
             position: fixed;
             top: 20px;
@@ -126,14 +126,13 @@
             text-align: center;
         }
 
-        /* CONTAINERUL GLOBAL AL INTERFAȚEI */
         #hq-interface {
             display: flex;
             width: 100%;
             height: 100vh;
         }
 
-        /* INTERFAȚA / SIDEBAR */
+        /* SIDEBAR / MENIU */
         .sidebar {
             width: 250px;
             background-color: var(--panel-color);
@@ -151,21 +150,27 @@
             z-index: 99;
         }
 
-        /* SELECTORUL DE LIMBĂ (STILIZAT CYBERPUNK) */
+        /* SELECTOARELE DE LIMBĂ URMĂRIRE MATRIX */
         .lang-container {
             padding: 0 20px 20px 20px;
             border-bottom: 1px solid #1a1a26;
             margin-bottom: 15px;
         }
-        .login-lang-container {
-            margin-bottom: 25px;
-            text-align: right;
+        
+        /* Poziționare fixă în colțul ecranului pentru faza de Login */
+        .global-login-lang {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            width: 100px;
         }
+
         .lang-select {
             width: 100%;
             background: #09090d;
             color: var(--text-color);
-            border: 1px solid rgba(138, 43, 226, 0.4);
+            border: 1px solid rgba(138, 43, 226, 0.5);
             padding: 8px;
             border-radius: 6px;
             font-family: 'Courier Prime', monospace;
@@ -242,7 +247,6 @@
         .entry-date { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
         .delete-btn { background: #ff4a4a; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-family: 'Courier Prime', monospace;}
         
-        /* BARA DE PROGRES BLOXSTRIKE */
         .progress-container {
             background: #09090d;
             border: 1px solid #2a2a3a;
@@ -287,12 +291,12 @@
             border: 1px solid #2a2a3a;
         }
 
-        /* OPTIMIZAT: ECRAN CINEMATIC CU FUNDAL GLOW (Dacă lipsește video, nu mai rămâne negru!) */
+        /* FOND CINEMATIC GRADIENT CONTROLAT */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; 
             width: 100vw; height: 100vh;
-            background: radial-gradient(circle, #1a0f30 0%, #050508 100%); /* Fundal tech neon în caz de lipsă video */
+            background: radial-gradient(circle, #1a0f30 0%, #050508 100%); 
             z-index: 9998;
             display: flex;
             flex-direction: column;
@@ -359,22 +363,28 @@
 </head>
 <body>
 
+    <!-- MENIU PLUTITOR SCHIMBARE LIMBA (Apare sus în dreapta la login, vizibil pe absolut orice dispozitiv) -->
+    <div id="global-login-lang-box" class="global-login-lang">
+        <select class="lang-select change-lang-matrix" onchange="changeLanguage(this.value)">
+            <option value="ro">🇷🇴 RO</option>
+            <option value="en">🇬🇧 EN</option>
+            <option value="fr">🇫🇷 FR</option>
+            <option value="ja">🇯🇵 JA</option>
+        </select>
+    </div>
+
+    <!-- PASUL 1: AUTENTIFICARE -->
     <div id="login-screen" class="login-overlay">
         <div class="login-box">
-            <div class="login-lang-container">
-                <select class="lang-select change-lang-matrix" onchange="changeLanguage(this.value)">
-                    <option value="ro">🇲🇩/🇷🇴 RO</option>
-                    <option value="en">🇬🇧 EN</option>
-                    <option value="fr">🇫🇷 FR</option>
-                    <option value="ja">🇯🇵 JA</option>
-                </select>
-            </div>
-
             <h2 data-i18n="loginTitle">Sistem de Securitate</h2>
             <p data-i18n="loginPrompt">Introdu cheia de acces:</p>
             
+            <!-- Securizat complet pentru tastaturi mobile -->
             <input type="password" id="pass-input" data-i18n-placeholder="loginPlaceholder" placeholder="Parolă..." 
                    onkeydown="if(event.key === 'Enter') login()"
+                   autocorrect="off" 
+                   autocapitalize="off" 
+                   spellcheck="false"
                    onpaste="return false;" 
                    ondrop="return false;" 
                    oncopy="return false;" 
@@ -386,6 +396,7 @@
         </div>
     </div>
 
+    <!-- PASUL 2: ECRAN CINEMATIC -->
     <div id="intro-screen" class="intro-overlay hidden" onclick="enterHQ()">
         <video class="intro-video" id="bg-video" loop muted playsinline>
             <source src="intro.mp4" type="video/mp4">
@@ -396,6 +407,7 @@
         <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();"><span data-i18n="skipBtn">Skip</span> ➔</button>
     </div>
 
+    <!-- PASUL 3: INTERFAȚA PROPRIU-ZISĂ -->
     <div id="hq-interface" class="hidden">
         
         <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ <span data-i18n="menuText">Meniu</span></button>
@@ -408,6 +420,7 @@
         <div class="sidebar" id="my-sidebar">
             <div class="sidebar-header" data-i18n="sidebarHeader">⚔️ HQ Personal</div>
             
+            <!-- OGLINDA SELECTORULUI DIN MENIU -->
             <div class="lang-container">
                 <select class="lang-select change-lang-matrix" onchange="changeLanguage(this.value)">
                     <option value="ro">🇷🇴 Română</option>
@@ -426,6 +439,7 @@
         </div>
 
         <div class="main-content">
+            <!-- PAGINA PRINCIPALĂ -->
             <div id="home" class="page active">
                 <h1 data-i18n="homeTitle">🏠 Pagina Principală</h1>
                 <div class="card">
@@ -437,21 +451,25 @@
                 </div>
             </div>
 
+            <!-- PLANNER -->
             <div id="planner" class="page">
                 <h1 data-i18n="menuPlanner">📅 Planner</h1>
                 <div class="card"><p data-i18n="plannerDesc">> Secțiunea de planificare pe termen lung și scurt.</p></div>
             </div>
             
+            <!-- SKILLS -->
             <div id="skills" class="page">
                 <h1 data-i18n="skillsTitle">🌳 Skill Tree</h1>
                 <div class="card"><p data-i18n="skillsDesc">> Arborele tău de abilități în stil RPG.</p></div>
             </div>
             
+            <!-- QUESTS -->
             <div id="quests" class="page">
                 <h1 data-i18n="questsTitle">📜 Quest Log</h1>
                 <div class="card"><p data-i18n="questsDesc">> Jurnalul de misiuni și obiective active.</p></div>
             </div>
 
+            <!-- BLOXSTRIKE TRACKER -->
             <div id="bloxstrike" class="page">
                 <h1 data-i18n="bsTitle">🎮 BloxStrike Status</h1>
                 <div class="card">
@@ -477,6 +495,7 @@
                     </div>
                 </div>
 
+                <!-- SINCRONIZARE DATE -->
                 <div class="card" style="margin-top: 20px;">
                     <h3 data-i18n="syncTitle">[ SINCRONIZARE DISPOZITIVE ]</h3>
                     <p data-i18n="syncDesc">> Deoarece GitHub Pages nu are bază de date, folosește acest cod criptat pentru a muta datele de pe PC pe Telefon:</p>
@@ -486,6 +505,7 @@
                 </div>
             </div>
             
+            <!-- JURNAL -->
             <div id="journal" class="page">
                 <h1 data-i18n="journalTitle">✍️ Jurnal Personal</h1>
                 <div class="card">
@@ -502,13 +522,12 @@
         let authenticated = false;
         let currentLang = "ro";
 
-        // DICȚIONAR MATRIX PENTRU LIMBI
         const translations = {
             ro: {
                 loginTitle: "Sistem de Securitate", loginPrompt: "Introdu cheia de acces:", loginPlaceholder: "Parolă...", loginBtn: "Deblochează", loginError: "Acces interzis.",
                 introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
                 menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
-                homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.", homeReady: "Sistem pregătit. Folosește meniul din stânga pentru navigare.",
+                homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.", homeReady: "Sistem pregătit. Folosește menus din stânga pentru navigare.",
                 plannerDesc: "> Secțiunea de planificare pe termen lung și scurt.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> Arborele tău de abilități în stil RPG.", questsTitle: "📜 Quest Log", questsDesc: "> Jurnalul de misiuni și obiective active.",
                 bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsDesc: "> Setează creditele tale actuale și obiectivul pe care vrei să îl atingi în joc.", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressTitle: "Progres Misiune Economică:", bsProgressText: "Finalizat", bsSaveBtn: "Salvează Local",
                 syncTitle: "[ SINCRONIZARE DISPOZITIVE ]", syncDesc: "> Deoarece GitHub Pages nu are bază de date, folosește acest cod criptat pentru a muta datele de pe PC pe Telefon:", syncPlaceholder: "Cod de sincronizare...", syncGenBtn: "Generează Cod (De pe PC)", syncLoadBtn: "Încarcă Cod (Pe Telefon)",
@@ -545,7 +564,7 @@
                 plannerDesc: "> 長期および短期の計画セクター。", skillsTitle: "🌳 スキルツリー", skillsDesc: "> RPGスタイルの能力マトリックス。", questsTitle: "📜 クエストログ", questsDesc: "> アクティブな任務と戦術目標。",
                 bsTitle: "🎮 BloxStrike ステータス", bsSubtitle: "[ ゲーム内財務モニター ]", bsDesc: "> 現在のクレジットと達成したい目標値を設定します。", bsCurrentLabel: "現在クレジット:", bsGoalLabel: "目標ゴール:", bsProgressTitle: "経済ミッション進行状況:", bsProgressText: "完了", bsSaveBtn: "ローカル保存",
                 syncTitle: "[ 端末間同期 ]", syncDesc: "> サーバーがないため、この暗号化コードを使用してPCからスマホにデータを移行します:", syncPlaceholder: "同期暗号コード...", syncGenBtn: "コード生成 (PC用)", syncLoadBtn: "コード読込 (スマホ用)",
-                journalTitle: "✍️ 個人データ日記", journalPlaceholder: "新しい物語のページを書き留める...", journalAddBtn: "データベースに追加", journalEmpty: "ログがありません。", journalDeleteBtn: "削除", journalConfirmDelete: "このログを消去しますか？",
+                journalTitle: "✍️ 個人データ日記", journalPlaceholder: "新しい物語 of ページを書き留める...", journalAddBtn: "データベースに追加", journalEmpty: "ログがありません。", journalDeleteBtn: "削除", journalConfirmDelete: "このログを消去しますか？",
                 alertSaveLocal: "クレジットデータを保存しました！", alertGenCode: "コード生成完了！ コピーして別の端末で読み込んでください。", alertLoadSuccess: "同期が成功しました！", alertLoadError: "コード復号エラー！"
             }
         };
@@ -556,7 +575,6 @@
             currentLang = lang;
             localStorage.setItem("hqLanguage", lang);
             
-            // Sincronizează ambele liste selectoare (cea din login și cea din meniu)
             document.querySelectorAll('.change-lang-matrix').forEach(select => {
                 select.value = lang;
             });
@@ -571,9 +589,10 @@
                 if (translations[lang] && translations[lang][key]) el.setAttribute('placeholder', translations[lang][key]);
             });
 
-            calculateProgress();
-            displayEntries();
-            updateClock();
+            // PROTECȚIE MOBILĂ: Try-catch previne blocarea rulării dacă un sub-sistem mobil dă crash
+            try { calculateProgress(); } catch(e) { console.log(e); }
+            try { displayEntries(); } catch(e) { console.log(e); }
+            try { updateClock(); } catch(e) { console.log(e); }
         }
 
         function updateClock() {
@@ -584,7 +603,12 @@
             document.getElementById('live-time').innerText = `${hours}:${minutes}:${seconds}`;
 
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('live-date').innerText = now.toLocaleDateString(langLocales[currentLang], options);
+            // Adăugat try-catch nativ pentru a rula sigur chiar și pe versiuni vechi de Safari sau Chrome Mobile
+            try {
+                document.getElementById('live-date').innerText = now.toLocaleDateString(langLocales[currentLang], options);
+            } catch(e) {
+                document.getElementById('live-date').innerText = now.toLocaleDateString('ro-RO', options);
+            }
         }
 
         function toggleSidebar() {
@@ -594,12 +618,16 @@
         }
 
         function login() {
-            if(document.getElementById("pass-input").value === PAROLA) {
+            const inputVal = document.getElementById("pass-input").value.trim(); // Curăță eventualele spații de pe mobil
+            if(inputVal === PAROLA) {
+                // Ascundem selectorul plutitor special de login când intrăm în HQ
+                document.getElementById("global-login-lang-box").classList.add("hidden");
+                
                 document.getElementById("login-screen").classList.add("hidden");
                 document.getElementById("intro-screen").classList.remove("hidden");
                 const video = document.getElementById("bg-video");
                 if(video) {
-                    video.play().catch(e => console.log("Video indisponibil temporar, fundal activat."));
+                    video.play().catch(e => console.log("Video dezactivat/lipsă, fundal reactiv activ."));
                 }
                 authenticated = true;
                 window.addEventListener('keydown', handleIntroKeys);
@@ -635,15 +663,19 @@
         }
 
         function calculateProgress() {
-            const current = parseFloat(document.getElementById("bs-current").value) || 0;
-            const goal = parseFloat(document.getElementById("bs-goal").value) || 1;
+            const currentEl = document.getElementById("bs-current");
+            const goalEl = document.getElementById("bs-goal");
+            if(!currentEl || !goalEl) return;
+
+            const current = parseFloat(currentEl.value) || 0;
+            const goal = parseFloat(goalEl.value) || 1;
             
             let percentage = Math.round((current / goal) * 100);
             if (percentage > 100) percentage = 100;
             if (percentage < 0) percentage = 0;
 
-            document.getElementById("bs-progress-bar").style.width = percentage + "%";
-            document.getElementById("bs-progress-text").innerText = percentage + "% " + translations[currentLang].bsProgressText;
+            if(document.getElementById("bs-progress-bar")) document.getElementById("bs-progress-bar").style.width = percentage + "%";
+            if(document.getElementById("bs-progress-text")) document.getElementById("bs-progress-text").innerText = percentage + "% " + translations[currentLang].bsProgressText;
         }
 
         function saveBloxStrikeData() {
@@ -653,13 +685,6 @@
             localStorage.setItem("bsGoalCredits", goal);
             alert(translations[currentLang].alertSaveLocal);
         }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const savedCurrent = localStorage.getItem("bsCurrentCredits") || "0";
-            const savedGoal = localStorage.getItem("bsGoalCredits") || "10000";
-            if(document.getElementById("bs-current")) document.getElementById("bs-current").value = savedCurrent;
-            if(document.getElementById("bs-goal")) document.getElementById("bs-goal").value = savedGoal;
-        });
 
         function generateSyncCode() {
             const current = document.getElementById("bs-current").value;
@@ -688,6 +713,12 @@
         window.onload = function() { 
             const savedLang = localStorage.getItem("hqLanguage") || "ro";
             changeLanguage(savedLang); 
+            
+            const savedCurrent = localStorage.getItem("bsCurrentCredits") || "0";
+            const savedGoal = localStorage.getItem("bsGoalCredits") || "10000";
+            if(document.getElementById("bs-current")) document.getElementById("bs-current").value = savedCurrent;
+            if(document.getElementById("bs-goal")) document.getElementById("bs-goal").value = savedGoal;
+            
             displayEntries(); 
             calculateProgress();
             updateClock();
@@ -699,4 +730,33 @@
             if (textarea.value.trim() === "") return;
             let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
             entries.unshift({ id: Date.now(), date: new Date().toLocaleString(langLocales[currentLang]), text: textarea.value });
-            localStorage.setItem("myJournalEntries",
+            localStorage.setItem("myJournalEntries", JSON.stringify(entries));
+            textarea.value = "";
+            displayEntries();
+        }
+
+        function displayEntries() {
+            const container = document.getElementById("entries-container");
+            if (!container) return;
+            let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
+            container.innerHTML = entries.length === 0 ? `<p>${translations[currentLang].journalEmpty}</p>` : "";
+            entries.forEach(entry => {
+                container.innerHTML += `
+                    <div class="journal-entry">
+                        <div class="entry-date">📅 ${entry.date}</div>
+                        <div style="white-space: pre-wrap;">${entry.text}</div>
+                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">${translations[currentLang].journalDeleteBtn}</button>
+                    </div>`;
+            });
+        }
+
+        function deleteEntry(id) {
+            if (confirm(translations[currentLang].journalConfirmDelete)) {
+                let entries = JSON.parse(localStorage.getItem("myJournalEntries")) || [];
+                localStorage.setItem("myJournalEntries", JSON.stringify(entries.filter(e => e.id !== id)));
+                displayEntries();
+            }
+        }
+    </script>
+</body>
+</html>
