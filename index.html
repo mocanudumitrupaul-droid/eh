@@ -17,7 +17,6 @@
         }
 
         body {
-            /* Setăm fontul Typewriter ca principal pentru tot site-ul */
             font-family: 'Courier Prime', monospace;
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -30,7 +29,7 @@
 
         .hidden { display: none !important; }
 
-        /* WIDGET CEAS (Păstrează fontul Orbitron) */
+        /* WIDGET CEAS (Orbitron Font) */
         .time-widget {
             position: fixed;
             top: 20px;
@@ -61,7 +60,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Când meniul e ascuns, ascundem și ceasul pentru un ecran 100% curat */
+        /* Ascunderea ceasului în modul Zen */
         body.menu-collapsed .time-widget {
             opacity: 0;
             pointer-events: none;
@@ -90,7 +89,7 @@
             box-shadow: 0 0 10px var(--accent-color);
         }
 
-        /* 1. ECRAN LOGIN */
+        /* ECRAN LOGIN */
         .login-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -125,10 +124,9 @@
         }
         button {
             font-family: 'Courier Prime', monospace;
-            cursor: pointer;
         }
 
-        /* 2. ECRAN CINEMATIC */
+        /* ECRAN CINEMATIC */
         .intro-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -189,7 +187,7 @@
             box-shadow: 0 0 10px var(--accent-color);
         }
 
-        /* 3. STRUCTURA INTERFĂȚII PRINCIPALE */
+        /* INTERFAȚA PRINCIPALE */
         .sidebar {
             width: 250px;
             background-color: var(--panel-color);
@@ -200,7 +198,6 @@
             transition: transform 0.3s ease;
         }
         
-        /* Ascunderea completă a meniului în stânga */
         .sidebar.collapsed {
             transform: translateX(-250px);
             position: absolute;
@@ -216,10 +213,17 @@
             transition: all 0.3s ease;
         }
         
-        /* Când meniul e ascuns, conținutul se extinde și se aliniază perfect */
         .sidebar.collapsed + .main-content {
             margin-left: 0;
             padding-top: 40px;
+        }
+
+        /* Izolarea paginilor: ascunse implicit, apar doar când sunt active */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -312,21 +316,52 @@
         <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();">Skip ➔</button>
     </div>
 
-    <!-- PASUL 3: INTERFAȚA -->
+    <!-- PASUL 3: INTERFAȚA (Meniul actualizat) -->
     <div class="sidebar" id="my-sidebar">
         <div class="sidebar-header">⚔️ HQ Personal</div>
+        <button class="menu-btn active" onclick="switchPage('home', this)">🏠 Principală</button>
         <button class="menu-btn" onclick="switchPage('planner', this)">📅 Planner</button>
         <button class="menu-btn" onclick="switchPage('skills', this)">🌳 Skills</button>
         <button class="menu-btn" onclick="switchPage('quests', this)">📜 Quests</button>
-        <button class="menu-btn active" onclick="switchPage('journal', this)">✍️ Jurnal</button>
+        <button class="menu-btn" onclick="switchPage('journal', this)">✍️ Jurnal</button>
     </div>
 
     <div class="main-content">
-        <div id="planner" class="page"><h1>📅 Planner</h1><div class="card"><p>Planuri viitoare.</p></div></div>
-        <div id="skills" class="page"><h1>🌳 Skill Tree</h1><div class="card"><p>Abilități RPG.</p></div></div>
-        <div id="quests" class="page"><h1>📜 Quest Log</h1><div class="card"><p>Misiuni active.</p></div></div>
+        <!-- PAGINA PRINCIPALĂ (DASHBOARD-UL NOU) -->
+        <div id="home" class="page active">
+            <h1>🏠 Pagina Principală</h1>
+            <div class="card">
+                <h3>[ CORE_SYSTEM: ONLINE ]</h3>
+                <p style="color: var(--accent-color); font-weight: bold;">> Bun venit în baza ta centrală de operațiuni.</p>
+                <p>> Acesta este spațiul tău principal gol. Aici poți adăuga pe viitor statusul tău actual, citate inspiraționale, link-uri rapide sau un panou de monitorizare generală.</p>
+                <br>
+                <p style="color: var(--text-dim);">Sistem pregătit. Folosește meniul din stânga pentru navigare.</p>
+            </div>
+        </div>
+
+        <!-- CELELALTE PAGINI (Ascunse până sunt selectate) -->
+        <div id="planner" class="page">
+            <h1>📅 Planner</h1>
+            <div class="card">
+                <p>> Secțiunea de planificare pe termen lung și scurt.</p>
+            </div>
+        </div>
         
-        <div id="journal" class="page active">
+        <div id="skills" class="page">
+            <h1>🌳 Skill Tree</h1>
+            <div class="card">
+                <p>> Arborele tău de abilități în stil RPG (Fancy design pending).</p>
+            </div>
+        </div>
+        
+        <div id="quests" class="page">
+            <h1>📜 Quest Log</h1>
+            <div class="card">
+                <p>> Jurnalul de misiuni și obiective active (Fancy design pending).</p>
+            </div>
+        </div>
+        
+        <div id="journal" class="page">
             <h1>✍️ Jurnal Personal</h1>
             <div class="card">
                 <textarea id="journal-input" placeholder="Scrie o nouă filă de poveste..."></textarea>
@@ -351,12 +386,9 @@
             document.getElementById('live-date').innerText = now.toLocaleDateString('ro-RO', options);
         }
 
-        // MODIFICAT: Ascunde/afișează elementele suplimentare pentru modul Zen
         function toggleSidebar() {
             const sidebar = document.getElementById("my-sidebar");
             sidebar.classList.toggle("collapsed");
-            
-            // Adăugăm o clasă pe întregul body pentru a putea controla ceasul din CSS
             document.body.classList.toggle("menu-collapsed");
         }
 
@@ -386,10 +418,16 @@
             }
         }
 
+        // IZOLAREA TOTALĂ: Ascunde tot și lasă doar tab-ul selectat
         function switchPage(pageId, buttonClicked) {
+            // Ascunde absolut toate paginile
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Dezactivează accentele pe butoanele vechi
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
+            // Afișează DOAR pagina dorită
             document.getElementById(pageId).classList.add('active');
+            // Activează butonul curent
             buttonClicked.classList.add('active');
             
             if (window.innerWidth <= 768) {
