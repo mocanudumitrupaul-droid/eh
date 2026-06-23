@@ -238,6 +238,70 @@
         .card { background-color: var(--panel-color); padding: 24px; border-radius: 10px; border: 1px solid #1a1a26; margin-bottom: 20px; }
         textarea { width: 100%; height: 120px; background-color: #09090d; color: white; border: 1px solid #2a2a3a; border-radius: 8px; padding: 15px; box-sizing: border-box; font-size: 16px; font-family: 'Courier Prime', monospace; resize: vertical; }
         
+        /* SKILL TREE STYLES */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .skill-card {
+            background: #09090d;
+            border: 1px solid #1a1a26;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .skill-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 12px rgba(138, 43, 226, 0.2);
+        }
+        .skill-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .skill-level-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 15px 0;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #202030;
+            border: 1px solid #2a2a3a;
+            transition: 0.3s;
+        }
+        .dot.active {
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+            border-color: #a040ff;
+        }
+        .skill-btn {
+            background: #111118;
+            border: 1px solid rgba(138, 43, 226, 0.5);
+            color: white;
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier Prime', monospace;
+            transition: 0.3s;
+        }
+        .skill-btn:hover:not(:disabled) {
+            background: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-color);
+        }
+        .skill-btn:disabled {
+            border-color: #2a2a3a;
+            color: var(--text-dim);
+            cursor: not-allowed;
+        }
+
         /* SERTARUL JURNALULUI */
         .journal-drawer {
             position: fixed;
@@ -270,7 +334,7 @@
         .custom-btn { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Courier Prime', monospace; margin-right: 10px; margin-top: 5px; }
         .sec-btn { background: #1a1a26; border: 1px solid #2a2a3a; }
 
-        /* INTRO SCREEN (CSS DIGITAL ANIMATION - NO VIDEO FILE REQUIRED) */
+        /* INTRO SCREEN */
         .intro-overlay { 
             position: fixed; 
             top: 0; left: 0; 
@@ -369,8 +433,18 @@
             </div>
 
             <div id="planner" class="page"><h1 data-i18n="menuPlanner">📅 Planner</h1><div class="card"><p data-i18n="plannerDesc">> Planificare sector.</p></div></div>
-            <div id="skills" class="page"><h1 data-i18n="skillsTitle">🌳 Skill Tree</h1><div class="card"><p data-i18n="skillsDesc">> Abilități RPG.</p></div></div>
             <div id="quests" class="page"><h1 data-i18n="questsTitle">📜 Quest Log</h1><div class="card"><p data-i18n="questsDesc">> Misiuni active.</p></div></div>
+
+            <div id="skills" class="page">
+                <h1 data-i18n="skillsTitle">🌳 Skill Tree</h1>
+                <div class="card">
+                    <h3 data-i18n="skillsSubtitle">[ DEZVOLTARE CARACTER ]</h3>
+                    <p data-i18n="skillsDesc">> Alocă puncte și monitorizează-ți evoluția în timp real.</p>
+                    
+                    <div class="skills-grid" id="skills-container">
+                        </div>
+                </div>
+            </div>
 
             <div id="bloxstrike" class="page">
                 <h1 data-i18n="bsTitle">🎮 BloxStrike Status</h1>
@@ -432,7 +506,7 @@
 
         const PAROLA = "SecretulMeu2026";
         let currentLang = "ro";
-        let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000 };
+        let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000, skills: { coding: 0, gaming: 0, fitness: 0, discipline: 0 } };
 
         const translations = {
             ro: {
@@ -440,7 +514,9 @@
                 introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
                 menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
                 homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal sincronizat automat în Cloud.",
-                plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> Abilități RPG.", questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.",
+                plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "[ DEZVOLTARE CARACTER ]", skillsDesc: "> Alocă puncte și monitorizează-ți evoluția în timp real.",
+                questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.", lvlText: "Nivel", upgradeBtn: "Upgrade +", maxedText: "MAXIM",
+                skill_coding: "Programare 💻", skill_gaming: "Reflexe Gaming 🎮", skill_fitness: "Forță & Sănătate 🏃‍♂️", skill_discipline: "Disciplină / Focus 🧠",
                 bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressText: "Finalizat",
                 journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Sertar gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
                 journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide"
@@ -450,7 +526,9 @@
                 introBlink: "PRESS ENTER / SPACE OR TOUCH THE BACKGROUND", skipBtn: "Skip", menuText: "Menu", sidebarHeader: "⚔️ Personal HQ",
                 menuHome: "🏠 Main Base", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
                 homeTitle: "🏠 Main Page", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Welcome to your central operations base.", homeDesc: "> This is your main hub layout synced perfectly via Cloud Database.",
-                plannerDesc: "> Tactical sector.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> RPG layout.", questsTitle: "📜 Quest Log", questsDesc: "> Active targets.",
+                plannerDesc: "> Tactical sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "[ CHARACTER DEVELOPMENT ]", skillsDesc: "> Allocate points and track your evolution in real time.",
+                questsTitle: "📜 Quest Log", questsDesc: "> Active targets.", lvlText: "Level", upgradeBtn: "Upgrade +", maxedText: "MAXED",
+                skill_coding: "Coding 💻", skill_gaming: "Gaming Reflexes 🎮", skill_fitness: "Strength & Health 🏃‍♂️", skill_discipline: "Discipline / Focus 🧠",
                 bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ IN-GAME FINANCIAL TRACKER ]", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Target Goal:", bsProgressText: "Completed",
                 journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new memory entry...", journalAddBtn: "Add to Database", journalEmpty: "Drawer empty.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
                 journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close"
@@ -460,7 +538,9 @@
                 introBlink: "APPUYEZ SUR ENTRÉE OU TOUCHEZ L'ÉCRAN", skipBtn: "Passer", menuText: "Menu", sidebarHeader: "⚔️ QG Personnel",
                 menuHome: "🏠 Accueil", menuPlanner: "📅 Agenda", menuSkills: "🌳 Talents", menuQuests: "📜 Quêtes", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
                 homeTitle: "🏠 QG Central", homeSubtitle: "[ SYSTEME: EN LIGNE ]", homeWelcome: "> Système synchronisé en Cloud.", homeDesc: "> Vos données se mettent à jour automatiquement sur tous vos écrans.",
-                plannerDesc: "> Agenda.", skillsTitle: "🌳 Talents", skillsDesc: "> Progression RPG.", questsTitle: "📜 Quêtes", questsDesc: "> Objectifs actifs.",
+                plannerDesc: "> Agenda.", skillsTitle: "🌳 Arbre de Talents", skillsSubtitle: "[ EVOLUTION DU PERSONNAGE ]", skillsDesc: "> Attribuez des points et suivez votre progression.",
+                questsTitle: "📜 Quêtes", questsDesc: "> Objectifs actifs.", lvlText: "Niveau", upgradeBtn: "Améliorer +", maxedText: "MAX",
+                skill_coding: "Codage 💻", skill_gaming: "Réflexes Gaming 🎮", skill_fitness: "Force & Santé 🏃‍♂️", skill_discipline: "Discipline / Focus 🧠",
                 bsTitle: "🎮 Statut BloxStrike", bsSubtitle: "[ SUIVI DU JEU ]", bsCurrentLabel: "Crédits:", bsGoalLabel: "Objectif:", bsProgressText: "Terminé",
                 journalTitle: "✍️ Journal Intime", journalPlaceholder: "Écrire une page...", journalAddBtn: "Consigner", journalEmpty: "Tiroir vide.", journalDeleteBtn: "Effacer", journalConfirmDelete: "Supprimer ?",
                 journalDrawerBtn: "📁 Ouvrir le Tiroir", journalDrawerTitle: "🗄️ Tiroir Souvenirs", journalCloseDrawer: "Fermer"
@@ -470,7 +550,9 @@
                 introBlink: "画面をタップするかENTERを押してください", skipBtn: "スキップ", menuText: "メニュー", sidebarHeader: "⚔️ 個人本部",
                 menuHome: "🏠 メイン基地", menuPlanner: "📅 計画書", menuSkills: "🌳 スキルツリー", menuQuests: "📜 クエストログ", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ 日記帳",
                 homeTitle: "🏠 メイン画面", homeSubtitle: "[ オンライン ]", homeWelcome: "> クラウド同期が有効です。", homeDesc: "> PC et スマホ間でデータはリアルタイムに自動同期されます。",
-                plannerDesc: "> 計画。", skillsTitle: "🌳 スキル", skillsDesc: "> RPGシステム。", questsTitle: "📜 クエスト", questsDesc: "> アクティブ任務。",
+                plannerDesc: "> 計画。", skillsTitle: "🌳 スキルツリー", skillsSubtitle: "[ キャラクター育成 ]", skillsDesc: "> ポイントを割り当て、リアルタイムで進化を追跡します。",
+                questsTitle: "📜 クエスト", questsDesc: "> アクティブ任務。", lvlText: "レベル", upgradeBtn: "強化 +", maxedText: "最大",
+                skill_coding: "コーディング 💻", skill_gaming: "ゲーム反射神経 🎮", skill_fitness: "体力・健康 🏃‍♂️", skill_discipline: "規律・集中 🧠",
                 bsTitle: "🎮 BloxStrike", bsSubtitle: "[ 財務モニター ]", bsCurrentLabel: "現在:", bsGoalLabel: "目標:", bsProgressText: "完了",
                 journalTitle: "✍️ 日記帳", journalPlaceholder: "書き留める...", journalAddBtn: "追加", journalEmpty: "空です。", journalDeleteBtn: "削除", journalConfirmDelete: "消去しますか？",
                 journalDrawerBtn: "📁 引き出しを開ける", journalDrawerTitle: "🗄️ 記憶の引き出し", journalCloseDrawer: "閉じる"
@@ -485,6 +567,7 @@
                 if (doc.exists()) {
                     globalData = doc.data();
                     if (!globalData.journalEntries) globalData.journalEntries = [];
+                    if (!globalData.skills) globalData.skills = { coding: 0, gaming: 0, fitness: 0, discipline: 0 };
                     
                     if(document.activeElement !== document.getElementById("bs-current")) {
                         document.getElementById("bs-current").value = globalData.bsCurrent || 0;
@@ -495,10 +578,11 @@
                     
                     calculateProgress();
                     displayEntries();
+                    renderSkills();
                 }
             }, (error) => {
                 console.error("Firebase Snapshot Error:", error);
-                alert("Eroare Cloud la citirea datelor: " + error.message + "\n\n⚠️ TIP: Ai uitat să alegi 'Start in test mode' la crearea bazei Firestore!");
+                alert("Eroare Cloud la citirea datelor: " + error.message);
             });
         }
 
@@ -511,119 +595,16 @@
             calculateProgress();
         }
 
-        function changeLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem("hqLanguage", lang);
-            document.querySelectorAll('.change-lang-matrix').forEach(select => select.value = lang);
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) el.innerText = translations[lang][key];
-            });
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (translations[lang] && translations[lang][key]) el.setAttribute('placeholder', translations[lang][key]);
-            });
-            calculateProgress();
-            displayEntries();
-        }
-
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('live-time').innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            try { document.getElementById('live-date').innerText = now.toLocaleDateString(langLocales[currentLang], options); } catch(e) {}
-        }
-
-        function toggleSidebar() {
-            document.getElementById("my-sidebar").classList.toggle("collapsed");
-            document.body.classList.toggle("menu-collapsed");
-        }
-
-        function toggleJournalDrawer(open) {
-            document.getElementById("journal-drawer").classList.toggle("open", open);
-        }
-
-        function login() {
-            if(document.getElementById("pass-input").value.trim() === PAROLA) {
-                document.getElementById("login-screen").classList.add("hidden");
-                document.getElementById("intro-screen").classList.remove("hidden");
-                listenToCloud(); 
-                window.addEventListener('keydown', handleIntroKeys);
-            } else {
-                document.getElementById("error").innerText = translations[currentLang].loginError;
-            }
-        }
-
-        function enterHQ() {
-            document.getElementById("intro-screen").classList.add("hidden");
-            document.getElementById("hq-interface").classList.remove("hidden");
-            window.removeEventListener('keydown', handleIntroKeys);
-        }
-
-        function handleIntroKeys(e) { if (e.key === " " || e.key === "Enter") enterHQ(); }
-
-        function switchPage(pageId, btn) {
-            toggleJournalDrawer(false);
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            btn.classList.add('active');
-            if (window.innerWidth <= 768) toggleSidebar();
-        }
-
-        function calculateProgress() {
-            const current = parseFloat(document.getElementById("bs-current").value) || 0;
-            const goal = parseFloat(document.getElementById("bs-goal").value) || 1;
-            let percentage = Math.min(Math.max(Math.round((current / goal) * 100), 0), 100);
-            document.getElementById("bs-progress-bar").style.width = percentage + "%";
-            document.getElementById("bs-progress-text").innerText = percentage + "% " + translations[currentLang].bsProgressText;
-        }
-
-        function saveJournalEntry() {
-            const tx = document.getElementById("journal-input");
-            if (tx.value.trim() === "") return;
-            
-            globalData.journalEntries.unshift({
-                id: Date.now(),
-                date: new Date().toLocaleString(langLocales[currentLang]),
-                text: tx.value
-            });
-
-            if(docRef) {
-                docRef.set(globalData).then(() => {
-                    tx.value = "";
-                    toggleJournalDrawer(true);
-                }).catch(err => alert("Cloud Sync Error: " + err.message));
-            }
-        }
-
-        function displayEntries() {
-            const container = document.getElementById("entries-container");
+        function renderSkills() {
+            const container = document.getElementById("skills-container");
             if (!container) return;
-            const entries = globalData.journalEntries || [];
-            container.innerHTML = entries.length === 0 ? `<p style="color: var(--text-dim); text-align: center;">${translations[currentLang].journalEmpty}</p>` : "";
-            entries.forEach(entry => {
-                container.innerHTML += `
-                    <div class="journal-entry">
-                        <div class="entry-date">📅 ${entry.date}</div>
-                        <div style="white-space: pre-wrap; font-size: 14px; color: #fff;">${entry.text}</div>
-                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">${translations[currentLang].journalDeleteBtn}</button>
-                    </div>`;
-            });
-        }
+            
+            const skillKeys = ["coding", "gaming", "fitness", "discipline"];
+            container.innerHTML = "";
 
-        function deleteEntry(id) {
-            if (confirm(translations[currentLang].journalConfirmDelete)) {
-                globalData.journalEntries = globalData.journalEntries.filter(e => e.id !== id);
-                if(docRef) docRef.set(globalData);
-            }
-        }
-
-        window.onload = function() { 
-            changeLanguage(localStorage.getItem("hqLanguage") || "ro"); 
-            updateClock();
-            setInterval(updateClock, 1000);
-        };
-    </script>
-</body>
-</html>
+            skillKeys.forEach(key => {
+                const currentLevel = globalData.skills[key] || 0;
+                const isMaxed = currentLevel >= 5;
+                
+                let dotsHtml = "";
+                for (let i = 1;
