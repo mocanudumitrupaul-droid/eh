@@ -342,4 +342,88 @@
                 <h1 data-i18n="homeTitle">🏠 Pagina Principală</h1>
                 <div class="card">
                     <h3 data-i18n="homeSubtitle">[ CORE_SYSTEM: ONLINE ]</h3>
-                    <p style="color: var(--accent-color); font-weight: bold;" data-i18n="homeWelcome">> Bun venit în
+                    <p style="color: var(--accent-color); font-weight: bold;" data-i18n="homeWelcome">> Bun venit în baza ta centrală de operațiuni.</p>
+                    <p data-i18n="homeDesc">> Acesta este spațiul tău principal sincronizat automat în Cloud.</p>
+                </div>
+            </div>
+
+            <div id="planner" class="page"><h1 data-i18n="menuPlanner">📅 Planner</h1><div class="card"><p data-i18n="plannerDesc">> Planificare sector.</p></div></div>
+            <div id="skills" class="page"><h1 data-i18n="skillsTitle">🌳 Skill Tree</h1><div class="card"><p data-i18n="skillsDesc">> Abilități RPG.</p></div></div>
+            <div id="quests" class="page"><h1 data-i18n="questsTitle">📜 Quest Log</h1><div class="card"><p data-i18n="questsDesc">> Misiuni active.</p></div></div>
+
+            <div id="bloxstrike" class="page">
+                <h1 data-i18n="bsTitle">🎮 BloxStrike Status</h1>
+                <div class="card">
+                    <h3 data-i18n="bsSubtitle">[ MONITORIZARE FINANCIARĂ JOC ]</h3>
+                    <div style="margin: 20px 0;">
+                        <label data-i18n="bsCurrentLabel">Credite Curente:</label>
+                        <input type="number" id="bs-current" class="credit-input" value="0" oninput="updateCloudData()">
+                        <label data-i18n="bsGoalLabel">Obiectiv (Goal):</label>
+                        <input type="number" id="bs-goal" class="credit-input" value="10000" oninput="updateCloudData()">
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="bs-progress-bar"></div>
+                        <div class="progress-text" id="bs-progress-text">0% Reușit</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="journal" class="page">
+                <h1 data-i18n="journalTitle">✍️ Jurnal Personal</h1>
+                <div class="card">
+                    <textarea id="journal-input" data-i18n-placeholder="journalPlaceholder" placeholder="Scrie o nouă filă de poveste..."></textarea>
+                    <div style="margin-top: 10px;">
+                        <button onclick="saveJournalEntry()" class="custom-btn" data-i18n="journalAddBtn">Adaugă în Jurnal</button>
+                        <button onclick="toggleJournalDrawer(true)" class="custom-btn sec-btn" data-i18n="journalDrawerBtn">📁 Deschide Sertar</button>
+                    </div>
+                </div>
+
+                <div id="journal-drawer" class="journal-drawer">
+                    <div class="drawer-header">
+                        <h3 style="margin: 0; color: var(--accent-color);" data-i18n="journalDrawerTitle">🗄️ Sertar cu Amintiri</h3>
+                        <button onclick="toggleJournalDrawer(false)" class="custom-btn sec-btn" style="margin: 0; padding: 5px 12px;" data-i18n="journalCloseDrawer">Închide</button>
+                    </div>
+                    <div class="journal-list" id="entries-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxfaSHjHfyLUAJiKJSYgo37QPTo5DtyIs",
+            authDomain: "hq-personal-cae00.firebaseapp.com",
+            projectId: "hq-personal-cae00",
+            storageBucket: "hq-personal-cae00.firebasestorage.app",
+            messagingSenderId: "961330194480",
+            appId: "1:961330194480:web:61f8be623d5d019f3665f5"
+        };
+        
+        // Protecție init: Dacă scriptul Firebase are probleme, nu mai îngheață restul site-ului
+        let db, docRef;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            docRef = db.collection("mainframe").doc("central_hq");
+        } catch (e) {
+            console.error("Firebase Initialization Error:", e);
+            alert("Eroare gravă de inițializare Firebase: " + e.message);
+        }
+
+        const PAROLA = "SecretulMeu2026";
+        let currentLang = "ro";
+        let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000 };
+
+        const translations = {
+            ro: {
+                loginTitle: "Sistem de Securitate", loginPrompt: "Introdu cheia de acces:", loginPlaceholder: "Parolă...", loginBtn: "Deblochează", loginError: "Acces interzis.",
+                introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
+                menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
+                homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal sincronizat automat în Cloud.",
+                plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> Abilități RPG.", questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.",
+                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressText: "Finalizat",
+                journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Sertar gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
+                journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide"
+            },
+            en: {
+                loginTitle
