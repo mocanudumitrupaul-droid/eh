@@ -478,24 +478,36 @@
             border-radius: 8px;
             max-width: 260px;
             backdrop-filter: blur(8px);
-            pointer-events: none;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        .sparkle-particle {
+        /* SUB-VIEW STIL DE LUPTĂ */
+        .combat-style-overlay {
             position: absolute;
-            background: #fff;
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0;
-            box-shadow: 0 0 8px #b040ff, 0 0 2px #fff;
-            animation: floatUpSpark 6s linear infinite;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #0e051c 0%, #040208 100%);
+            z-index: 50;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
-        @keyframes floatUpSpark {
-            0% { transform: translateY(100%) scale(0); opacity: 0; }
-            20% { opacity: 0.7; }
-            80% { opacity: 0.6; }
-            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+        .combat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .combat-slot {
+            background: rgba(17, 17, 24, 0.85);
+            border: 1px solid rgba(176, 64, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .combat-slot:hover {
+            border-color: var(--electro-purple);
+            box-shadow: 0 0 15px rgba(176, 64, 255, 0.2);
         }
 
         /* SERTAR JURNAL */
@@ -515,7 +527,7 @@
         .journal-drawer.open { right: 0; }
         .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a26; padding-bottom: 10px; margin-bottom: 20px; }
         .journal-list { margin-top: 10px; }
-        .journal-entry { background: #111118; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-color); margin-bottom: 15px; border: 1px solid #1a1a26; }
+        .journal-entry { background: #111118; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-color); margin-bottom: 15px; border: 1px solid #1a1a26; color: white; }
         .entry-date { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
         .delete-btn { background: #ff4a4a; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-family: 'Courier Prime', monospace;}
         
@@ -523,8 +535,10 @@
         .progress-bar { background: var(--accent-color); height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--accent-color); }
         .progress-text { position: absolute; width: 100%; text-align: center; top: 3px; font-size: 13px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000; }
         
-        .custom-btn { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Courier Prime', monospace; margin-right: 10px; margin-top: 5px; }
+        .custom-btn { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Courier Prime', monospace; margin-right: 10px; margin-top: 5px; transition: 0.2s; }
+        .custom-btn:hover { filter: brightness(1.2); box-shadow: 0 0 10px var(--accent-color); }
         .sec-btn { background: #1a1a26; border: 1px solid #2a2a3a; }
+        .sec-btn:hover { box-shadow: none; background: #252538; }
 
         /* INTRO SCREEN */
         .intro-overlay { 
@@ -539,96 +553,112 @@
             animation: gridMove 20s linear infinite; z-index: 1;
         }
         @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 1000px; } }
-        .intro-content { position: relative; z-index: 2; text-align: center; margin-top: auto; margin-bottom: 10vh; background: rgba(5, 5, 8, 0.9); padding: 18px 30px; border-radius: 30px; border: 1px solid rgba(138, 43, 226, 0.6); box-shadow: 0 0 25px rgba(138, 43, 226, 0.3); width: 85%; max-width: 450px; pointer-events: none; }
-        .blink-text { font-size: 14px; font-weight: bold; letter-spacing: 1.5px; color: #ffffff; text-shadow: 0 0 10px var(--accent-color); animation: blink 2s infinite; }
+        .intro-content { position: relative; z-index: 2; text-align: center; margin-top: auto; margin-bottom: 10vh; background: rgba(5, 5, 8, 0.9); padding: 18px 30px; border-radius: 30px; border: 1px solid rgba(138, 43, 226, 0.6); box-shadow: 0 0 25px rgba(138, 43, 226, 0.3); width: 85%; max-width: 450px; }
+        .blink-text { font-size: 14px; font-weight: bold; letter-spacing: 1.5px; color: #ffffff; text-shadow: 0 0 10px var(--accent-color); animation: blink 2s infinite; cursor: pointer; }
         .skip-btn { position: absolute; bottom: 30px; right: 30px; z-index: 3; background: rgba(17, 17, 24, 0.9); border: 1px solid rgba(138, 43, 226, 0.5); color: white; padding: 10px 20px; font-size: 14px; border-radius: 6px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; font-family: 'Courier Prime', monospace; }
         .skip-btn:hover { background: var(--accent-color); box-shadow: 0 0 15px var(--accent-color); }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body>
 
-        /* ================== STILURI EXCLUSIVE RESPIRAȚIA LUNII ================== */
-        .moon-combat-tab {
-            position: absolute;
-            left: -2px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(90deg, #511281 0%, #3a0066 100%);
-            border: 2px solid #a25df5;
-            border-left: none;
-            border-radius: 0 12px 12px 0;
-            padding: 25px 12px;
-            cursor: pointer;
-            writing-mode: vertical-lr;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 3px;
-            font-size: 0.85rem;
-            box-shadow: 5px 0 15px rgba(162, 93, 245, 0.4);
-            transition: all 0.3s ease;
-            z-index: 100;
-        }
-        .moon-combat-tab:hover {
-            padding-left: 18px;
-            background: #6c1ca7;
-            box-shadow: 5px 0 25px rgba(162, 93, 245, 0.7);
-        }
+    <div id="login-screen" class="login-overlay">
+        <div class="login-box">
+            <div class="login-lang-wrapper">
+                <select class="lang-select change-lang-matrix" style="width: auto;" onchange="changeLanguage(this.value)">
+                    <option value="ro">🇷🇴 RO</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="ja">🇯🇵 JA</option>
+                </select>
+            </div>
+            <h2 id="trans-loginTitle">Sistem de Securitate</h2>
+            <p id="trans-loginPrompt">Introdu cheia de acces:</p>
+            <input type="password" id="pass-input" placeholder="Parolă..." onkeydown="if(event.key === 'Enter') login()" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <br><br>
+            <button onclick="login()" id="trans-loginBtn" class="custom-btn" style="margin: 0;">Deblochează</button>
+            <p id="error" style="color: #ff4a4a; margin-top: 10px;"></p>
+        </div>
+    </div>
 
-        .moon-full-screen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: radial-gradient(circle, #2d124d 0%, #0c0317 100%);
-            z-index: 2000;
-            display: none;
-            opacity: 0;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .moon-full-screen.active { display: flex; opacity: 1; }
+    <div id="intro-screen" class="intro-overlay hidden" onclick="enterHQ()">
+        <div class="intro-content">
+            <div class="blink-text" id="trans-introBlink">APASĂ PENTRU A ACCESA MAINFRAME-UL</div>
+        </div>
+        <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();">Skip ➔</button>
+    </div>
 
-        .moon-back-arrow {
-            position: absolute;
-            top: 40px; left: 40px;
-            font-size: 1.8rem; width: 55px; height: 55px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: all 0.3s ease; z-index: 2100;
-            color: #fff;
-        }
-        .moon-back-arrow:hover { background: #ffffff; color: #0c0317; box-shadow: 0 0 20px #ffffff; transform: scale(1.1); }
+    <div id="hq-interface" class="hidden">
+        <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ Meniu</button>
 
-        .moon-giant-bg {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 65vh; height: 65vh;
-            pointer-events: none; z-index: 10; opacity: 0.12;
-            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5));
-        }
+        <div class="time-widget">
+            <div class="widget-time" id="live-time">00:00:00</div>
+            <div class="widget-date" id="live-date">LUNI, 1 IANUARIE 2026</div>
+        </div>
 
-        .moon-tree-wrap { position: relative; width: 1050px; height: 500px; z-index: 20; }
+        <div class="sidebar" id="my-sidebar">
+            <div class="sidebar-header">⚔️ HQ Personal</div>
+            <div class="lang-container">
+                <select class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="ro">🇷🇴 Română</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                </select>
+            </div>
+            <button class="menu-btn active" onclick="switchPage('home', this)">🏠 Principală</button>
+            <button class="menu-btn" onclick="switchPage('planner', this)">📅 Planner</button>
+            <button class="menu-btn" onclick="switchPage('skills', this)">🌳 Skills</button>
+            <button class="menu-btn" onclick="switchPage('quests', this)">📜 Quests</button>
+            <button class="menu-btn" onclick="switchPage('bloxstrike', this)">🎮 BloxStrike</button>
+            <button class="menu-btn" onclick="switchPage('journal', this)">✍️ Jurnal</button>
+        </div>
 
-        .moon-node {
-            position: absolute;
-            width: 170px; height: 85px;
-            background: rgba(19, 7, 36, 0.85);
-            border: 2px solid #8b5cf6;
-            border-radius: 10px; padding: 12px; text-align: center;
-            display: flex; flex-direction: column; justify-content: center;
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-            cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-        .moon-node:hover { transform: scale(1.05); border-color: #ffffff; box-shadow: 0 0 25px rgba(255, 255, 255, 0.6); }
+        <div class="main-content">
+            <div id="home" class="page active">
+                <h1>🏠 Pagina Principală</h1>
+                <div class="card">
+                    <h3>[ CORE_SYSTEM: ONLINE ]</h3>
+                    <p style="color: var(--accent-color); font-weight: bold;">> Bun venit în baza ta centrală de operațiuni.</p>
+                    <p>> Acesta este spațiul tău principal sincronizat automat în Cloud.</p>
+                </div>
+            </div>
 
-        .moon-node-base { border-color: #00f2fe; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); }
-        .moon-node-base .moon-node-name { color: #00f2fe; }
+            <div id="planner" class="page"><h1>📅 Planner</h1><div class="card"><p>> Planificare sector.</p></div></div>
+            <div id="quests" class="page"><h1>📜 Quest Log</h1><div class="card"><p>> Misiuni active.</p></div></div>
 
-        .moon-node-locked { border-color: #4b5563; background: rgba(20, 20, 20, 0.6); cursor: not-allowed; box-shadow: none; }
-        .moon-node-locked .moon-node-name { color: #9ca3af; }
-        .moon-node-locked .moon-node-form { color: #6b7280; }
-        .moon-node-locked:hover { transform: none; border-color: #4b5563; box-shadow: none; }
+            <div id="skills" class="page">
+                <div class="genshin-container" id="tree-main-container">
+                    
+                    <div class="constellation-panel">
+                        <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #fff;">CONSTELLATION</h3>
+                        <p style="margin: 0; font-size: 10px; color: var(--electro-purple); letter-spacing: 1px;">ELEMENT: ELECTRO (OS)</p>
+                        <button class="custom-btn" style="font-size: 11px; padding: 6px 10px; margin-top: 10px; background: var(--electro-purple); width: 100%;" onclick="toggleCombatStyle(true)">⚔️ Stil de Luptă</button>
+                    </div>
 
-        .moon-node-form { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #a78bfa; margin-
-                        
+                    <div class="zoom-hud-controls">
+                        <button class="hud-btn" onclick="adjustZoom(0.15)">+</button>
+                        <button class="hud-btn" onclick="adjustZoom(-0.15)">-</button>
+                        <button class="hud-btn" style="font-size: 11px;" onclick="resetZoomAndPan()">Reset</button>
+                    </div>
+
+                    <div class="skill-details-panel" id="skill-details-side">
+                        <button class="close-details-btn" onclick="closeSkillDetails()">×</button>
+                        <div id="skill-details-content"></div>
+                    </div>
+
+                    <div class="electro-bg">
+                        <div class="electro-clouds"></div>
+                    </div>
+
+                    <div class="tree-viewport" id="tree-viewport-area">
+                        <div class="tree-canvas" id="tree-canvas-board">
+                            <svg class="tree-svg-container" id="tree-svg-canvas"></svg>
+                            <div id="nodes-layer"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="combat-style-subview" class="combat-style-overlay hidden">
+                    <button class="custom-btn sec-btn" onclick="toggleCombatStyle(false)">⬅ Înapoi la Skill Tree</button>
+                    <h2 style="margin-
