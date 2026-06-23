@@ -403,4 +403,820 @@
         }
         @keyframes pulseGlow {
             0% { box-shadow: 0 0 15px rgba(176, 64, 255, 0.6); border-color: var(--electro-purple); }
-            100% { box-shadow: 0 0 25px rgba(176, 64, 255, 0.9), 0 0 5px #fff; border-color:
+            100% { box-shadow: 0 0 25px rgba(176, 64, 255, 0.9), 0 0 5px #fff; border-color: #e5b3ff; }
+        }
+
+        .rhombus-inner {
+            transform: rotate(-45deg);
+            text-align: center;
+            color: #d0cce0;
+            font-size: 11px;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            width: 85%;
+            user-select: none;
+        }
+        .skill-node.unlocked .rhombus-inner {
+            color: #ffffff;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+        .node-icon {
+            font-size: 18px;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .node-status-text {
+            font-size: 8px;
+            display: block;
+            color: var(--text-dim);
+            margin-top: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .skill-node.unlocked .node-status-text {
+            color: #d6a6ff;
+        }
+
+        .zoom-hud-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .hud-btn {
+            width: 38px;
+            height: 38px;
+            background: rgba(15, 10, 25, 0.85);
+            border: 1px solid rgba(138, 43, 226, 0.5);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+        .hud-btn:hover {
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .constellation-panel {
+            position: absolute;
+            top: 20px;
+            left: 80px;
+            z-index: 5;
+            background: rgba(11, 7, 20, 0.85);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            padding: 15px 20px;
+            border-radius: 8px;
+            max-width: 260px;
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .sparkle-particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 0 8px #b040ff, 0 0 2px #fff;
+            animation: floatUpSpark 6s linear infinite;
+        }
+        @keyframes floatUpSpark {
+            0% { transform: translateY(100%) scale(0); opacity: 0; }
+            20% { opacity: 0.7; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+        }
+
+        /* SERTAR JURNAL */
+        .journal-drawer {
+            position: fixed;
+            top: 0; right: -420px;
+            width: 400px; max-width: 85vw; height: 100vh;
+            background-color: #0c0c12;
+            border-left: 2px solid var(--accent-color);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+            z-index: 200;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 90px 20px 20px 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .journal-drawer.open { right: 0; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1a1a26; padding-bottom: 10px; margin-bottom: 20px; }
+        .journal-list { margin-top: 10px; }
+        .journal-entry { background: #111118; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-color); margin-bottom: 15px; border: 1px solid #1a1a26; }
+        .entry-date { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
+        .delete-btn { background: #ff4a4a; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 4px; margin-top: 10px; cursor: pointer; font-family: 'Courier Prime', monospace;}
+        
+        .progress-container { background: #09090d; border: 1px solid #2a2a3a; border-radius: 6px; height: 24px; width: 100%; margin-top: 15px; overflow: hidden; position: relative; }
+        .progress-bar { background: var(--accent-color); height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px var(--accent-color); }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 3px; font-size: 13px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000; }
+        
+        .custom-btn { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Courier Prime', monospace; margin-right: 10px; margin-top: 5px; }
+        .sec-btn { background: #1a1a26; border: 1px solid #2a2a3a; }
+
+        /* INTRO SCREEN */
+        .intro-overlay { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: radial-gradient(circle, #1a0f30 0%, #050508 100%); 
+            z-index: 9998; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; 
+        }
+        .intro-overlay::before {
+            content: ''; position: absolute; width: 200%; height: 200%;
+            background: linear-gradient(rgba(138, 43, 226, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(138, 43, 226, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px; transform: perspective(500px) rotateX(60deg) translateY(-50%);
+            animation: gridMove 20s linear infinite; z-index: 1;
+        }
+        @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 1000px; } }
+        .intro-content { position: relative; z-index: 2; text-align: center; margin-top: auto; margin-bottom: 10vh; background: rgba(5, 5, 8, 0.9); padding: 18px 30px; border-radius: 30px; border: 1px solid rgba(138, 43, 226, 0.6); box-shadow: 0 0 25px rgba(138, 43, 226, 0.3); width: 85%; max-width: 450px; pointer-events: none; }
+        .blink-text { font-size: 14px; font-weight: bold; letter-spacing: 1.5px; color: #ffffff; text-shadow: 0 0 10px var(--accent-color); animation: blink 2s infinite; }
+        .skip-btn { position: absolute; bottom: 30px; right: 30px; z-index: 3; background: rgba(17, 17, 24, 0.9); border: 1px solid rgba(138, 43, 226, 0.5); color: white; padding: 10px 20px; font-size: 14px; border-radius: 6px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; font-family: 'Courier Prime', monospace; }
+        .skip-btn:hover { background: var(--accent-color); box-shadow: 0 0 15px var(--accent-color); }
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="login-overlay">
+        <div class="login-box">
+            <div class="login-lang-wrapper">
+                <select class="lang-select change-lang-matrix" style="width: auto;" onchange="changeLanguage(this.value)">
+                    <option value="ro">🇷🇴 RO</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="ja">🇯🇵 JA</option>
+                </select>
+            </div>
+            <h2 data-i18n="loginTitle">Sistem de Securitate</h2>
+            <p data-i18n="loginPrompt">Introdu cheia de acces:</p>
+            <input type="password" id="pass-input" data-i18n-placeholder="loginPlaceholder" placeholder="Parolă..." onkeydown="if(event.key === 'Enter') login()" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <br><br>
+            <button onclick="login()" data-i18n="loginBtn" class="custom-btn" style="margin: 0;">Deblochează</button>
+            <p id="error" style="color: #ff4a4a; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div id="intro-screen" class="intro-overlay hidden" onclick="enterHQ()">
+        <div class="intro-content">
+            <div class="blink-text" data-i18n="introBlink">APASĂ ENTER / SPACE SAU ATINGE FUNDALUL</div>
+        </div>
+        <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();"><span data-i18n="skipBtn">Skip</span> ➔</button>
+    </div>
+
+    <div id="hq-interface" class="hidden">
+        <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ <span data-i18n="menuText">Meniu</span></button>
+
+        <div class="time-widget">
+            <div class="widget-time" id="live-time">00:00:00</div>
+            <div class="widget-date" id="live-date">LUNI, 1 IANUARIE 2026</div>
+        </div>
+
+        <div class="sidebar" id="my-sidebar">
+            <div class="sidebar-header" data-i18n="sidebarHeader">⚔️ HQ Personal</div>
+            <div class="lang-container">
+                <select class="lang-select change-lang-matrix" onchange="changeLanguage(this.value)">
+                    <option value="ro">🇷🇴 Română</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                </select>
+            </div>
+            <button class="menu-btn active" onclick="switchPage('home', this)" data-i18n="menuHome">🏠 Principală</button>
+            <button class="menu-btn" onclick="switchPage('planner', this)" data-i18n="menuPlanner">📅 Planner</button>
+            <button class="menu-btn" onclick="switchPage('skills', this)" data-i18n="menuSkills">🌳 Skills</button>
+            <button class="menu-btn" onclick="switchPage('quests', this)" data-i18n="menuQuests">📜 Quests</button>
+            <button class="menu-btn" onclick="switchPage('bloxstrike', this)" data-i18n="menuBloxStrike">🎮 BloxStrike</button>
+            <button class="menu-btn" onclick="switchPage('journal', this)" data-i18n="menuJournal">✍️ Jurnal</button>
+        </div>
+
+        <div class="main-content">
+            <div id="home" class="page active">
+                <h1 data-i18n="homeTitle">🏠 Pagina Principală</h1>
+                <div class="card">
+                    <h3 data-i18n="homeSubtitle">[ CORE_SYSTEM: ONLINE ]</h3>
+                    <p style="color: var(--accent-color); font-weight: bold;" data-i18n="homeWelcome">> Bun venit în baza ta centrală de operațiuni.</p>
+                    <p data-i18n="homeDesc">> Acesta este spațiul tău principal sincronizat automat în Cloud.</p>
+                </div>
+            </div>
+
+            <div id="planner" class="page"><h1 data-i18n="menuPlanner">📅 Planner</h1><div class="card"><p data-i18n="plannerDesc">> Planificare sector.</p></div></div>
+            <div id="quests" class="page"><h1 data-i18n="questsTitle">📜 Quest Log</h1><div class="card"><p data-i18n="questsDesc">> Misiuni active.</p></div></div>
+
+            <div id="skills" class="page">
+                <div class="genshin-container">
+                    <button class="tree-back-btn" onclick="exitSkillTree()">⬅</button>
+
+                    <div class="constellation-panel">
+                        <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #fff;" data-i18n="skillsSubtitle">CONSTELLATION</h3>
+                        <p style="margin: 0; font-size: 10px; color: var(--electro-purple); letter-spacing: 1px;" data-i18n="skillsDesc">ELEMENT: ELECTRO (OS)</p>
+                    </div>
+
+                    <div class="zoom-hud-controls">
+                        <button class="hud-btn" onclick="adjustZoom(0.15)">+</button>
+                        <button class="hud-btn" onclick="adjustZoom(-0.15)">-</button>
+                        <button class="hud-btn" style="font-size: 11px;" onclick="resetZoomAndPan()">Reset</button>
+                    </div>
+
+                    <div class="skill-details-panel" id="skill-details-side">
+                        <button class="close-details-btn" onclick="closeSkillDetails()">×</button>
+                        <div id="skill-details-content"></div>
+                    </div>
+
+                    <div class="electro-bg" id="electro-particles-bg">
+                        <div class="electro-clouds"></div>
+                    </div>
+
+                    <div class="tree-viewport" id="tree-viewport-area">
+                        <div class="tree-canvas" id="tree-canvas-board">
+                            <svg class="tree-svg-container" id="tree-svg-canvas"></svg>
+                            <div id="nodes-layer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="bloxstrike" class="page">
+                <h1 data-i18n="bsTitle">🎮 BloxStrike Status</h1>
+                <div class="card">
+                    <h3 data-i18n="bsSubtitle">[ MONITORIZARE FINANCIARĂ JOC ]</h3>
+                    <div style="margin: 20px 0;">
+                        <label data-i18n="bsCurrentLabel">Credite Curente:</label>
+                        <input type="number" id="bs-current" class="credit-input" value="0" oninput="updateCloudData()">
+                        <label data-i18n="bsGoalLabel">Obiectiv (Goal):</label>
+                        <input type="number" id="bs-goal" class="credit-input" value="10000" oninput="updateCloudData()">
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="bs-progress-bar"></div>
+                        <div class="progress-text" id="bs-progress-text">0% Reușit</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="journal" class="page">
+                <h1 data-i18n="journalTitle">✍️ Jurnal Personal</h1>
+                <div class="card">
+                    <textarea id="journal-input" data-i18n-placeholder="journalPlaceholder" placeholder="Scrie o nouă filă de poveste..."></textarea>
+                    <div style="margin-top: 10px;">
+                        <button onclick="saveJournalEntry()" class="custom-btn" data-i18n="journalAddBtn">Adaugă în Jurnal</button>
+                        <button onclick="toggleJournalDrawer(true)" class="custom-btn sec-btn" data-i18n="journalDrawerBtn">📁 Deschide Sertar</button>
+                    </div>
+                </div>
+
+                <div id="journal-drawer" class="journal-drawer">
+                    <div class="drawer-header">
+                        <h3 style="margin: 0; color: var(--accent-color);" data-i18n="journalDrawerTitle">🗄️ Sertar cu Amintiri</h3>
+                        <button onclick="toggleJournalDrawer(false)" class="custom-btn sec-btn" style="margin: 0; padding: 5px 12px;" data-i18n="journalCloseDrawer">Închide</button>
+                    </div>
+                    <div class="journal-list" id="entries-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxfaSHjHfyLUAJiKJSYgo37QPTo5DtyIs",
+            authDomain: "hq-personal-cae00.firebaseapp.com",
+            projectId: "hq-personal-cae00",
+            storageBucket: "hq-personal-cae00.firebasestorage.app",
+            messagingSenderId: "961330194480",
+            appId: "1:961330194480:web:61f8be623d5d019f3665f5"
+        };
+        
+        let db, docRef;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            docRef = db.collection("mainframe").doc("central_hq");
+        } catch (e) {
+            console.error("Firebase Initialization Error:", e);
+        }
+
+        const PAROLA = "SecretulMeu2026";
+        let currentLang = "ro";
+        let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000, skillsUnlocked: { core: true } };
+        let currentlySelectedNode = null;
+
+        const skillTreeStructure = {
+            nodes: {
+                core: { name: "Core Node", icon: "⚛️", x: 600, y: 120 },
+                coding: { name: "Coding", icon: "💻", x: 400, y: 320 },
+                gaming: { name: "Gaming", icon: "🎮", x: 600, y: 320 },
+                fitness: { name: "Fitness", icon: "🏃‍♂️", x: 800, y: 320 },
+                ai_mastery: { name: "AI Sync", icon: "🤖", x: 300, y: 550 },
+                esports: { name: "Tactics", icon: "🎯", x: 600, y: 550 },
+                discipline: { name: "Mindset", icon: "🧠", x: 900, y: 550 },
+                apex_god: { name: "Overlord", icon: "👑", x: 600, y: 780 }
+            },
+            connections: [
+                { from: "core", to: "coding" },
+                { from: "core", to: "gaming" },
+                { from: "core", to: "fitness" },
+                { from: "coding", to: "ai_mastery" },
+                { from: "gaming", to: "esports" },
+                { from: "fitness", to: "discipline" },
+                { from: "ai_mastery", to: "apex_god" },
+                { from: "esports", to: "apex_god" },
+                { from: "discipline", to: "apex_god" }
+            ]
+        };
+
+        let zoomScale = 0.85;
+        let panX = 80;
+        let panY = 20;
+        let isDragging = false;
+        let startX, startY;
+
+        const translations = {
+            ro: {
+                loginTitle: "Sistem de Securitate", loginPrompt: "Introdu cheia de acces:", loginPlaceholder: "Parolă...", loginBtn: "Deblochează", loginError: "Acces interzis.",
+                introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
+                menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
+                homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal sincronizat automat în Cloud.",
+                plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
+                questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.",
+                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressText: "Finalizat",
+                journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Sertar gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
+                journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide",
+                node_unlocked: "Deblocat", node_locked: "Blocat",
+                node_core: "Nucleu ⚛️", node_coding: "Codare 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "Sincro AI 🤖", node_esports: "Tactică 🎯", node_discipline: "Mental 🧠", node_apex_god: "Overlord 👑"
+            },
+            en: {
+                loginTitle: "Security System", loginPrompt: "Enter access key:", loginPlaceholder: "Password...", loginBtn: "Unlock", loginError: "Access denied.",
+                introBlink: "PRESS ENTER / SPACE OR TOUCH THE BACKGROUND", skipBtn: "Skip", menuText: "Menu", sidebarHeader: "⚔️ Personal HQ",
+                menuHome: "🏠 Main Base", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
+                homeTitle: "🏠 Main Page", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Welcome to your central operations base.", homeDesc: "> This is your main hub layout synced perfectly via Cloud Database.",
+                plannerDesc: "> Tactical sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
+                questsTitle: "📜 Quest Log", questsDesc: "> Active targets.",
+                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ IN-GAME FINANCIAL TRACKER ]", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Target Goal:", bsProgressText: "Completed",
+                journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new memory entry...", journalAddBtn: "Add to Database", journalEmpty: "Drawer empty.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
+                journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close",
+                node_unlocked: "Activated", node_locked: "Locked",
+                node_core: "Core ⚛️", node_coding: "Coding 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "AI Sync 🤖", node_esports: "Tactics 🎯", node_discipline: "Mindset 🧠", node_apex_god: "Overlord 👑"
+            },
+            fr: {
+                loginTitle: "Système de Sécurité", loginPrompt: "Entrez la clé:", loginPlaceholder: "Mot de passe...", loginBtn: "Déverrouiller", loginError: "Refusé.",
+                introBlink: "APPUYEZ SUR ENTRÉE OU TOUCHEZ L'ÉCRAN", skipBtn: "Passer", menuText: "Menu", sidebarHeader: "⚔️ QG Personnel",
+                menuHome: "🏠 Accueil", menuPlanner: "📅 Agenda", menuSkills: "🌳 Talents", menuQuests: "📜 Quêtes", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
+                homeTitle: "🏠 QG Central", homeSubtitle: "[ SYSTEME: EN LIGNE ]", homeWelcome: "> Système synchronisé en Cloud.", homeDesc: "> Vos données se mettent à jour automatiquement sur tous vos écrans.",
+                plannerDesc: "> Agenda.", skillsTitle: "🌳 Arbre", skillsSubtitle: "CONSTELLATION", skillsDesc: "ÉLÉMENT: ÉLECTRO (OS)",
+                questsTitle: "📜 Quêtes", questsDesc: "> Objectifs actifs.",
+                bsTitle: "🎮 Statut BloxStrike", bsSubtitle: "[ SUIVI DU JEU ]", bsCurrentLabel: "Crédits:", bsGoalLabel: "Objectif:", bsProgressText: "Terminé",
+                journalTitle: "✍️ Journal Intime", journalPlaceholder: "Écrire une page...", journalAddBtn: "Consigner", journalEmpty: "Tiroir vide.", journalDeleteBtn: "Effacer", journalConfirmDelete: "Supprimer ?",
+                journalDrawerBtn: "📁 Ouvrir le Tiroir", journalDrawerTitle: "🗄️ Tiroir Souvenirs", journalCloseDrawer: "Fermer",
+                node_unlocked: "Activé", node_locked: "Bloqué",
+                node_core: "Noyau ⚛️", node_coding: "Code 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "Synchro AI 🤖", node_esports: "Tactique 🎯", node_discipline: "Mental 🧠", node_apex_god: "Overlord 👑"
+            },
+            ja: {
+                loginTitle: "セキュリティ", loginPrompt: "キーを入力:", loginPlaceholder: "パスワード...", loginBtn: "解除", loginError: "拒否されました。",
+                introBlink: "画面をタップするかENTERを押してください", skipBtn: "スキップ", menuText: "メニュー", sidebarHeader: "⚔️ 個人本部",
+                menuHome: "🏠 メイン基地", menuPlanner: "📅 計画書", menuSkills: "🌳 スキルツリー", menuQuests: "📜 クエストログ", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ 日記帳",
+                homeTitle: "🏠 メイン画面", homeSubtitle: "[ オンライン ]", homeWelcome: "> クラウド同期が有効です。", homeDesc: "> PC et スマホ間でデータはリアルタイムに自動同期されます。",
+                plannerDesc: "> 計画。", skillsTitle: "🌳 スキルツリー", skillsSubtitle: "命ノ星座", skillsDesc: "元素タイプ: 雷 (OS)",
+                questsTitle: "📜 クエスト", questsDesc: "> アクティブ任務。",
+                bsTitle: "🎮 BloxStrike", bsSubtitle: "[ 財務モニター ]", bsCurrentLabel: "現在:", bsGoalLabel: "目標:", bsProgressText: "完了",
+                journalTitle: "✍️ 日記帳", journalPlaceholder: "書き留める...", journalAddBtn: "追加", journalEmpty: "空です。", journalDeleteBtn: "削除", journalConfirmDelete: "消去しますか？",
+                journalDrawerBtn: "📁 引き出しを開ける", journalDrawerTitle: "🗄️ 記憶の引き出し", journalCloseDrawer: "閉じる",
+                node_unlocked: "有効化済み", node_locked: "ロック中",
+                node_core: "コア ⚛️", node_coding: "開発 💻", node_gaming: "ゲーム 🎮", node_fitness: "体力 🏃‍♂️", node_ai_mastery: "AI同期 🤖", node_esports: "戦術 🎯", node_discipline: "精神 🧠", node_apex_god: "覇王 👑"
+            }
+        };
+
+        const langLocales = { ro: 'ro-RO', en: 'en-US', fr: 'fr-FR', ja: 'ja-JP' };
+
+        function listenToCloud() {
+            if (!docRef) return;
+            docRef.onSnapshot((doc) => {
+                if (doc.exists()) {
+                    globalData = doc.data();
+                    if (!globalData.journalEntries) globalData.journalEntries = [];
+                    if (!globalData.skillsUnlocked) globalData.skillsUnlocked = { core: true };
+                    
+                    const curEl = document.getElementById("bs-current");
+                    const goEl = document.getElementById("bs-goal");
+                    if(curEl && document.activeElement !== curEl) curEl.value = globalData.bsCurrent || 0;
+                    if(goEl && document.activeElement !== goEl) goEl.value = globalData.bsGoal || 10000;
+                    
+                    calculateProgress();
+                    displayEntries();
+                    drawSkillTree();
+                    if (currentlySelectedNode) showSkillDetails(currentlySelectedNode);
+                }
+            }, (error) => {
+                console.error("Firebase Snapshot Error:", error);
+            });
+        }
+
+        function updateCloudData() {
+            if (!docRef) return;
+            const curEl = document.getElementById("bs-current");
+            const goEl = document.getElementById("bs-goal");
+            globalData.bsCurrent = curEl ? (parseFloat(curEl.value) || 0) : 0;
+            globalData.bsGoal = goEl ? (parseFloat(goEl.value) || 10000) : 10000;
+            
+            docRef.set(globalData).catch(err => console.error("Cloud error:", err));
+            calculateProgress();
+        }
+
+        function drawSkillTree() {
+            const nodesContainer = document.getElementById("nodes-layer");
+            const svgCanvas = document.getElementById("tree-svg-canvas");
+            if (!nodesContainer || !svgCanvas) return;
+
+            nodesContainer.innerHTML = "";
+            svgCanvas.innerHTML = "";
+
+            const unlocked = globalData.skillsUnlocked || { core: true };
+            const labels = translations[currentLang] || translations["ro"];
+
+            skillTreeStructure.connections.forEach(conn => {
+                const nodeFrom = skillTreeStructure.nodes[conn.from];
+                const nodeTo = skillTreeStructure.nodes[conn.to];
+                if (!nodeFrom || !nodeTo) return;
+
+                const isLineActive = unlocked[conn.from] && unlocked[conn.to];
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", nodeFrom.x);
+                line.setAttribute("y1", nodeFrom.y);
+                line.setAttribute("x2", nodeTo.x);
+                line.setAttribute("y2", nodeTo.y);
+                line.setAttribute("class", `tree-line ${isLineActive ? 'unlocked' : 'locked'}`);
+                svgCanvas.appendChild(line);
+            });
+
+            Object.keys(skillTreeStructure.nodes).forEach(key => {
+                const nodeData = skillTreeStructure.nodes[key];
+                const isUnlocked = !!unlocked[key];
+                const nodeDiv = document.createElement("div");
+                nodeDiv.className = `skill-node ${isUnlocked ? 'unlocked' : 'locked'}`;
+                nodeDiv.style.left = `${nodeData.x}px`;
+                nodeDiv.style.top = `${nodeData.y}px`;
+
+                const translatedName = labels["node_" + key] || nodeData.name;
+                const statusLabel = isUnlocked ? (labels.node_unlocked || "Unlocked") : (labels.node_locked || "Locked");
+
+                nodeDiv.innerHTML = `
+                    <div class="rhombus-outer" onclick="selectSkillNode('${key}')">
+                        <div class="rhombus-inner">
+                            <span class="node-icon">${nodeData.icon}</span>
+                            <span>${translatedName.split(' ')[0]}</span>
+                            <span class="node-status-text">${statusLabel}</span>
+                        </div>
+                    </div>
+                `;
+                nodesContainer.appendChild(nodeDiv);
+            });
+
+            applyPanZoomTransform();
+        }
+
+        function selectSkillNode(nodeId) {
+            const nodeData = skillTreeStructure.nodes[nodeId];
+            if (!nodeData) return;
+
+            zoomScale = 1.3;
+            const viewport = document.getElementById("tree-viewport-area");
+            if (viewport) {
+                const vWidth = viewport.clientWidth;
+                const vHeight = viewport.clientHeight;
+                panX = ((vWidth - 170) / 2) - (nodeData.x * zoomScale);
+                panY = (vHeight / 2) - (nodeData.y * zoomScale);
+            }
+
+            applyPanZoomTransform();
+            showSkillDetails(nodeId);
+        }
+
+        function showSkillDetails(nodeId) {
+            currentlySelectedNode = nodeId;
+            const nodeData = skillTreeStructure.nodes[nodeId];
+            if (!nodeData) return;
+            
+            const isUnlocked = !!(globalData.skillsUnlocked && globalData.skillsUnlocked[nodeId]);
+            const panel = document.getElementById("skill-details-side");
+            const content = document.getElementById("skill-details-content");
+            if (!panel || !content) return;
+
+            const labels = translations[currentLang] || translations["ro"];
+            const translatedName = labels["node_" + nodeId] || nodeData.name;
+            const statusLabel = isUnlocked ? labels.node_unlocked : labels.node_locked;
+
+            content.innerHTML = `
+                <div style="text-align: center; margin-top: 10px;">
+                    <div style="font-size: 50px; margin-bottom: 12px; filter: drop-shadow(0 0 10px var(--electro-purple));">${nodeData.icon}</div>
+                    <h2 style="font-family: 'Orbitron', sans-serif; color: #fff; margin: 0 0 5px 0; font-size: 19px;">${translatedName}</h2>
+                    <p style="color: ${isUnlocked ? 'var(--electro-purple)' : 'var(--text-dim)'}; font-weight: bold; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0;">
+                        [ ${statusLabel} ]
+                    </p>
+                </div>
+                <hr style="border: 0; border-top: 1px solid rgba(138, 43, 226, 0.3); margin: 25px 0;">
+                <p style="font-size: 14px; line-height: 1.6; color: #d0cce0; font-family: 'Courier Prime', monospace;">
+                    ${getNodeDescription(nodeId)}
+                </p>
+                <div style="margin-top: 40px; text-align: center;">
+                    <button onclick="toggleNodeFromMenu('${nodeId}')" class="custom-btn" style="width: 100%; padding: 12px; margin: 0; box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);">
+                        ${isUnlocked ? (currentLang === 'ro' ? 'DEZACTIVEAZĂ' : 'DEACTIVATE') : (currentLang === 'ro' ? 'DEBLOCHEAZĂ' : 'UNLOCK')}
+                    </button>
+                </div>
+            `;
+            panel.classList.add("open");
+        }
+
+        function closeSkillDetails() {
+            const panel = document.getElementById("skill-details-side");
+            if (panel) panel.classList.remove("open");
+            currentlySelectedNode = null;
+        }
+
+        function toggleNodeFromMenu(nodeId) {
+            if (nodeId === "core") return; 
+            if (!globalData.skillsUnlocked) globalData.skillsUnlocked = { core: true };
+            globalData.skillsUnlocked[nodeId] = !globalData.skillsUnlocked[nodeId];
+            if (docRef) {
+                docRef.set(globalData).then(() => {
+                    showSkillDetails(nodeId);
+                }).catch(err => console.error(err));
+            }
+        }
+
+        function getNodeDescription(nodeId) {
+            const descriptions = {
+                ro: {
+                    core: "Nucleul central al sistemului tău OS. Reprezintă conexiunea principală cu baza de date Cloud și distribuția de energie Electro corporativă.",
+                    coding: "Abilitatea avansată de a structura și dezvolta algoritmi complecși. Crește exponențial eficiența în rezolvarea task-urilor tehnice.",
+                    gaming: "Reflexe sporite, analiză tactică în timp real și coordonare neuronală superioară în timpul sesiunilor intense de gameplay.",
+                    fitness: "Rezistență fizică și mentală superioară. Condiția optimă de bază necesară pentru a susține performanța ridicată pe termen lung.",
+                    ai_mastery: "Integrarea completă a rețelelor neurale artificiale în workflow-ul zilnic. Automatizare la nivel de expert.",
+                    esports: "Strategii competitive avansate de gaming și control absolut al stării de spirit sub presiune maximă.",
+                    discipline: "Control total asupra atenției și focusului tău. Elimină complet distragerile inutile pentru o productivitate maximă.",
+                    apex_god: "Nivelul suprem de control al vieții și carierei. Toate sectoarele rulează la randament maxim. Statut de Overlord deblocat."
+                },
+                en: {
+                    core: "The central core of your OS system. Represents the primary connection to the Cloud database and corporate Electro energy routing.",
+                    coding: "Advanced capability to structure and develop complex algorithms. Exponentially increases efficiency in handling technical tasks.",
+                    gaming: "Enhanced reflexes, real-time tactical analysis, and superior neural coordination during intense gameplay sessions.",
+                    fitness: "Superior physical and mental stamina. The optimal foundation required to sustain high-level performance over time.",
+                    ai_mastery: "Full integration of artificial neural networks into daily workflows. Expert-level workflow automation.",
+                    esports: "Advanced competitive gaming blueprints and absolute emotional control under peak pressure environments.",
+                    discipline: "Total mastery over attention and mental focus. Complete elimination of digital friction for ultimate productivity.",
+                    apex_god: "The apex tier of life and core operations management. All sectors active. Overlord server profile fully deployed."
+                }
+            };
+            const lang = descriptions[currentLang] ? currentLang : 'en';
+            return descriptions[lang][nodeId] || "Accessing encrypted mainframe data...";
+        }
+
+        function exitSkillTree() {
+            closeSkillDetails();
+            const homeBtn = document.querySelector('.menu-btn');
+            switchPage('home', homeBtn);
+        }
+
+        function setupZoomPanEngine() {
+            const viewport = document.getElementById("tree-viewport-area");
+            if (!viewport) return;
+
+            viewport.addEventListener("wheel", (e) => {
+                e.preventDefault();
+                const zoomFactor = 0.05;
+                zoomScale = e.deltaY < 0 ? Math.min(zoomScale + zoomFactor, 2.0) : Math.max(zoomScale - zoomFactor, 0.4);
+                applyPanZoomTransform();
+            }, { passive: false });
+
+            viewport.addEventListener("mousedown", (e) => {
+                isDragging = true;
+                startX = e.clientX - panX;
+                startY = e.clientY - panY;
+            });
+
+            window.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                panX = e.clientX - startX;
+                panY = e.clientY - startY;
+                applyPanZoomTransform();
+            });
+
+            window.addEventListener("mouseup", () => { isDragging = false; });
+            
+            viewport.addEventListener("touchstart", (e) => {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX - panX;
+                    startY = e.touches[0].clientY - panY;
+                }
+            });
+            viewport.addEventListener("touchmove", (e) => {
+                if (!isDragging || e.touches.length !== 1) return;
+                panX = e.touches[0].clientX - startX;
+                panY = e.touches[0].clientY - startY;
+                applyPanZoomTransform();
+            });
+            viewport.addEventListener("touchend", () => { isDragging = false; });
+        }
+
+        function adjustZoom(amount) {
+            zoomScale = Math.min(Math.max(zoomScale + amount, 0.4), 2.0);
+            applyPanZoomTransform();
+        }
+
+        function resetZoomAndPan() {
+            zoomScale = 0.85; panX = 80; panY = 20;
+            applyPanZoomTransform();
+        }
+
+        function applyPanZoomTransform() {
+            const canvas = document.getElementById("tree-canvas-board");
+            if (canvas) canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`;
+        }
+
+        function createElectroParticles() {
+            const bg = document.getElementById("electro-particles-bg");
+            if (!bg) return;
+            setInterval(() => {
+                const skPage = document.getElementById("skills");
+                if (!skPage || !skPage.classList.contains("active")) return;
+                
+                const particle = document.createElement("div");
+                particle.className = "sparkle-particle";
+                particle.style.left = Math.random() * 100 + "%";
+                particle.style.bottom = "0px";
+                
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + "px";
+                particle.style.height = size + "px";
+                particle.style.animationDuration = (Math.random() * 4 + 4) + "s";
+                
+                bg.appendChild(particle);
+                setTimeout(() => { particle.remove(); }, 7000);
+            }, 350);
+        }
+
+        function changeLanguage(lang) {
+            if (!translations[lang]) lang = "ro";
+            currentLang = lang;
+            localStorage.setItem("hqLanguage", lang);
+            
+            document.querySelectorAll('.change-lang-matrix').forEach(select => select.value = lang);
+            
+            const labels = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (labels && labels[key]) el.innerText = labels[key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (labels && labels[key]) el.setAttribute('placeholder', labels[key]);
+            });
+            
+            calculateProgress();
+            displayEntries();
+            drawSkillTree();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeEl = document.getElementById('live-time');
+            const dateEl = document.getElementById('live-date');
+            if(timeEl) timeEl.innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            try { if(dateEl) dateEl.innerText = now.toLocaleDateString(langLocales[currentLang] || 'ro-RO', options); } catch(e) {}
+        }
+
+        function toggleSidebar() {
+            const sb = document.getElementById("my-sidebar");
+            if(sb) sb.classList.toggle("collapsed");
+            document.body.classList.toggle("menu-collapsed");
+        }
+
+        function toggleJournalDrawer(open) {
+            const jd = document.getElementById("journal-drawer");
+            if(jd) jd.classList.toggle("open", open);
+        }
+
+        function login() {
+            const passInp = document.getElementById("pass-input");
+            if(passInp && passInp.value.trim() === PAROLA) {
+                const logScr = document.getElementById("login-screen");
+                const intScr = document.getElementById("intro-screen");
+                if(logScr) logScr.classList.add("hidden");
+                if(intScr) intScr.classList.remove("hidden");
+                listenToCloud(); 
+                window.addEventListener('keydown', handleIntroKeys);
+            } else {
+                const errEl = document.getElementById("error");
+                const labels = translations[currentLang] || translations["ro"];
+                if(errEl) errEl.innerText = labels.loginError || "Eroare";
+            }
+        }
+
+        function enterHQ() {
+            const intScr = document.getElementById("intro-screen");
+            const hqInt = document.getElementById("hq-interface");
+            if(intScr) intScr.classList.add("hidden");
+            if(hqInt) hqInt.classList.remove("hidden");
+            window.removeEventListener('keydown', handleIntroKeys);
+            setupZoomPanEngine();
+            createElectroParticles();
+        }
+
+        function handleIntroKeys(e) { if (e.key === " " || e.key === "Enter") enterHQ(); }
+
+        function switchPage(pageId, btn) {
+            toggleJournalDrawer(false);
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId);
+            if(targetPage) targetPage.classList.add('active');
+            if (btn) btn.classList.add('active');
+            if (window.innerWidth <= 768) toggleSidebar();
+            
+            const genshinContainer = document.querySelector(".genshin-container");
+            if (pageId === 'skills') {
+                if (genshinContainer) genshinContainer.classList.add("fullscreen-tree");
+                setTimeout(drawSkillTree, 50);
+            } else {
+                if (genshinContainer) genshinContainer.classList.remove("fullscreen-tree");
+                closeSkillDetails();
+            }
+        }
+
+        function calculateProgress() {
+            const currentEl = document.getElementById("bs-current");
+            const goalEl = document.getElementById("bs-goal");
+            const barEl = document.getElementById("bs-progress-bar");
+            const txtEl = document.getElementById("bs-progress-text");
+            
+            if(!currentEl || !goalEl || !barEl || !txtEl) return;
+
+            const current = parseFloat(currentEl.value) || 0;
+            const goal = parseFloat(goalEl.value) || 1;
+            let percentage = Math.min(Math.max(Math.round((current / goal) * 100), 0), 100);
+            barEl.style.width = percentage + "%";
+            
+            const labels = translations[currentLang] || translations["ro"];
+            txtEl.innerText = percentage + "% " + (labels.bsProgressText || "");
+        }
+
+        function saveJournalEntry() {
+            const tx = document.getElementById("journal-input");
+            if (!tx || tx.value.trim() === "") return;
+            
+            globalData.journalEntries.unshift({
+                id: Date.now(),
+                date: new Date().toLocaleString(langLocales[currentLang] || 'ro-RO'),
+                text: tx.value
+            });
+
+            if(docRef) {
+                docRef.set(globalData).then(() => {
+                    tx.value = "";
+                    toggleJournalDrawer(true);
+                }).catch(err => console.error("Cloud Error:", err));
+            }
+        }
+
+        function displayEntries() {
+            const container = document.getElementById("entries-container");
+            if (!container) return;
+            const entries = globalData.journalEntries || [];
+            const labels = translations[currentLang] || translations["ro"];
+            
+            container.innerHTML = entries.length === 0 ? `<p style="color: var(--text-dim); text-align: center;">${labels.journalEmpty || ''}</p>` : "";
+            entries.forEach(entry => {
+                container.innerHTML += `
+                    <div class="journal-entry">
+                        <div class="entry-date">📅 ${entry.date}</div>
+                        <div style="white-space: pre-wrap; font-size: 14px; color: #fff;">${entry.text}</div>
+                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">${labels.journalDeleteBtn || 'Delete'}</button>
+                    </div>`;
+            });
+        }
+
+        function deleteEntry(id) {
+            const labels = translations[currentLang] || translations["ro"];
+            if (confirm(labels.journalConfirmDelete || "Stergi?")) {
+                globalData.journalEntries = globalData.journalEntries.filter(e => e.id !== id);
+                if(docRef) docRef.set(globalData);
+            }
+        }
+
+        window.onload = function() { 
+            changeLanguage(localStorage.getItem("hqLanguage") || "ro"); 
+            updateClock();
+            setInterval(updateClock, 1000);
+        };
+    </script>
+</body>
+</html>
