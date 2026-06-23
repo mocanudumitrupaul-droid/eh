@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     
-    <!-- Scripturi oficiale Firebase Cloud (v8 Namespaced pentru stabilitate pe mobil) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
@@ -283,7 +282,6 @@
 </head>
 <body>
 
-    <!-- LOGIN -->
     <div id="login-screen" class="login-overlay">
         <div class="login-box">
             <div class="login-lang-wrapper">
@@ -303,7 +301,6 @@
         </div>
     </div>
 
-    <!-- INTRO CINEMATIC -->
     <div id="intro-screen" class="intro-overlay hidden" onclick="enterHQ()">
         <video class="intro-video" id="bg-video" loop muted playsinline>
             <source src="intro.mp4" type="video/mp4">
@@ -314,7 +311,6 @@
         <button class="skip-btn" onclick="event.stopPropagation(); enterHQ();"><span data-i18n="skipBtn">Skip</span> ➔</button>
     </div>
 
-    <!-- INTERFAȚA HQ -->
     <div id="hq-interface" class="hidden">
         <button class="toggle-menu-btn" onclick="toggleSidebar()">☰ <span data-i18n="menuText">Meniu</span></button>
 
@@ -342,280 +338,8 @@
         </div>
 
         <div class="main-content">
-            <!-- ACASĂ -->
             <div id="home" class="page active">
                 <h1 data-i18n="homeTitle">🏠 Pagina Principală</h1>
                 <div class="card">
                     <h3 data-i18n="homeSubtitle">[ CORE_SYSTEM: ONLINE ]</h3>
-                    <p style="color: var(--accent-color); font-weight: bold;" data-i18n="homeWelcome">> Bun venit în baza ta centrală de operațiuni.</p>
-                    <p data-i18n="homeDesc">> Acesta este spațiul tău principal sincronizat automat în Cloud.</p>
-                </div>
-            </div>
-
-            <!-- PLANNER, SKILLS, QUESTS (Neschimbate) -->
-            <div id="planner" class="page"><h1 data-i18n="menuPlanner">📅 Planner</h1><div class="card"><p data-i18n="plannerDesc">> Planificare sector.</p></div></div>
-            <div id="skills" class="page"><h1 data-i18n="skillsTitle">🌳 Skill Tree</h1><div class="card"><p data-i18n="skillsDesc">> Abilități RPG.</p></div></div>
-            <div id="quests" class="page"><h1 data-i18n="questsTitle">📜 Quest Log</h1><div class="card"><p data-i18n="questsDesc">> Misiuni active.</p></div></div>
-
-            <!-- BLOXSTRIKE -->
-            <div id="bloxstrike" class="page">
-                <h1 data-i18n="bsTitle">🎮 BloxStrike Status</h1>
-                <div class="card">
-                    <h3 data-i18n="bsSubtitle">[ MONITORIZARE FINANCIARĂ JOC ]</h3>
-                    <div style="margin: 20px 0;">
-                        <label data-i18n="bsCurrentLabel">Credite Curente:</label>
-                        <input type="number" id="bs-current" class="credit-input" value="0" oninput="updateCloudData()">
-                        <label data-i18n="bsGoalLabel">Obiectiv (Goal):</label>
-                        <input type="number" id="bs-goal" class="credit-input" value="10000" oninput="updateCloudData()">
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" id="bs-progress-bar"></div>
-                        <div class="progress-text" id="bs-progress-text">0% Reușit</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- JURNAL -->
-            <div id="journal" class="page">
-                <h1 data-i18n="journalTitle">✍️ Jurnal Personal</h1>
-                <div class="card">
-                    <textarea id="journal-input" data-i18n-placeholder="journalPlaceholder" placeholder="Scrie o nouă filă de poveste..."></textarea>
-                    <div style="margin-top: 10px;">
-                        <button onclick="saveJournalEntry()" class="custom-btn" data-i18n="journalAddBtn">Adaugă în Jurnal</button>
-                        <button onclick="toggleJournalDrawer(true)" class="custom-btn sec-btn" data-i18n="journalDrawerBtn">📁 Deschide Sertar</button>
-                    </div>
-                </div>
-
-                <!-- SERTARUL CU AMINTIRI -->
-                <div id="journal-drawer" class="journal-drawer">
-                    <div class="drawer-header">
-                        <h3 style="margin: 0; color: var(--accent-color);" data-i18n="journalDrawerTitle">🗄️ Sertar cu Amintiri</h3>
-                        <button onclick="toggleJournalDrawer(false)" class="custom-btn sec-btn" style="margin: 0; padding: 5px 12px;" data-i18n="journalCloseDrawer">Închide</button>
-                    </div>
-                    <div class="journal-list" id="entries-container"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDxfaSHjHfyLUAJiKJSYgo37QPTo5DtyIs",
-    authDomain: "hq-personal-cae00.firebaseapp.com",
-    projectId: "hq-personal-cae00",
-    storageBucket: "hq-personal-cae00.firebasestorage.app",
-    messagingSenderId: "961330194480",
-    appId: "1:961330194480:web:61f8be623d5d019f3665f5"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
-        
-        // Inițializare Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const docRef = db.collection("mainframe").doc("central_hq");
-
-        const PAROLA = "SecretulMeu2026";
-        let currentLang = "ro";
-        let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000 };
-
-        const translations = {
-            ro: {
-                loginTitle: "Sistem de Securitate", loginPrompt: "Introdu cheia de acces:", loginPlaceholder: "Parolă...", loginBtn: "Deblochează", loginError: "Acces interzis.",
-                introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
-                menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
-                homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal sincronizat automat în Cloud.",
-                plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> Abilități RPG.", questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.",
-                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressText: "Finalizat",
-                journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Sertar gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
-                journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide"
-            },
-            en: {
-                loginTitle: "Security System", loginPrompt: "Enter access key:", loginPlaceholder: "Password...", loginBtn: "Unlock", loginError: "Access denied.",
-                introBlink: "PRESS ENTER / SPACE OR TOUCH THE BACKGROUND", skipBtn: "Skip", menuText: "Menu", sidebarHeader: "⚔️ Personal HQ",
-                menuHome: "🏠 Main Base", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
-                homeTitle: "🏠 Main Page", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Welcome to your central operations base.", homeDesc: "> This is your main hub layout synced perfectly via Cloud Database.",
-                plannerDesc: "> Tactical sector.", skillsTitle: "🌳 Skill Tree", skillsDesc: "> RPG layout.", questsTitle: "📜 Quest Log", questsDesc: "> Active targets.",
-                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ IN-GAME FINANCIAL TRACKER ]", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Target Goal:", bsProgressText: "Completed",
-                journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new memory entry...", journalAddBtn: "Add to Database", journalEmpty: "Drawer empty.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
-                journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close"
-            },
-            fr: {
-                loginTitle: "Système de Sécurité", loginPrompt: "Entrez la clé:", loginPlaceholder: "Mot de passe...", loginBtn: "Déverrouiller", loginError: "Refusé.",
-                introBlink: "APPUYEZ SUR ENTRÉE OU TOUCHEZ L'ÉCRAN", skipBtn: "Passer", menuText: "Menu", sidebarHeader: "⚔️ QG Personnel",
-                menuHome: "🏠 Accueil", menuPlanner: "📅 Agenda", menuSkills: "🌳 Talents", menuQuests: "📜 Quêtes", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
-                homeTitle: "🏠 QG Central", homeSubtitle: "[ SYSTEME: EN LIGNE ]", homeWelcome: "> Système synchronisé en Cloud.", homeDesc: "> Vos données se mettent à jour automatiquement sur tous vos écrans.",
-                plannerDesc: "> Agenda.", skillsTitle: "🌳 Talents", skillsDesc: "> Progression RPG.", questsTitle: "📜 Quêtes", questsDesc: "> Objectifs actifs.",
-                bsTitle: "🎮 Statut BloxStrike", bsSubtitle: "[ SUIVI DU JEU ]", bsCurrentLabel: "Crédits:", bsGoalLabel: "Objectif:", bsProgressText: "Terminé",
-                journalTitle: "✍️ Journal Intime", journalPlaceholder: "Écrire une page...", journalAddBtn: "Consigner", journalEmpty: "Tiroir vide.", journalDeleteBtn: "Effacer", journalConfirmDelete: "Supprimer ?",
-                journalDrawerBtn: "📁 Ouvrir le Tiroir", journalDrawerTitle: "🗄️ Tiroir Souvenirs", journalCloseDrawer: "Fermer"
-            },
-            ja: {
-                loginTitle: "セキュリティ", loginPrompt: "キーを入力:", loginPlaceholder: "パスワード...", loginBtn: "解除", loginError: "拒否されました。",
-                introBlink: "画面をタップするかENTERを押してください", skipBtn: "スキップ", menuText: "メニュー", sidebarHeader: "⚔️ 個人本部",
-                menuHome: "🏠 メイン基地", menuPlanner: "📅 計画書", menuSkills: "🌳 スキルツリー", menuQuests: "📜 クエストログ", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ 日記帳",
-                homeTitle: "🏠 メイン画面", homeSubtitle: "[ オンライン ]", homeWelcome: "> クラウド同期が有効です。", homeDesc: "> PCとスマホ間でデータはリアルタイムに自動同期されます。",
-                plannerDesc: "> 計画。", skillsTitle: "🌳 スキル", skillsDesc: "> RPGシステム。", questsTitle: "📜 クエスト", questsDesc: "> アクティブ任務。",
-                bsTitle: "🎮 BloxStrike", bsSubtitle: "[ 財務モニター ]", bsCurrentLabel: "現在:", bsGoalLabel: "目標:", bsProgressText: "完了",
-                journalTitle: "✍️ 日記帳", journalPlaceholder: "書き留める...", journalAddBtn: "追加", journalEmpty: "空です。", journalDeleteBtn: "削除", journalConfirmDelete: "消去しますか？",
-                journalDrawerBtn: "📁 引き出しを開ける", journalDrawerTitle: "🗄️ 記憶の引き出し", journalCloseDrawer: "閉じる"
-            }
-        };
-
-        const langLocales = { ro: 'ro-RO', en: 'en-US', fr: 'fr-FR', ja: 'ja-JP' };
-
-        // SINCRONIZARE LIVE: Ascultă cloud-ul și descarcă modificările instantaneu
-        function listenToCloud() {
-            docRef.onSnapshot((doc) => {
-                if (doc.exists()) {
-                    globalData = doc.data();
-                    if (!globalData.journalEntries) globalData.journalEntries = [];
-                    
-                    // Actualizează inputurile de BloxStrike dacă utilizatorul nu scrie activ în ele
-                    if(document.activeElement !== document.getElementById("bs-current")) {
-                        document.getElementById("bs-current").value = globalData.bsCurrent || 0;
-                    }
-                    if(document.activeElement !== document.getElementById("bs-goal")) {
-                        document.getElementById("bs-goal").value = globalData.bsGoal || 10000;
-                    }
-                    
-                    calculateProgress();
-                    displayEntries();
-                }
-            });
-        }
-
-        // SALVARE ÎN CLOUD
-        function updateCloudData() {
-            globalData.bsCurrent = parseFloat(document.getElementById("bs-current").value) || 0;
-            globalData.bsGoal = parseFloat(document.getElementById("bs-goal").value) || 10000;
-            
-            docRef.set(globalData).catch(err => console.error("Eroare cloud write: ", err));
-            calculateProgress();
-        }
-
-        function changeLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem("hqLanguage", lang);
-            document.querySelectorAll('.change-lang-matrix').forEach(select => select.value = lang);
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) el.innerText = translations[lang][key];
-            });
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-i18n-placeholder');
-                if (translations[lang] && translations[lang][key]) el.setAttribute('placeholder', translations[lang][key]);
-            });
-            calculateProgress();
-            displayEntries();
-        }
-
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('live-time').innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            try { document.getElementById('live-date').innerText = now.toLocaleDateString(langLocales[currentLang], options); } catch(e) {}
-        }
-
-        function toggleSidebar() {
-            document.getElementById("my-sidebar").classList.toggle("collapsed");
-            document.body.classList.toggle("menu-collapsed");
-        }
-
-        function toggleJournalDrawer(open) {
-            document.getElementById("journal-drawer").classList.toggle("open", open);
-        }
-
-        function login() {
-            if(document.getElementById("pass-input").value.trim() === PAROLA) {
-                document.getElementById("login-screen").classList.add("hidden");
-                document.getElementById("intro-screen").classList.remove("hidden");
-                const video = document.getElementById("bg-video");
-                if(video) video.play().catch(() => {});
-                listenToCloud(); // Pornește sincronizarea automată la autentificare
-                window.addEventListener('keydown', handleIntroKeys);
-            } else {
-                document.getElementById("error").innerText = translations[currentLang].loginError;
-            }
-        }
-
-        function enterHQ() {
-            if(document.getElementById("bg-video")) document.getElementById("bg-video").pause();
-            document.getElementById("intro-screen").classList.add("hidden");
-            document.getElementById("hq-interface").classList.remove("hidden");
-            window.removeEventListener('keydown', handleIntroKeys);
-        }
-
-        function handleIntroKeys(e) { if (e.key === " " || e.key === "Enter") enterHQ(); }
-
-        function switchPage(pageId, btn) {
-            toggleJournalDrawer(false);
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            btn.classList.add('active');
-            if (window.innerWidth <= 768) toggleSidebar();
-        }
-
-        function calculateProgress() {
-            const current = parseFloat(document.getElementById("bs-current").value) || 0;
-            const goal = parseFloat(document.getElementById("bs-goal").value) || 1;
-            let percentage = Math.min(Math.max(Math.round((current / goal) * 100), 0), 100);
-            document.getElementById("bs-progress-bar").style.width = percentage + "%";
-            document.getElementById("bs-progress-text").innerText = percentage + "% " + translations[currentLang].bsProgressText;
-        }
-
-        function saveJournalEntry() {
-            const tx = document.getElementById("journal-input");
-            if (tx.value.trim() === "") return;
-            
-            globalData.journalEntries.unshift({
-                id: Date.now(),
-                date: new Date().toLocaleString(langLocales[currentLang]),
-                text: tx.value
-            });
-
-            docRef.set(globalData).then(() => {
-                tx.value = "";
-                toggleJournalDrawer(true); // Deschide sertarul
-            }).catch(err => alert("Cloud Sync Error: " + err));
-        }
-
-        function displayEntries() {
-            const container = document.getElementById("entries-container");
-            if (!container) return;
-            const entries = globalData.journalEntries || [];
-            container.innerHTML = entries.length === 0 ? `<p style="color: var(--text-dim); text-align: center;">${translations[currentLang].journalEmpty}</p>` : "";
-            entries.forEach(entry => {
-                container.innerHTML += `
-                    <div class="journal-entry">
-                        <div class="entry-date">📅 ${entry.date}</div>
-                        <div style="white-space: pre-wrap; font-size: 14px; color: #fff;">${entry.text}</div>
-                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">${translations[currentLang].journalDeleteBtn}</button>
-                    </div>`;
-            });
-        }
-
-        function deleteEntry(id) {
-            if (confirm(translations[currentLang].journalConfirmDelete)) {
-                globalData.journalEntries = globalData.journalEntries.filter(e => e.id !== id);
-                docRef.set(globalData);
-            }
-        }
-
-        window.onload = function() { 
-            changeLanguage(localStorage.getItem("hqLanguage") || "ro"); 
-            updateClock();
-            setInterval(updateClock, 1000);
-        };
-    </script>
-</body>
-</html>
+                    <p style="color: var(--accent-color); font-weight: bold;" data-i18n="homeWelcome">> Bun venit în
