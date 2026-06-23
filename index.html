@@ -6,9 +6,6 @@
     <title>HQ Personal - Mainframe</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Courier+Prime&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
     <style>
         :root {
             --bg-dark: #0a0813;
@@ -42,6 +39,7 @@
             background: var(--sidebar-bg); border: 2px solid var(--electro-purple);
             padding: 40px; border-radius: 8px; text-align: center;
             box-shadow: 0 0 30px var(--border-glow); width: 90%; max-width: 400px;
+            color: var(--text-main); z-index: 10000;
         }
         .secure-box h2 { font-family: 'Orbitron', sans-serif; margin-bottom: 20px; color: #fff; }
         .matrix-input {
@@ -180,10 +178,4 @@
             transition: right 0.4s cubic-bezier(0.1, 0.9, 0.2, 1); padding: 25px; backdrop-filter: blur(15px); pointer-events: auto;
         }
         .skill-details-side.open { right: 20px; }
-        .close-details-btn { position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; }
-
-        .tree-ui-controls { position: absolute; bottom: 20px; left: 20px; z-index: 10; display: flex; gap: 8px; pointer-events: auto; }
-        .ui-round-btn { width: 38px; height: 38px; border-radius: 5px; background: rgba(15, 12, 27, 0.85); border: 1px solid rgba(138, 43, 226, 0.4); color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .ui-round-btn:hover { background: var(--electro-purple); }
-
-        .electro-particles-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events
+        .close-details-btn { position: absolute;
