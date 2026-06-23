@@ -17,6 +17,7 @@
             --accent-color: #8a2be2;
             --text-color: #f0f0f5;
             --text-dim: #707085;
+            --electro-purple: #b040ff;
         }
 
         body {
@@ -185,6 +186,7 @@
             margin-top: 60px;
             overflow-y: auto;
             transition: all 0.3s ease;
+            position: relative;
         }
         
         .sidebar.collapsed + .main-content {
@@ -192,7 +194,7 @@
             padding-top: 40px;
         }
 
-        .page { display: none; }
+        .page { display: none; height: 100%; }
         .page.active { display: block; }
 
         @media (max-width: 768px) {
@@ -238,68 +240,217 @@
         .card { background-color: var(--panel-color); padding: 24px; border-radius: 10px; border: 1px solid #1a1a26; margin-bottom: 20px; }
         textarea { width: 100%; height: 120px; background-color: #09090d; color: white; border: 1px solid #2a2a3a; border-radius: 8px; padding: 15px; box-sizing: border-box; font-size: 16px; font-family: 'Courier Prime', monospace; resize: vertical; }
         
-        /* SKILL TREE STYLES */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
+        /* ==========================================================
+           GENSHIN IMPACT STYLE SKILL TREE & ANIMS
+           ========================================================== */
+        .genshin-container {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 180px);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            background: #06030d;
         }
-        .skill-card {
-            background: #09090d;
-            border: 1px solid #1a1a26;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            transition: 0.3s;
+
+        /* FUNDAL ELECTROMAGNETIC ENERGETIC IN MISCARE */
+        .electro-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1c0a35 0%, #06030f 100%);
+            z-index: 1;
+            overflow: hidden;
         }
-        .skill-card:hover {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 12px rgba(138, 43, 226, 0.2);
+        .electro-clouds {
+            position: absolute;
+            width: 200%; height: 200%;
+            top: -50%; left: -50%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(138, 43, 226, 0.22) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(176, 64, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 40% 80%, rgba(75, 0, 130, 0.25) 0%, transparent 50%);
+            filter: blur(30px);
+            animation: electroFlow 22s ease-in-out infinite alternate;
         }
-        .skill-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        @keyframes electroFlow {
+            0% { transform: scale(1) rotate(0deg) translate(0, 0); }
+            50% { transform: scale(1.15) rotate(5deg) translate(-3%, 4%); }
+            100% { transform: scale(1) rotate(-5deg) translate(3%, -2%); }
         }
-        .skill-level-dots {
+
+        /* VIEWPORT PENTRU ZOOM SI PAN */
+        .tree-viewport {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2;
+            cursor: grab;
+            overflow: hidden;
+        }
+        .tree-viewport:active { cursor: grabbing; }
+
+        /* PANZA UNDE DECORAM SKILLURILE SI LINIILE */
+        .tree-canvas {
+            position: absolute;
+            width: 1200px;
+            height: 900px;
+            top: 0; left: 0;
+            transform-origin: 0 0;
+            transition: transform 0.05s linear;
+        }
+
+        /* CONTAINER SECRETE SVG PENTRU LINII CORECTE */
+        .tree-svg-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+        }
+        .tree-line {
+            stroke-width: 3;
+            transition: stroke 0.4s ease, filter 0.4s ease;
+        }
+        .tree-line.locked {
+            stroke: #252430;
+            stroke-dasharray: 6 4;
+        }
+        .tree-line.unlocked {
+            stroke: var(--electro-purple);
+            filter: drop-shadow(0 0 6px var(--electro-purple)) drop-shadow(0 0 2px #fff);
+        }
+
+        /* NODURILE IN FORMA DE ROMB (GENSHIN STYLE) */
+        .skill-node {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            z-index: 10;
+            transform: translate(-40px, -40px); /* Aliniere perfecta pe centru */
+        }
+        .rhombus-outer {
+            width: 100%;
+            height: 100%;
+            transform: rotate(45deg);
+            background: rgba(15, 10, 25, 0.85);
+            border: 2px solid #3c354a;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.6);
             display: flex;
             justify-content: center;
-            gap: 6px;
-            margin: 15px 0;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #202030;
-            border: 1px solid #2a2a3a;
-            transition: 0.3s;
+        .rhombus-outer:hover {
+            border-color: #d6a6ff;
+            transform: rotate(45deg) scale(1.08);
+            box-shadow: 0 0 15px rgba(176, 64, 255, 0.4);
         }
-        .dot.active {
-            background: var(--accent-color);
-            box-shadow: 0 0 10px var(--accent-color);
-            border-color: #a040ff;
+        
+        /* Nod Deblocat Activat */
+        .skill-node.unlocked .rhombus-outer {
+            border-color: var(--electro-purple);
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.4) 0%, rgba(18, 9, 36, 0.9) 100%);
+            box-shadow: 0 0 20px rgba(176, 64, 255, 0.7), inset 0 0 10px rgba(176, 64, 255, 0.5);
+            animation: pulseGlow 3s ease-in-out infinite alternate;
         }
-        .skill-btn {
-            background: #111118;
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(176, 64, 255, 0.6); border-color: var(--electro-purple); }
+            100% { box-shadow: 0 0 25px rgba(176, 64, 255, 0.9), 0 0 5px #fff; border-color: #e5b3ff; }
+        }
+
+        /* Continutul intors la loc ca sa nu stea textul stramb */
+        .rhombus-inner {
+            transform: rotate(-45deg);
+            text-align: center;
+            color: #d0cce0;
+            font-size: 11px;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            width: 85%;
+            user-select: none;
+        }
+        .skill-node.unlocked .rhombus-inner {
+            color: #ffffff;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+        .node-icon {
+            font-size: 18px;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .node-status-text {
+            font-size: 8px;
+            display: block;
+            color: var(--text-dim);
+            margin-top: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .skill-node.unlocked .node-status-text {
+            color: #d6a6ff;
+        }
+
+        /* CONTROALE HUD PENTRU ZOOM MANUAL */
+        .zoom-hud-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .hud-btn {
+            width: 38px;
+            height: 38px;
+            background: rgba(15, 10, 25, 0.85);
             border: 1px solid rgba(138, 43, 226, 0.5);
             color: white;
-            padding: 6px 14px;
-            font-size: 12px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-family: 'Courier Prime', monospace;
-            transition: 0.3s;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
-        .skill-btn:hover:not(:disabled) {
+        .hud-btn:hover {
             background: var(--accent-color);
-            box-shadow: 0 0 8px var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
         }
-        .skill-btn:disabled {
-            border-color: #2a2a3a;
-            color: var(--text-dim);
-            cursor: not-allowed;
+
+        /* PANOU DETALII REPEDE IN STIL CONSTELLATION */
+        .constellation-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 5;
+            background: rgba(11, 7, 20, 0.85);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            padding: 15px 20px;
+            border-radius: 8px;
+            max-width: 260px;
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        /* PARTICOLE ELECTRICE IN FUNDAL */
+        .sparkle-particle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 0 8px #b040ff, 0 0 2px #fff;
+            animation: floatUpSpark 6s linear infinite;
+        }
+        @keyframes floatUpSpark {
+            0% { transform: translateY(100%) scale(0); opacity: 0; }
+            20% { opacity: 0.7; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
         }
 
         /* SERTARUL JURNALULUI */
@@ -437,12 +588,30 @@
 
             <div id="skills" class="page">
                 <h1 data-i18n="skillsTitle">🌳 Skill Tree</h1>
-                <div class="card">
-                    <h3 data-i18n="skillsSubtitle">[ DEZVOLTARE CARACTER ]</h3>
-                    <p data-i18n="skillsDesc">> Alocă puncte și monitorizează-ți evoluția în timp real.</p>
-                    
-                    <div class="skills-grid" id="skills-container">
+                
+                <div class="genshin-container">
+                    <div class="constellation-panel">
+                        <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #fff;" data-i18n="skillsSubtitle">CONSTELLATION</h3>
+                        <p style="margin: 0; font-size: 10px; color: var(--electro-purple); letter-spacing: 1px;" data-i18n="skillsDesc">ELEMENT: ELECTRO (OS)</p>
+                    </div>
+
+                    <div class="zoom-hud-controls">
+                        <button class="hud-btn" onclick="adjustZoom(0.15)">+</button>
+                        <button class="hud-btn" onclick="adjustZoom(-0.15)">-</button>
+                        <button class="hud-btn" style="font-size: 11px;" onclick="resetZoomAndPan()">Reset</button>
+                    </div>
+
+                    <div class="electro-bg" id="electro-particles-bg">
+                        <div class="electro-clouds"></div>
+                    </div>
+
+                    <div class="tree-viewport" id="tree-viewport-area">
+                        <div class="tree-canvas" id="tree-canvas-board">
+                            <svg class="tree-svg-container" id="tree-svg-canvas"></svg>
+                            
+                            <div id="nodes-layer"></div>
                         </div>
+                    </div>
                 </div>
             </div>
 
@@ -506,7 +675,39 @@
 
         const PAROLA = "SecretulMeu2026";
         let currentLang = "ro";
-        let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000, skills: { coding: 0, gaming: 0, fitness: 0, discipline: 0 } };
+        let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000, skillsUnlocked: { core: true } };
+
+        // CONFIGURAȚIA HĂRȚII CONSTELEȚIEI (COORDONATE ABSOLUTE PE CANVAS-UL DE 1200x900)
+        const skillTreeStructure = {
+            nodes: {
+                core: { name: "Core Node", icon: "⚛️", x: 600, y: 120 },
+                coding: { name: "Coding", icon: "💻", x: 400, y: 320 },
+                gaming: { name: "Gaming", icon: "🎮", x: 600, y: 320 },
+                fitness: { name: "Fitness", icon: "🏃‍♂️", x: 800, y: 320 },
+                ai_mastery: { name: "AI Sync", icon: "🤖", x: 300, y: 550 },
+                esports: { name: "Tactics", icon: "🎯", x: 600, y: 550 },
+                discipline: { name: "Mindset", icon: "🧠", x: 900, y: 550 },
+                apex_god: { name: "Overlord", icon: "👑", x: 600, y: 780 }
+            },
+            connections: [
+                { from: "core", to: "coding" },
+                { from: "core", to: "gaming" },
+                { from: "core", to: "fitness" },
+                { from: "coding", to: "ai_mastery" },
+                { from: "gaming", to: "esports" },
+                { from: "fitness", to: "discipline" },
+                { from: "ai_mastery", to: "apex_god" },
+                { from: "esports", to: "apex_god" },
+                { from: "discipline", to: "apex_god" }
+            ]
+        };
+
+        // VARIABILE COORDONARE MOTOR ZOOM & PAN
+        let zoomScale = 0.85;
+        let panX = 80;
+        let panY = 20;
+        let isDragging = false;
+        let startX, startY;
 
         const translations = {
             ro: {
@@ -514,48 +715,52 @@
                 introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
                 menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
                 homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal sincronizat automat în Cloud.",
-                plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "[ DEZVOLTARE CARACTER ]", skillsDesc: "> Alocă puncte și monitorizează-ți evoluția în timp real.",
-                questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.", lvlText: "Nivel", upgradeBtn: "Upgrade +", maxedText: "MAXIM",
-                skill_coding: "Programare 💻", skill_gaming: "Reflexe Gaming 🎮", skill_fitness: "Forță & Sănătate 🏃‍♂️", skill_discipline: "Disciplină / Focus 🧠",
+                plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
+                questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.",
                 bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressText: "Finalizat",
                 journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Sertar gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
-                journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide"
+                journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide",
+                node_unlocked: "Deblocat", node_locked: "Blocat",
+                node_core: "Nucleu ⚛️", node_coding: "Codare 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "Sincro AI 🤖", node_esports: "Tactică 🎯", node_discipline: "Mental 🧠", node_apex_god: "Overlord 👑"
             },
             en: {
                 loginTitle: "Security System", loginPrompt: "Enter access key:", loginPlaceholder: "Password...", loginBtn: "Unlock", loginError: "Access denied.",
                 introBlink: "PRESS ENTER / SPACE OR TOUCH THE BACKGROUND", skipBtn: "Skip", menuText: "Menu", sidebarHeader: "⚔️ Personal HQ",
                 menuHome: "🏠 Main Base", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
                 homeTitle: "🏠 Main Page", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Welcome to your central operations base.", homeDesc: "> This is your main hub layout synced perfectly via Cloud Database.",
-                plannerDesc: "> Tactical sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "[ CHARACTER DEVELOPMENT ]", skillsDesc: "> Allocate points and track your evolution in real time.",
-                questsTitle: "📜 Quest Log", questsDesc: "> Active targets.", lvlText: "Level", upgradeBtn: "Upgrade +", maxedText: "MAXED",
-                skill_coding: "Coding 💻", skill_gaming: "Gaming Reflexes 🎮", skill_fitness: "Strength & Health 🏃‍♂️", skill_discipline: "Discipline / Focus 🧠",
+                plannerDesc: "> Tactical sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
+                questsTitle: "📜 Quest Log", questsDesc: "> Active targets.",
                 bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ IN-GAME FINANCIAL TRACKER ]", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Target Goal:", bsProgressText: "Completed",
                 journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new memory entry...", journalAddBtn: "Add to Database", journalEmpty: "Drawer empty.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
-                journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close"
+                journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close",
+                node_unlocked: "Activated", node_locked: "Locked",
+                node_core: "Core ⚛️", node_coding: "Coding 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "AI Sync 🤖", node_esports: "Tactics 🎯", node_discipline: "Mindset 🧠", node_apex_god: "Overlord 👑"
             },
             fr: {
                 loginTitle: "Système de Sécurité", loginPrompt: "Entrez la clé:", loginPlaceholder: "Mot de passe...", loginBtn: "Déverrouiller", loginError: "Refusé.",
                 introBlink: "APPUYEZ SUR ENTRÉE OU TOUCHEZ L'ÉCRAN", skipBtn: "Passer", menuText: "Menu", sidebarHeader: "⚔️ QG Personnel",
                 menuHome: "🏠 Accueil", menuPlanner: "📅 Agenda", menuSkills: "🌳 Talents", menuQuests: "📜 Quêtes", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
                 homeTitle: "🏠 QG Central", homeSubtitle: "[ SYSTEME: EN LIGNE ]", homeWelcome: "> Système synchronisé en Cloud.", homeDesc: "> Vos données se mettent à jour automatiquement sur tous vos écrans.",
-                plannerDesc: "> Agenda.", skillsTitle: "🌳 Arbre de Talents", skillsSubtitle: "[ EVOLUTION DU PERSONNAGE ]", skillsDesc: "> Attribuez des points et suivez votre progression.",
-                questsTitle: "📜 Quêtes", questsDesc: "> Objectifs actifs.", lvlText: "Niveau", upgradeBtn: "Améliorer +", maxedText: "MAX",
-                skill_coding: "Codage 💻", skill_gaming: "Réflexes Gaming 🎮", skill_fitness: "Force & Santé 🏃‍♂️", skill_discipline: "Discipline / Focus 🧠",
+                plannerDesc: "> Agenda.", skillsTitle: "🌳 Arbre", skillsSubtitle: "CONSTELLATION", skillsDesc: "ÉLÉMENT: ÉLECTRO (OS)",
+                questsTitle: "📜 Quêtes", questsDesc: "> Objectifs actifs.",
                 bsTitle: "🎮 Statut BloxStrike", bsSubtitle: "[ SUIVI DU JEU ]", bsCurrentLabel: "Crédits:", bsGoalLabel: "Objectif:", bsProgressText: "Terminé",
                 journalTitle: "✍️ Journal Intime", journalPlaceholder: "Écrire une page...", journalAddBtn: "Consigner", journalEmpty: "Tiroir vide.", journalDeleteBtn: "Effacer", journalConfirmDelete: "Supprimer ?",
-                journalDrawerBtn: "📁 Ouvrir le Tiroir", journalDrawerTitle: "🗄️ Tiroir Souvenirs", journalCloseDrawer: "Fermer"
+                journalDrawerBtn: "📁 Ouvrir le Tiroir", journalDrawerTitle: "🗄️ Tiroir Souvenirs", journalCloseDrawer: "Fermer",
+                node_unlocked: "Activé", node_locked: "Bloqué",
+                node_core: "Noyau ⚛️", node_coding: "Code 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "Synchro AI 🤖", node_esports: "Tactique 🎯", node_discipline: "Mental 🧠", node_apex_god: "Overlord 👑"
             },
             ja: {
                 loginTitle: "セキュリティ", loginPrompt: "キーを入力:", loginPlaceholder: "パスワード...", loginBtn: "解除", loginError: "拒否されました。",
                 introBlink: "画面をタップするかENTERを押してください", skipBtn: "スキップ", menuText: "メニュー", sidebarHeader: "⚔️ 個人本部",
                 menuHome: "🏠 メイン基地", menuPlanner: "📅 計画書", menuSkills: "🌳 スキルツリー", menuQuests: "📜 クエストログ", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ 日記帳",
                 homeTitle: "🏠 メイン画面", homeSubtitle: "[ オンライン ]", homeWelcome: "> クラウド同期が有効です。", homeDesc: "> PC et スマホ間でデータはリアルタイムに自動同期されます。",
-                plannerDesc: "> 計画。", skillsTitle: "🌳 スキルツリー", skillsSubtitle: "[ キャラクター育成 ]", skillsDesc: "> ポイントを割り当て、リアルタイムで進化を追跡します。",
-                questsTitle: "📜 クエスト", questsDesc: "> アクティブ任務。", lvlText: "レベル", upgradeBtn: "強化 +", maxedText: "最大",
-                skill_coding: "コーディング 💻", skill_gaming: "ゲーム反射神経 🎮", skill_fitness: "体力・健康 🏃‍♂️", skill_discipline: "規律・集中 🧠",
+                plannerDesc: "> 計画。", skillsTitle: "🌳 スキルツリー", skillsSubtitle: "命ノ星座", skillsDesc: "元素タイプ: 雷 (OS)",
+                questsTitle: "📜 クエスト", questsDesc: "> アクティブ任務。",
                 bsTitle: "🎮 BloxStrike", bsSubtitle: "[ 財務モニター ]", bsCurrentLabel: "現在:", bsGoalLabel: "目標:", bsProgressText: "完了",
                 journalTitle: "✍️ 日記帳", journalPlaceholder: "書き留める...", journalAddBtn: "追加", journalEmpty: "空です。", journalDeleteBtn: "削除", journalConfirmDelete: "消去しますか？",
-                journalDrawerBtn: "📁 引き出しを開ける", journalDrawerTitle: "🗄️ 記憶の引き出し", journalCloseDrawer: "閉じる"
+                journalDrawerBtn: "📁 引き出しを開ける", journalDrawerTitle: "🗄️ 記憶の引き出し", journalCloseDrawer: "閉じる",
+                node_unlocked: "有効化済み", node_locked: "ロック中",
+                node_core: "コア ⚛️", node_coding: "開発 💻", node_gaming: "ゲーム 🎮", node_fitness: "体力 🏃‍♂️", node_ai_mastery: "AI同期 🤖", node_esports: "戦術 🎯", node_discipline: "精神 🧠", node_apex_god: "覇王 👑"
             }
         };
 
@@ -567,7 +772,7 @@
                 if (doc.exists()) {
                     globalData = doc.data();
                     if (!globalData.journalEntries) globalData.journalEntries = [];
-                    if (!globalData.skills) globalData.skills = { coding: 0, gaming: 0, fitness: 0, discipline: 0 };
+                    if (!globalData.skillsUnlocked) globalData.skillsUnlocked = { core: true };
                     
                     if(document.activeElement !== document.getElementById("bs-current")) {
                         document.getElementById("bs-current").value = globalData.bsCurrent || 0;
@@ -578,11 +783,10 @@
                     
                     calculateProgress();
                     displayEntries();
-                    renderSkills();
+                    drawSkillTree();
                 }
             }, (error) => {
                 console.error("Firebase Snapshot Error:", error);
-                alert("Eroare Cloud la citirea datelor: " + error.message);
             });
         }
 
@@ -591,20 +795,299 @@
             globalData.bsCurrent = parseFloat(document.getElementById("bs-current").value) || 0;
             globalData.bsGoal = parseFloat(document.getElementById("bs-goal").value) || 10000;
             
-            docRef.set(globalData).catch(err => alert("Eroare salvat Cloud: " + err.message));
+            docRef.set(globalData).catch(err => alert("Eroare: " + err.message));
             calculateProgress();
         }
 
-        function renderSkills() {
-            const container = document.getElementById("skills-container");
-            if (!container) return;
-            
-            const skillKeys = ["coding", "gaming", "fitness", "discipline"];
-            container.innerHTML = "";
+        // ==========================================================
+        // MOTOR DE REDARE GENSHIN SKILL TREE
+        // ==========================================================
+        function drawSkillTree() {
+            const nodesContainer = document.getElementById("nodes-layer");
+            const svgCanvas = document.getElementById("tree-svg-canvas");
+            if (!nodesContainer || !svgCanvas) return;
 
-            skillKeys.forEach(key => {
-                const currentLevel = globalData.skills[key] || 0;
-                const isMaxed = currentLevel >= 5;
+            nodesContainer.innerHTML = "";
+            svgCanvas.innerHTML = "";
+
+            const unlocked = globalData.skillsUnlocked || { core: true };
+
+            // 1. DESENARE LINII LASER CONEXIUNI
+            skillTreeStructure.connections.forEach(conn => {
+                const nodeFrom = skillTreeStructure.nodes[conn.from];
+                const nodeTo = skillTreeStructure.nodes[conn.to];
+                if (!nodeFrom || !nodeTo) return;
+
+                // Regula ta: Linia e mov stralucitor doar cand AMBELE noduri sunt deblocate!
+                const isLineActive = unlocked[conn.from] && unlocked[conn.to];
+
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", nodeFrom.x);
+                line.setAttribute("y1", nodeFrom.y);
+                line.setAttribute("x2", nodeTo.x);
+                line.setAttribute("y2", nodeTo.y);
+                line.setAttribute("class", `tree-line ${isLineActive ? 'unlocked' : 'locked'}`);
+                svgCanvas.appendChild(line);
+            });
+
+            // 2. GENERARE NODURI ROMBICE
+            Object.keys(skillTreeStructure.nodes).forEach(key => {
+                const nodeData = skillTreeStructure.nodes[key];
+                const isUnlocked = !!unlocked[key];
                 
-                let dotsHtml = "";
-                for (let i = 1;
+                const nodeDiv = document.createElement("div");
+                nodeDiv.className = `skill-node ${isUnlocked ? 'unlocked' : 'locked'}`;
+                nodeDiv.style.left = `${nodeData.x}px`;
+                nodeDiv.style.top = `${nodeData.y}px`;
+
+                const translatedName = translations[currentLang]["node_" + key] || nodeData.name;
+                const statusLabel = isUnlocked ? translations[currentLang].node_unlocked : translations[currentLang].node_locked;
+
+                nodeDiv.innerHTML = `
+                    <div class="rhombus-outer" onclick="toggleNodeActivation('${key}')">
+                        <div class="rhombus-inner">
+                            <span class="node-icon">${nodeData.icon}</span>
+                            <span>${translatedName.split(' ')[0]}</span>
+                            <span class="node-status-text">${statusLabel}</span>
+                        </div>
+                    </div>
+                `;
+                nodesContainer.appendChild(nodeDiv);
+            });
+
+            applyPanZoomTransform();
+        }
+
+        function toggleNodeActivation(nodeId) {
+            if (!globalData.skillsUnlocked) globalData.skillsUnlocked = { core: true };
+            
+            // Core este mereu deblocat permanent
+            if (nodeId === "core") return;
+
+            // Schimbare stare deblocat/blocat la click direct
+            globalData.skillsUnlocked[nodeId] = !globalData.skillsUnlocked[nodeId];
+            
+            if (docRef) {
+                docRef.set(globalData).catch(err => alert(err.message));
+            }
+        }
+
+        // ==========================================================
+        // MOTOR INTERACTIV DE DRAG / PAN ȘI ZOOM
+        // ==========================================================
+        function setupZoomPanEngine() {
+            const viewport = document.getElementById("tree-viewport-area");
+            if (!viewport) return;
+
+            // Zoom prin Scroll-ul mouse-ului
+            viewport.addEventListener("wheel", (e) => {
+                e.preventDefault();
+                const zoomFactor = 0.05;
+                if (e.deltaY < 0) {
+                    zoomScale = Math.min(zoomScale + zoomFactor, 2.0);
+                } else {
+                    zoomScale = Math.max(zoomScale - zoomFactor, 0.4);
+                }
+                applyPanZoomTransform();
+            }, { passive: false });
+
+            // Drag navigation (Click stânga și trage tabla)
+            viewport.addEventListener("mousedown", (e) => {
+                isDragging = true;
+                startX = e.clientX - panX;
+                startY = e.clientY - panY;
+            });
+
+            window.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                panX = e.clientX - startX;
+                panY = e.clientY - startY;
+                applyPanZoomTransform();
+            });
+
+            window.addEventListener("mouseup", () => { isDragging = false; });
+            
+            // Suport pentru ecrane tactile / telefoane mobil drag simpel
+            viewport.addEventListener("touchstart", (e) => {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX - panX;
+                    startY = e.touches[0].clientY - panY;
+                }
+            });
+            viewport.addEventListener("touchmove", (e) => {
+                if (!isDragging || e.touches.length !== 1) return;
+                panX = e.touches[0].clientX - startX;
+                panY = e.touches[0].clientY - startY;
+                applyPanZoomTransform();
+            });
+            viewport.addEventListener("touchend", () => { isDragging = false; });
+        }
+
+        function adjustZoom(amount) {
+            zoomScale = Math.min(Math.max(zoomScale + amount, 0.4), 2.0);
+            applyPanZoomTransform();
+        }
+
+        function resetZoomAndPan() {
+            zoomScale = 0.85;
+            panX = 80;
+            panY = 20;
+            applyPanZoomTransform();
+        }
+
+        function applyPanZoomTransform() {
+            const canvas = document.getElementById("tree-canvas-board");
+            if (canvas) {
+                canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`;
+            }
+        }
+
+        // GENERATOR GENEROS DE SPARKLES ELECTRO
+        function createElectroParticles() {
+            const bg = document.getElementById("electro-particles-bg");
+            if (!bg) return;
+            setInterval(() => {
+                // Generare doar dacă suntem pe pagina de skill-uri ca să salvăm resurse de PC
+                if (!document.getElementById("skills").classList.contains("active")) return;
+                
+                const particle = document.createElement("div");
+                particle.className = "sparkle-particle";
+                particle.style.left = Math.random() * 100 + "%";
+                particle.style.bottom = "0px";
+                
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + "px";
+                particle.style.height = size + "px";
+                particle.style.animationDuration = (Math.random() * 4 + 4) + "s";
+                
+                bg.appendChild(particle);
+                setTimeout(() => { particle.remove(); }, 7000);
+            }, 350);
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem("hqLanguage", lang);
+            document.querySelectorAll('.change-lang-matrix').forEach(select => select.value = lang);
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) el.innerText = translations[lang][key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) el.setAttribute('placeholder', translations[lang][key]);
+            });
+            calculateProgress();
+            displayEntries();
+            drawSkillTree();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-time').innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            try { document.getElementById('live-date').innerText = now.toLocaleDateString(langLocales[currentLang], options); } catch(e) {}
+        }
+
+        function toggleSidebar() {
+            document.getElementById("my-sidebar").classList.toggle("collapsed");
+            document.body.classList.toggle("menu-collapsed");
+        }
+
+        function toggleJournalDrawer(open) {
+            document.getElementById("journal-drawer").classList.toggle("open", open);
+        }
+
+        function login() {
+            if(document.getElementById("pass-input").value.trim() === PAROLA) {
+                document.getElementById("login-screen").classList.add("hidden");
+                document.getElementById("intro-screen").classList.remove("hidden");
+                listenToCloud(); 
+                window.addEventListener('keydown', handleIntroKeys);
+            } else {
+                document.getElementById("error").innerText = translations[currentLang].loginError;
+            }
+        }
+
+        function enterHQ() {
+            document.getElementById("intro-screen").classList.add("hidden");
+            document.getElementById("hq-interface").classList.remove("hidden");
+            window.removeEventListener('keydown', handleIntroKeys);
+            // Inițializăm hărțile mecanice de zoom după deblocare
+            setupZoomPanEngine();
+            createElectroParticles();
+        }
+
+        function handleIntroKeys(e) { if (e.key === " " || e.key === "Enter") enterHQ(); }
+
+        function switchPage(pageId, btn) {
+            toggleJournalDrawer(false);
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            btn.classList.add('active');
+            if (window.innerWidth <= 768) toggleSidebar();
+            
+            // Dacă intră pe skills, redesenează corect nodurile și centrul
+            if(pageId === 'skills') {
+                setTimeout(drawSkillTree, 50);
+            }
+        }
+
+        function calculateProgress() {
+            const current = parseFloat(document.getElementById("bs-current").value) || 0;
+            const goal = parseFloat(document.getElementById("bs-goal").value) || 1;
+            let percentage = Math.min(Math.max(Math.round((current / goal) * 100), 0), 100);
+            document.getElementById("bs-progress-bar").style.width = percentage + "%";
+            document.getElementById("bs-progress-text").innerText = percentage + "% " + translations[currentLang].bsProgressText;
+        }
+
+        function saveJournalEntry() {
+            const tx = document.getElementById("journal-input");
+            if (tx.value.trim() === "") return;
+            
+            globalData.journalEntries.unshift({
+                id: Date.now(),
+                date: new Date().toLocaleString(langLocales[currentLang]),
+                text: tx.value
+            });
+
+            if(docRef) {
+                docRef.set(globalData).then(() => {
+                    tx.value = "";
+                    toggleJournalDrawer(true);
+                }).catch(err => alert("Cloud Sync Error: " + err.message));
+            }
+        }
+
+        function displayEntries() {
+            const container = document.getElementById("entries-container");
+            if (!container) return;
+            const entries = globalData.journalEntries || [];
+            container.innerHTML = entries.length === 0 ? `<p style="color: var(--text-dim); text-align: center;">${translations[currentLang].journalEmpty}</p>` : "";
+            entries.forEach(entry => {
+                container.innerHTML += `
+                    <div class="journal-entry">
+                        <div class="entry-date">📅 ${entry.date}</div>
+                        <div style="white-space: pre-wrap; font-size: 14px; color: #fff;">${entry.text}</div>
+                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">${translations[currentLang].journalDeleteBtn}</button>
+                    </div>`;
+            });
+        }
+
+        function deleteEntry(id) {
+            if (confirm(translations[currentLang].journalConfirmDelete)) {
+                globalData.journalEntries = globalData.journalEntries.filter(e => e.id !== id);
+                if(docRef) docRef.set(globalData);
+            }
+        }
+
+        window.onload = function() { 
+            changeLanguage(localStorage.getItem("hqLanguage") || "ro"); 
+            updateClock();
+            setInterval(updateClock, 1000);
+        };
+    </script>
+</body>
+</html>
