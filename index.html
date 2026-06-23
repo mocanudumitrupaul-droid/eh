@@ -1,342 +1,189 @@
-<script>
-// =========================================================================
-// 1. CONFIGURAȚIE ȘI COLOANA VERTEBRALĂ (FIREBASE & VARIABILE GLOBALE)
-// =========================================================================
-const firebaseConfig = {
-    apiKey: "AIzaSyDxfaSHjHfyLUAJiKJSYgo37QPTo5DtyIs",
-    authDomain: "hq-personal-cae00.firebaseapp.com",
-    projectId: "hq-personal-cae00",
-    storageBucket: "hq-personal-cae00.firebasestorage.app",
-    messagingSenderId: "961330194480",
-    appId: "1:961330194480:web:61f8be623d5d019f3665f5"
-};
-
-let db, docRef;
-try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    docRef = db.collection("mainframe").doc("central_hq");
-} catch (e) {
-    console.error("Sistem: Eroare la inițializarea bazei Cloud Firebase:", e);
-}
-
-const PAROLA = "SecretulMeu2026";
-const YOUTUBE_VIDEO_ID = "011mDfeC9G0"; // ID Video Asu - AndaaBuuke pentru Intro
-
-let currentLang = "ro";
-let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000, skillsUnlocked: { core: true } };
-let currentlySelectedNode = null;
-
-const skillTreeStructure = {
-    nodes: {
-        core: { name: "Core Node", icon: "⚛️", x: 600, y: 120 },
-        coding: { name: "Coding", icon: "💻", x: 400, y: 320 },
-        gaming: { name: "Gaming", icon: "🎮", x: 600, y: 320 },
-        fitness: { name: "Fitness", icon: "🏃‍♂️", x: 800, y: 320 },
-        ai_mastery: { name: "AI Sync", icon: "🤖", x: 300, y: 550 },
-        esports: { name: "Tactics", icon: "🎯", x: 600, y: 550 },
-        discipline: { name: "Mindset", icon: "🧠", x: 900, y: 550 },
-        apex_god: { name: "Overlord", icon: "👑", x: 600, y: 780 }
-    },
-    connections: [
-        { from: "core", to: "coding" },
-        { from: "core", to: "gaming" },
-        { from: "core", to: "fitness" },
-        { from: "coding", to: "ai_mastery" },
-        { from: "gaming", to: "esports" },
-        { from: "fitness", to: "discipline" },
-        { from: "ai_mastery", to: "apex_god" },
-        { from: "esports", to: "apex_god" },
-        { from: "discipline", to: "apex_god" }
-    ]
-};
-
-let zoomScale = 0.85;
-let panX = 80;
-let panY = 20;
-let isDragging = false;
-let startX, startY;
-
-const translations = {
-    ro: {
-        loginTitle: "Sistem de Securitate", loginPrompt: "Introdu cheia de acces:", loginPlaceholder: "Parolă...", loginBtn: "Deblochează", loginError: "Acces interzis.",
-        introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
-        menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
-        homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal sincronizat automat în Cloud.",
-        plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
-        questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.",
-        bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressText: "Finalizat",
-        journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Sertar gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
-        journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide",
-        node_unlocked: "Deblocat", node_locked: "Blocat",
-        node_core: "Nucleu ⚛️", node_coding: "Codare 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "Sincro AI 🤖", node_esports: "Tactică 🎯", node_discipline: "Mental 🧠", node_apex_god: "Overlord 👑"
-    },
-    en: {
-        loginTitle: "Security System", loginPrompt: "Enter access key:", loginPlaceholder: "Password...", loginBtn: "Unlock", loginError: "Access denied.",
-        introBlink: "PRESS ENTER / SPACE OR TOUCH THE BACKGROUND", skipBtn: "Skip", menuText: "Menu", sidebarHeader: "⚔️ Personal HQ",
-        menuHome: "🏠 Main Base", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
-        homeTitle: "🏠 Main Page", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Welcome to your central operations base.", homeDesc: "> This is your main hub layout synced perfectly via Cloud Database.",
-        plannerDesc: "> Tactical sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
-        questsTitle: "📜 Quest Log", questsDesc: "> Active targets.",
-        bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ IN-GAME FINANCIAL TRACKER ]", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Target Goal:", bsProgressText: "Completed",
-        journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new memory entry...", journalAddBtn: "Add to Database", journalEmpty: "Drawer empty.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
-        journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close",
-        node_unlocked: "Activated", node_locked: "Locked",
-        node_core: "Core ⚛️", node_coding: "Coding 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "AI Sync 🤖", node_esports: "Tactics 🎯", node_discipline: "Mindset 🧠", node_apex_god: "Overlord 👑"
-    }
-};
-
-const langLocales = { ro: 'ro-RO', en: 'en-US' };
-
-// =========================================================================
-// 2. CONEXIUNE CLOUD & SINCRONIZARE (FIREBASE SNAPSHOTS)
-// =========================================================================
-function listenToCloud() {
-    if (!docRef) return;
-    docRef.onSnapshot((doc) => {
-        if (doc.exists()) {
-            globalData = doc.data();
-            if (!globalData.journalEntries) globalData.journalEntries = [];
-            if (!globalData.skillsUnlocked) globalData.skillsUnlocked = { core: true };
-            
-            const curEl = document.getElementById("bs-current");
-            const goEl = document.getElementById("bs-goal");
-            if(curEl && document.activeElement !== curEl) curEl.value = globalData.bsCurrent || 0;
-            if(goEl && document.activeElement !== goEl) goEl.value = globalData.bsGoal || 10000;
-            
-            calculateProgress();
-            displayEntries();
-            drawSkillTree();
-            if (currentlySelectedNode) showSkillDetails(currentlySelectedNode);
-        }
-    }, (error) => {
-        console.error("Eroare la citirea datelor live din Cloud:", error);
-    });
-}
-
-function updateCloudData() {
-    if (!docRef) return;
-    const curEl = document.getElementById("bs-current");
-    const goEl = document.getElementById("bs-goal");
-    globalData.bsCurrent = curEl ? (parseFloat(curEl.value) || 0) : 0;
-    globalData.bsGoal = goEl ? (parseFloat(goEl.value) || 10000) : 10000;
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HQ Personal - Mainframe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Courier+Prime&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     
-    docRef.set(globalData).catch(err => console.error("Cloud Error la salvare:", err));
-    calculateProgress();
-}
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-// =========================================================================
-// 3. ENGINUL SKILL TREE (CONSTELLATION ENGINE)
-// =========================================================================
-function drawSkillTree() {
-    const nodesContainer = document.getElementById("nodes-layer");
-    const svgCanvas = document.getElementById("tree-svg-canvas");
-    if (!nodesContainer || !svgCanvas) return;
-
-    nodesContainer.innerHTML = "";
-    svgCanvas.innerHTML = "";
-
-    const unlocked = globalData.skillsUnlocked || { core: true };
-    const labels = translations[currentLang] || translations["ro"];
-
-    skillTreeStructure.connections.forEach(conn => {
-        const nodeFrom = skillTreeStructure.nodes[conn.from];
-        const nodeTo = skillTreeStructure.nodes[conn.to];
-        if (!nodeFrom || !nodeTo) return;
-
-        const isLineActive = unlocked[conn.from] && unlocked[conn.to];
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", nodeFrom.x);
-        line.setAttribute("y1", nodeFrom.y);
-        line.setAttribute("x2", nodeTo.x);
-        line.setAttribute("y2", nodeTo.y);
-        line.setAttribute("class", `tree-line ${isLineActive ? 'unlocked' : 'locked'}`);
-        svgCanvas.appendChild(line);
-    });
-
-    Object.keys(skillTreeStructure.nodes).forEach(key => {
-        const nodeData = skillTreeStructure.nodes[key];
-        const isUnlocked = !!unlocked[key];
-        const nodeDiv = document.createElement("div");
-        nodeDiv.className = `skill-node ${isUnlocked ? 'unlocked' : 'locked'}`;
-        nodeDiv.style.left = `${nodeData.x}px`;
-        nodeDiv.style.top = `${nodeData.y}px`;
-
-        const translatedName = labels["node_" + key] || nodeData.name;
-        const statusLabel = isUnlocked ? (labels.node_unlocked || "Unlocked") : (labels.node_locked || "Locked");
-
-        nodeDiv.innerHTML = `
-            <div class="rhombus-outer" onclick="selectSkillNode('${key}')">
-                <div class="rhombus-inner">
-                    <span class="node-icon">${nodeData.icon}</span>
-                    <span>${translatedName.split(' ')[0]}</span>
-                    <span class="node-status-text">${statusLabel}</span>
-                </div>
-            </div>
-        `;
-        nodesContainer.appendChild(nodeDiv);
-    });
-
-    applyPanZoomTransform();
-}
-
-function selectSkillNode(nodeId) {
-    const nodeData = skillTreeStructure.nodes[nodeId];
-    if (!nodeData) return;
-
-    zoomScale = 1.3;
-    const viewport = document.getElementById("tree-viewport-area");
-    if (viewport) {
-        const vWidth = viewport.clientWidth;
-        const vHeight = viewport.clientHeight;
-        panX = ((vWidth - 170) / 2) - (nodeData.x * zoomScale);
-        panY = (vHeight / 2) - (nodeData.y * zoomScale);
-    }
-
-    applyPanZoomTransform();
-    showSkillDetails(nodeId);
-}
-
-function showSkillDetails(nodeId) {
-    currentlySelectedNode = nodeId;
-    const nodeData = skillTreeStructure.nodes[nodeId];
-    if (!nodeData) return;
-    
-    const isUnlocked = !!(globalData.skillsUnlocked && globalData.skillsUnlocked[nodeId]);
-    const panel = document.getElementById("skill-details-side");
-    const content = document.getElementById("skill-details-content");
-    if (!panel || !content) return;
-
-    const labels = translations[currentLang] || translations["ro"];
-    const translatedName = labels["node_" + nodeId] || nodeData.name;
-    const statusLabel = isUnlocked ? labels.node_unlocked : labels.node_locked;
-
-    content.innerHTML = `
-        <div style="text-align: center; margin-top: 10px;">
-            <div style="font-size: 50px; margin-bottom: 12px; filter: drop-shadow(0 0 10px var(--electro-purple));">${nodeData.icon}</div>
-            <h2 style="font-family: 'Orbitron', sans-serif; color: #fff; margin: 0 0 5px 0; font-size: 19px;">${translatedName}</h2>
-            <p style="color: ${isUnlocked ? 'var(--electro-purple)' : 'var(--text-dim)'}; font-weight: bold; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0;">
-                [ ${statusLabel} ]
-            </p>
-        </div>
-        <hr style="border: 0; border-top: 1px solid rgba(138, 43, 226, 0.3); margin: 25px 0;">
-        <p style="font-size: 14px; line-height: 1.6; color: #d0cce0; font-family: 'Courier Prime', monospace;">
-            ${getNodeDescription(nodeId)}
-        </p>
-        <div style="margin-top: 40px; text-align: center;">
-            <button onclick="toggleNodeFromMenu('${nodeId}')" class="custom-btn" style="width: 100%; padding: 12px; margin: 0; box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);">
-                ${isUnlocked ? (currentLang === 'ro' ? 'DEZACTIVEAZĂ' : 'DEACTIVATE') : (currentLang === 'ro' ? 'DEBLOCHEAZĂ' : 'UNLOCK')}
-            </button>
-        </div>
-    `;
-    panel.classList.add("open");
-}
-
-function closeSkillDetails() {
-    const panel = document.getElementById("skill-details-side");
-    if (panel) panel.classList.remove("open");
-    currentlySelectedNode = null;
-}
-
-function toggleNodeFromMenu(nodeId) {
-    if (nodeId === "core") return; 
-    if (!globalData.skillsUnlocked) globalData.skillsUnlocked = { core: true };
-    globalData.skillsUnlocked[nodeId] = !globalData.skillsUnlocked[nodeId];
-    if (docRef) {
-        docRef.set(globalData).then(() => {
-            showSkillDetails(nodeId);
-        }).catch(err => console.error(err));
-    }
-}
-
-function getNodeDescription(nodeId) {
-    const descriptions = {
-        ro: {
-            core: "Nucleul central al sistemului tău OS. Reprezintă conexiunea principală cu baza de date Cloud și distribuția de energie Electro corporativă.",
-            coding: "Abilitatea avansată de a structura și dezvolta algoritmi complecși. Crește exponențial eficiența în rezolvarea task-urilor tehnice.",
-            gaming: "Reflexe sporite, analiză tactică în timp real și coordonare neuronală superioară în timpul sesiunilor intense de gameplay.",
-            fitness: "Rezistență fizică și mentală superioară. Condiția optimă de bază necesară pentru a susține performanța ridicată pe termen lung.",
-            ai_mastery: "Integrarea completă a rețelelor neurale artificiale în workflow-ul zilnic. Automatizare la nivel de expert.",
-            esports: "Strategii competitive avansate de gaming și control absolut al stării de spirit sub presiune maximă.",
-            discipline: "Control total asupra atenției și focusului tău. Elimină complet distragerile inutile pentru o productivitate maximă.",
-            apex_god: "Nivelul suprem de control al vieții și carierei. Toate sectoarele rulează la randament maxim. Statut de Overlord deblocat."
-        },
-        en: {
-            core: "The central core of your OS system. Represents the primary connection to the Cloud database and corporate Electro energy routing.",
-            coding: "Advanced capability to structure and develop complex algorithms. Exponentially increases efficiency in handling technical tasks.",
-            gaming: "Enhanced reflexes, real-time tactical analysis, and superior neural coordination during intense gameplay sessions.",
-            fitness: "Superior physical and mental stamina. The optimal foundation required to sustain high-level performance over time.",
-            ai_mastery: "Full integration of artificial neural networks into daily workflows. Expert-level workflow automation.",
-            esports: "Advanced competitive gaming blueprints and absolute emotional control under peak pressure environments.",
-            discipline: "Total mastery over attention and mental focus. Complete elimination of digital friction for ultimate productivity.",
-            apex_god: "The apex tier of life and core operations management. All sectors active. Overlord server profile fully deployed."
+    <style>
+        :root {
+            --bg-dark: #0a0813;
+            --sidebar-bg: #0f0c1b;
+            --electro-purple: #8a2be2;
+            --electro-glow: #bf40ff;
+            --text-main: #f0edf8;
+            --text-dim: #7a7293;
+            --panel-bg: rgba(20, 16, 36, 0.7);
+            --border-glow: rgba(138, 43, 226, 0.4);
         }
-    };
-    const lang = descriptions[currentLang] ? currentLang : 'en';
-    return descriptions[lang][nodeId] || "Accessing encrypted mainframe data...";
-}
 
-function exitSkillTree() {
-    closeSkillDetails();
-    const homeBtn = document.querySelector('.menu-btn');
-    switchPage('home', homeBtn);
-}
-
-// =========================================================================
-// 4. INTERFAȚĂ DINAMICĂ (ZOOM, PANNING, EFECTE PARTICULE ELECTRO)
-// =========================================================================
-function setupZoomPanEngine() {
-    const viewport = document.getElementById("tree-viewport-area");
-    if (!viewport) return;
-
-    viewport.addEventListener("wheel", (e) => {
-        e.preventDefault();
-        const zoomFactor = 0.05;
-        zoomScale = e.deltaY < 0 ? Math.min(zoomScale + zoomFactor, 2.0) : Math.max(zoomScale - zoomFactor, 0.4);
-        applyPanZoomTransform();
-    }, { passive: false });
-
-    viewport.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        startX = e.clientX - panX;
-        startY = e.clientY - panY;
-    });
-
-    window.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-        panX = e.clientX - startX;
-        panY = e.clientY - startY;
-        applyPanZoomTransform();
-    });
-
-    window.addEventListener("mouseup", () => { isDragging = false; });
-    
-    viewport.addEventListener("touchstart", (e) => {
-        if (e.touches.length === 1) {
-            isDragging = true;
-            startX = e.touches[0].clientX - panX;
-            startY = e.touches[0].clientY - panY;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            height: 100vh;
         }
-    });
-    viewport.addEventListener("touchmove", (e) => {
-        if (!isDragging || e.touches.length !== 1) return;
-        panX = e.touches[0].clientX - startX;
-        panY = e.touches[0].clientY - startY;
-        applyPanZoomTransform();
-    });
-    viewport.addEventListener("touchend", () => { isDragging = false; });
-}
 
-function adjustZoom(amount) {
-    zoomScale = Math.min(Math.max(zoomScale + amount, 0.4), 2.0);
-    applyPanZoomTransform();
-}
+        /* ------------------ PANOURI DE SECURITATE & INTRO ------------------ */
+        .fullscreen-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .hidden { display: none !important; }
 
-function resetZoomAndPan() {
-    zoomScale = 0.85; panX = 80; panY = 20;
-    applyPanZoomTransform();
-}
+        .secure-box {
+            background: var(--sidebar-bg); border: 2px solid var(--electro-purple);
+            padding: 40px; border-radius: 8px; text-align: center;
+            box-shadow: 0 0 30px var(--border-glow); width: 90%; max-width: 400px;
+        }
+        .secure-box h2 { font-family: 'Orbitron', sans-serif; margin-bottom: 20px; color: #fff; }
+        .matrix-input {
+            width: 100%; padding: 12px; background: #000; border: 1px solid var(--text-dim);
+            color: #fff; text-align: center; font-family: 'Courier Prime', monospace;
+            margin-bottom: 20px; font-size: 16px; border-radius: 4px;
+        }
+        .custom-btn {
+            background: var(--electro-purple); color: #fff; border: none;
+            padding: 12px 30px; font-family: 'Orbitron', sans-serif; font-weight: bold;
+            cursor: pointer; letter-spacing: 1px; border-radius: 4px; transition: 0.3s;
+        }
+        .custom-btn:hover { background: var(--electro-glow); box-shadow: 0 0 15px var(--electro-glow); }
+        .error-msg { color: #ff4a4a; font-family: 'Courier Prime', monospace; margin-top: 15px; font-size: 14px; }
 
-function applyPanZoomTransform() {
-    const canvas = document.getElementById("tree-canvas-board");
-    if (canvas) canvas.style.transform = `translate(${panX}px, ${panY}px)
+        /* INTRO SCREEN YOUTUBE */
+        #intro-screen { background: #000; cursor: pointer; }
+        .video-background-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.6;
+        }
+        .video-background-layer iframe { width: 100%; height: 100%; border: none; transform: scale(1.35); }
+        .blink-text {
+            position: relative; z-index: 10; font-family: 'Orbitron', sans-serif;
+            font-size: 20px; color: #fff; text-shadow: 0 0 10px var(--electro-glow);
+            animation: pulseBlink 2s infinite; text-align: center; padding: 20px;
+        }
+        @keyframes pulseBlink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        /* ------------------ INTERFAȚĂ CENTRALĂ HQ ------------------ */
+        .genshin-container { display: flex; height: 100vh; width: 100vw; position: relative; }
+        
+        /* SIDEBAR LATERALE */
+        .sidebar {
+            width: 260px; background: var(--sidebar-bg); border-right: 1px solid rgba(138, 43, 226, 0.2);
+            display: flex; flex-direction: column; justify-content: space-between; padding: 20px;
+            transition: all 0.3s ease; z-index: 100;
+        }
+        .sidebar.collapsed { width: 0; padding: 20px 0; overflow: hidden; border-right: none; }
+        
+        .sidebar-header { font-family: 'Orbitron', sans-serif; font-size: 18px; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .menu-btn {
+            width: 100%; text-align: left; background: transparent; border: none; color: var(--text-dim);
+            padding: 14px 15px; font-size: 15px; cursor: pointer; font-family: 'Inter', sans-serif;
+            border-radius: 6px; margin-bottom: 8px; transition: 0.2s; display: flex; align-items: center; gap: 10px;
+        }
+        .menu-btn:hover, .menu-btn.active { color: #fff; background: rgba(138, 43, 226, 0.15); box-shadow: inset 3px 0 0 var(--electro-purple); }
+        
+        .change-lang-matrix {
+            background: #000; color: var(--text-dim); border: 1px solid rgba(138, 43, 226, 0.3);
+            padding: 5px; width: 100%; border-radius: 4px; font-family: 'Orbitron', sans-serif; cursor: pointer;
+        }
+
+        /* FILTRUL DE PAGINI VIZUALE */
+        .main-content-zone { flex: 1; position: relative; overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+        .top-bar {
+            height: 60px; border-bottom: 1px solid rgba(138, 43, 226, 0.15);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: rgba(15, 12, 27, 0.5);
+        }
+        .toggle-sb-trigger { background: transparent; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+        .clock-widget { text-align: right; font-family: 'Orbitron', sans-serif; }
+        #live-time { font-size: 16px; font-weight: bold; color: var(--electro-glow); }
+        #live-date { font-size: 11px; color: var(--text-dim); }
+
+        .page { display: none; flex: 1; padding: 40px; overflow-y: auto; }
+        .page.active { display: block; }
+        
+        /* BLOCURI DE CONȚINUT STANDARD */
+        .dashboard-panel {
+            background: var(--panel-bg); border: 1px solid rgba(138, 43, 226, 0.2);
+            padding: 30px; border-radius: 8px; backdrop-filter: blur(10px); max-width: 800px; margin-bottom: 25px;
+        }
+        .dashboard-panel h1 { font-family: 'Orbitron', sans-serif; font-size: 24px; margin-bottom: 10px; }
+        .subtitle-terminal { font-family: 'Courier Prime', monospace; color: var(--electro-glow); font-size: 12px; margin-bottom: 20px; letter-spacing: 2px; }
+
+        /* TRACKER PROGRESS BAR JOC */
+        .progress-container-shell { width: 100%; background: #000; height: 24px; border-radius: 12px; overflow: hidden; border: 1px solid var(--electro-purple); margin: 15px 0; position: relative; }
+        .progress-fill-core { height: 100%; width: 0%; background: linear-gradient(90deg, var(--electro-purple), var(--electro-glow)); transition: width 0.4s ease; }
+        .progress-text-overlay { position: absolute; width: 100%; text-align: center; top: 2px; font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: bold; color: #fff; mix-blend-mode: difference; }
+
+        /* SISTEM DE FIȘIERE JURNAL */
+        .journal-box-layout { display: flex; flex-direction: column; gap: 15px; max-width: 700px; }
+        .journal-textarea { width: 100%; height: 120px; background: rgba(0,0,0,0.4); border: 1px solid rgba(138, 43, 226, 0.4); border-radius: 6px; padding: 15px; color: #fff; font-family: 'Inter', sans-serif; resize: none; }
+        .journal-textarea:focus { outline: none; border-color: var(--electro-glow); }
+        
+        .drawer-overlay-side {
+            position: fixed; top: 0; right: -450px; width: 420px; height: 100%; background: var(--sidebar-bg);
+            border-left: 2px solid var(--electro-purple); z-index: 500; box-shadow: -10px 0 30px rgba(0,0,0,0.7);
+            transition: right 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); padding: 30px; display: flex; flex-direction: column;
+        }
+        .drawer-overlay-side.open { right: 0; }
+        .drawer-entries-scroll { flex: 1; overflow-y: auto; margin-top: 20px; }
+        
+        .journal-entry { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 15px; border-radius: 6px; margin-bottom: 15px; position: relative; }
+        .entry-date { font-family: 'Courier Prime', monospace; font-size: 11px; color: var(--electro-glow); margin-bottom: 8px; }
+        .delete-btn { background: rgba(255, 74, 74, 0.2); border: 1px solid #ff4a4a; color: #ff4a4a; padding: 4px 8px; font-size: 11px; cursor: pointer; border-radius: 4px; margin-top: 10px; }
+
+        /* ------------------ REȚEAUA SKILL TREE COGNITIVĂ ------------------ */
+        .fullscreen-tree { padding: 0 !important; }
+        .tree-view-wrapper { width: 100%; height: 100%; position: relative; background: radial-gradient(circle at center, #141026 0%, #06050b 100%); overflow: hidden; }
+        .tree-viewport-area { width: 100%; height: 100%; position: absolute; top:0; left:0; cursor: grab; }
+        .tree-viewport-area:active { cursor: grabbing; }
+        .tree-canvas-board { position: absolute; width: 2000px; height: 2000px; transform-origin: 0 0; pointer-events: none; }
+        
+        #tree-svg-canvas { position: absolute; width: 100%; height: 100%; top:0; left:0; pointer-events: none; z-index: 1; }
+        .tree-line { stroke-width: 3; stroke-linecap: round; transition: all 0.5s ease; }
+        .tree-line.locked { stroke: rgba(60, 50, 95, 0.4); stroke-dasharray: 6, 4; }
+        .tree-line.unlocked { stroke: var(--electro-purple); filter: drop-shadow(0 0 5px var(--electro-glow)); }
+        
+        .nodes-layer { position: absolute; width: 100%; height: 100%; top:0; left:0; z-index: 2; }
+        .skill-node { position: absolute; width: 120px; height: 120px; transform: translate(-60px, -60px); pointer-events: auto; }
+        
+        .rhombus-outer {
+            width: 80px; height: 80px; margin: 20px auto; background: rgba(10, 8, 19, 0.85);
+            border: 2px solid rgba(138, 43, 226, 0.4); transform: rotate(45deg);
+            transition: all 0.3s cubic-bezier(0.2, 1, 0.2, 1); cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .rhombus-inner {
+            transform: rotate(-45deg); display: flex; flex-direction: column; align-items: center;
+            justify-content: center; color: var(--text-dim); text-align: center; width: 100%; height: 100%;
+        }
+        .node-icon { font-size: 22px; margin-bottom: 2px; transition: transform 0.3s; }
+        .rhombus-inner span:nth-child(2) { font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: bold; letter-spacing: 0.5px; color: #fff; text-transform: uppercase; }
+        .node-status-text { font-size: 7px; font-family: 'Courier Prime', monospace; color: var(--text-dim); margin-top: 2px; letter-spacing: 1px; }
+
+        /* NODE STATES CSS */
+        .skill-node.unlocked .rhombus-outer { border-color: var(--electro-glow); box-shadow: 0 0 20px rgba(138, 43, 226, 0.6); background: rgba(30, 15, 60, 0.9); }
+        .skill-node.unlocked .node-icon { filter: drop-shadow(0 0 6px var(--electro-glow)); }
+        .skill-node.unlocked .node-status-text { color: var(--electro-glow); font-weight: bold; }
+        .skill-node .rhombus-outer:hover { transform: rotate(45deg) scale(1.12); border-color: #fff; box-shadow: 0 0 25px rgba(255,255,255,0.4); }
+
+        /* SKILL CONSOLE PANOU DREAPTA */
+        .skill-details-side {
+            position: absolute; top: 20px; right: -360px; width: 330px; bottom: 20px;
+            background: rgba(10, 7, 20, 0.92); border: 1px solid rgba(138, 43, 226, 0.4);
+            border-radius: 8px; z-index: 10; box-shadow: -5px 5px 25px rgba(0,0,0,0.8);
+            transition: right 0.4s cubic-bezier(0.1, 0.9, 0.2, 1); padding: 25px; backdrop-filter: blur(15px); pointer-events: auto;
+        }
+        .skill-details-side.open { right: 20px; }
+        .close-details-btn { position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; }
+
+        .tree-ui-controls { position: absolute; bottom: 20px; left: 20px; z-index: 10; display: flex; gap: 8px; pointer-events: auto; }
+        .ui-round-btn { width: 38px; height: 38px; border-radius: 5px; background: rgba(15, 12, 27, 0.85); border: 1px solid rgba(138, 43, 226, 0.4); color: #fff; cursor: pointer; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .ui-round-btn:hover { background: var(--electro-purple); }
+
+        .electro-particles-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events
