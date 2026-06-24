@@ -478,33 +478,8 @@
             border-radius: 8px;
             max-width: 260px;
             backdrop-filter: blur(8px);
+            pointer-events: none;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        /* Stiluri sub-tag-uri / butoane navigare stil de lupta */
-        .tree-sub-nav {
-            margin-top: 10px;
-            display: flex;
-            gap: 6px;
-            border-top: 1px solid rgba(138, 43, 226, 0.2);
-            padding-top: 8px;
-        }
-        .sub-tag-btn {
-            background: rgba(15, 10, 25, 0.9);
-            border: 1px solid rgba(138, 43, 226, 0.4);
-            color: var(--text-dim);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 9px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .sub-tag-btn.active {
-            border-color: var(--electro-purple);
-            color: #fff;
-            background: rgba(138, 43, 226, 0.2);
-            box-shadow: 0 0 8px rgba(176, 64, 255, 0.4);
         }
 
         .sparkle-particle {
@@ -640,16 +615,11 @@
 
             <div id="skills" class="page">
                 <div class="genshin-container">
-                    <button class="tree-back-btn" onclick="resetZoomAndPan()">🔄</button>
+                    <button class="tree-back-btn" onclick="exitSkillTree()">⬅</button>
 
                     <div class="constellation-panel">
                         <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #fff;" data-i18n="skillsSubtitle">CONSTELLATION</h3>
-                        <p style="margin: 0; font-size: 10px; color: var(--electro-purple); letter-spacing: 1px;" id="element-text" data-i18n="skillsDesc">ELEMENT: ELECTRO (OS)</p>
-                        
-                        <div class="tree-sub-nav">
-                            <button id="subtag-os" class="sub-tag-btn active" onclick="switchTreeCategory('os')">Core OS</button>
-                            <button id="subtag-combat" class="sub-tag-btn" onclick="switchTreeCategory('combat')">⚔️ Stil Luptă</button>
-                        </div>
+                        <p style="margin: 0; font-size: 10px; color: var(--electro-purple); letter-spacing: 1px;" data-i18n="skillsDesc">ELEMENT: ELECTRO (OS)</p>
                     </div>
 
                     <div class="zoom-hud-controls">
@@ -736,43 +706,37 @@
         const PAROLA = "SecretulMeu2026";
         let currentLang = "ro";
         let globalData = { journalEntries: [], bsCurrent: 0, bsGoal: 10000, skillsUnlocked: { core: true } };
-        let activeTreeProfile = "os";
+        let currentlySelectedNode = null;
 
-        // STRUCTURI MULTIPLE DE ABILITĂȚI (Core System vs Stil de Luptă)
-        const skillTreeProfiles = {
-            os: {
-                nodes: {
-                    core: { name: "Core Node", icon: "⚛️", x: 600, y: 120, desc: "Sistemul central al bazei de date operative." },
-                    coding: { name: "Coding", icon: "💻", x: 400, y: 320, desc: "Dezvoltare software și automatizări scripturi." },
-                    gaming: { name: "Gaming", icon: "🎮", x: 600, y: 320, desc: "Reflexe mecanice și gaming strategic." },
-                    fitness: { name: "Fitness", icon: "🏃‍♂️", x: 800, y: 320, desc: "Conditionare fizică și antrenamente." },
-                    ai_mastery: { name: "AI Sync", icon: "🤖", x: 300, y: 550, desc: "Integrare LLM-uri și rețele neuronale." },
-                    esports: { name: "Tactics", icon: "🎯", x: 600, y: 550, desc: "Analiză avansată a meciurilor in BloxStrike." },
-                    discipline: { name: "Mindset", icon: "🧠", x: 900, y: 550, desc: "Concentrare profundă și rutine zilnice." },
-                    apex_god: { name: "Overlord", icon: "👑", x: 600, y: 780, desc: "Control absolut peste toate sectoarele." }
-                },
-                connections: [
-                    { from: "core", to: "coding" }, { from: "core", to: "gaming" }, { from: "core", to: "fitness" },
-                    { from: "coding", to: "ai_mastery" }, { from: "gaming", to: "esports" }, { from: "fitness", to: "discipline" },
-                    { from: "ai_mastery", to: "apex_god" }, { from: "esports", to: "apex_god" }, { from: "discipline", to: "apex_god" }
-                ]
+        const skillTreeStructure = {
+            nodes: {
+                core: { name: "Core Node", icon: "⚛️", x: 600, y: 120 },
+                coding: { name: "Coding", icon: "💻", x: 400, y: 320 },
+                gaming: { name: "Gaming", icon: "🎮", x: 600, y: 320 },
+                fitness: { name: "Fitness", icon: "🏃‍♂️", x: 800, y: 320 },
+                ai_mastery: { name: "AI Sync", icon: "🤖", x: 300, y: 550 },
+                esports: { name: "Tactics", icon: "🎯", x: 600, y: 550 },
+                discipline: { name: "Mindset", icon: "🧠", x: 900, y: 550 },
+                apex_god: { name: "Overlord", icon: "👑", x: 600, y: 780 }
             },
-            combat: {
-                nodes: {
-                    stance: { name: "Baza Stilului", icon: "⚔️", x: 600, y: 150, desc: "Poziția fundamentală de gardă și echilibru." },
-                    strike: { name: "Atac Rapid", icon: "⚡", x: 450, y: 350, desc: "Lovituri fulgerătoare cu timpi reduși de reacție." },
-                    defend: { name: "Parare Fluidă", icon: "🛡️", x: 750, y: 350, desc: "Redirecționarea forței oponentului fără efort." },
-                    counter: { name: "Contratac", icon: "💥", x: 450, y: 580, desc: "Răspuns imediat după blocarea atacului inamic." },
-                    focus: { name: "Concentrare", icon: "🧘‍♂️", x: 750, y: 580, desc: "Găsirea breșelor din defensiva inamicului." },
-                    ultimate: { name: "Maestru Stil", icon: "☯️", x: 600, y: 760, desc: "Stăpânirea deplină a stilului de luptă ales." }
-                },
-                connections: [
-                    { from: "stance", to: "strike" }, { from: "stance", to: "defend" },
-                    { from: "strike", to: "counter" }, { from: "defend", to: "focus" },
-                    { from: "counter", to: "ultimate" }, { from: "focus", to: "ultimate" }
-                ]
-            }
+            connections: [
+                { from: "core", to: "coding" },
+                { from: "core", to: "gaming" },
+                { from: "core", to: "fitness" },
+                { from: "coding", to: "ai_mastery" },
+                { from: "gaming", to: "esports" },
+                { from: "fitness", to: "discipline" },
+                { from: "ai_mastery", to: "apex_god" },
+                { from: "esports", to: "apex_god" },
+                { from: "discipline", to: "apex_god" }
+            ]
         };
+
+        let zoomScale = 0.85;
+        let panX = 80;
+        let panY = 20;
+        let isDragging = false;
+        let startX, startY;
 
         const translations = {
             ro: {
@@ -780,297 +744,479 @@
                 introBlink: "APASĂ ENTER / SPACE SAU ATINGE FUNDALUL", skipBtn: "Skip", menuText: "Meniu", sidebarHeader: "⚔️ HQ Personal",
                 menuHome: "🏠 Principală", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Jurnal",
                 homeTitle: "🏠 Pagina Principală", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Bun venit în baza ta centrală de operațiuni.", homeDesc: "> Acesta este spațiul tău principal sincronizat automat în Cloud.",
-                plannerDesc: "> Planificare sector.", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
+                plannerDesc: "> Planificare sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
                 questsTitle: "📜 Quest Log", questsDesc: "> Misiuni active.",
-                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):",
-                journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide"
+                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ MONITORIZARE FINANCIARĂ JOC ]", bsCurrentLabel: "Credite Curente:", bsGoalLabel: "Obiectiv (Goal):", bsProgressText: "Finalizat",
+                journalTitle: "✍️ Jurnal Personal", journalPlaceholder: "Scrie o nouă filă de poveste...", journalAddBtn: "Adaugă în Jurnal", journalEmpty: "Sertar gol.", journalDeleteBtn: "Șterge", journalConfirmDelete: "Ștergi postarea?",
+                journalDrawerBtn: "📁 Deschide Sertar", journalDrawerTitle: "🗄️ Sertar cu Amintiri", journalCloseDrawer: "Închide",
+                node_unlocked: "Deblocat", node_locked: "Blocat",
+                node_core: "Nucleu ⚛️", node_coding: "Codare 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "Sincro AI 🤖", node_esports: "Tactică 🎯", node_discipline: "Mental 🧠", node_apex_god: "Overlord 👑"
             },
             en: {
                 loginTitle: "Security System", loginPrompt: "Enter access key:", loginPlaceholder: "Password...", loginBtn: "Unlock", loginError: "Access denied.",
-                introBlink: "PRESS ENTER / SPACE OR TAP BACKGROUND", skipBtn: "Skip", menuText: "Menu", sidebarHeader: "⚔️ Personal HQ",
-                menuHome: "🏠 Main", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
-                homeTitle: "🏠 Main Page", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Welcome to your central command base.", homeDesc: "> This is your main workspace synced directly to the Cloud.",
-                plannerDesc: "> Sector planning.", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
-                questsTitle: "📜 Quest Log", questsDesc: "> Active operations.",
-                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ GAME FINANCIAL TRACKING ]", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Goal Target:",
-                journalTitle: "✍️ Personal Journal", journalPlaceholder: "Write a new story entry...", journalAddBtn: "Add to Journal", journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close"
+                introBlink: "PRESS ENTER / SPACE OR TOUCH THE BACKGROUND", skipBtn: "Skip", menuText: "Menu", sidebarHeader: "⚔️ Personal HQ",
+                menuHome: "🏠 Main Base", menuPlanner: "📅 Planner", menuSkills: "🌳 Skills", menuQuests: "📜 Quests", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
+                homeTitle: "🏠 Main Page", homeSubtitle: "[ CORE_SYSTEM: ONLINE ]", homeWelcome: "> Welcome to your central operations base.", homeDesc: "> This is your main hub layout synced perfectly via Cloud Database.",
+                plannerDesc: "> Tactical sector.", skillsTitle: "🌳 Skill Tree", skillsSubtitle: "CONSTELLATION", skillsDesc: "ELEMENT: ELECTRO (OS)",
+                questsTitle: "📜 Quest Log", questsDesc: "> Active targets.",
+                bsTitle: "🎮 BloxStrike Status", bsSubtitle: "[ IN-GAME FINANCIAL TRACKER ]", bsCurrentLabel: "Current Credits:", bsGoalLabel: "Target Goal:", bsProgressText: "Completed",
+                journalTitle: "✍️ Personal Logs", journalPlaceholder: "Log a new memory entry...", journalAddBtn: "Add to Database", journalEmpty: "Drawer empty.", journalDeleteBtn: "Purge", journalConfirmDelete: "Purge this log file?",
+                journalDrawerBtn: "📁 Open Drawer", journalDrawerTitle: "🗄️ Memory Drawer", journalCloseDrawer: "Close",
+                node_unlocked: "Activated", node_locked: "Locked",
+                node_core: "Core ⚛️", node_coding: "Coding 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "AI Sync 🤖", node_esports: "Tactics 🎯", node_discipline: "Mindset 🧠", node_apex_god: "Overlord 👑"
+            },
+            fr: {
+                loginTitle: "Système de Sécurité", loginPrompt: "Entrez la clé:", loginPlaceholder: "Mot de passe...", loginBtn: "Déverrouiller", loginError: "Refusé.",
+                introBlink: "APPUYEZ SUR ENTRÉE OU TOUCHEZ L'ÉCRAN", skipBtn: "Passer", menuText: "Menu", sidebarHeader: "⚔️ QG Personnel",
+                menuHome: "🏠 Accueil", menuPlanner: "📅 Agenda", menuSkills: "🌳 Talents", menuQuests: "📜 Quêtes", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ Journal",
+                homeTitle: "🏠 QG Central", homeSubtitle: "[ SYSTEME: EN LIGNE ]", homeWelcome: "> Système synchronisé en Cloud.", homeDesc: "> Vos données se mettent à jour automatiquement sur tous vos écrans.",
+                plannerDesc: "> Agenda.", skillsTitle: "🌳 Arbre", skillsSubtitle: "CONSTELLATION", skillsDesc: "ÉLÉMENT: ÉLECTRO (OS)",
+                questsTitle: "📜 Quêtes", questsDesc: "> Objectifs actifs.",
+                bsTitle: "🎮 Statut BloxStrike", bsSubtitle: "[ SUIVI DU JEU ]", bsCurrentLabel: "Crédits:", bsGoalLabel: "Objectif:", bsProgressText: "Terminé",
+                journalTitle: "✍️ Journal Intime", journalPlaceholder: "Écrire une page...", journalAddBtn: "Consigner", journalEmpty: "Tiroir vide.", journalDeleteBtn: "Effacer", journalConfirmDelete: "Supprimer ?",
+                journalDrawerBtn: "📁 Ouvrir le Tiroir", journalDrawerTitle: "🗄️ Tiroir Souvenirs", journalCloseDrawer: "Fermer",
+                node_unlocked: "Activé", node_locked: "Bloqué",
+                node_core: "Noyau ⚛️", node_coding: "Code 💻", node_gaming: "Gaming 🎮", node_fitness: "Fitness 🏃‍♂️", node_ai_mastery: "Synchro AI 🤖", node_esports: "Tactique 🎯", node_discipline: "Mental 🧠", node_apex_god: "Overlord 👑"
+            },
+            ja: {
+                loginTitle: "セキュリティ", loginPrompt: "キーを入力:", loginPlaceholder: "パスワード...", loginBtn: "解除", loginError: "拒否されました。",
+                introBlink: "画面をタップするかENTERを押してください", skipBtn: "スキップ", menuText: "メニュー", sidebarHeader: "⚔️ 個人本部",
+                menuHome: "🏠 メイン基地", menuPlanner: "📅 計画書", menuSkills: "🌳 スキルツリー", menuQuests: "📜 クエストログ", menuBloxStrike: "🎮 BloxStrike", menuJournal: "✍️ 日記帳",
+                homeTitle: "🏠 メイン画面", homeSubtitle: "[ オンライン ]", homeWelcome: "> クラウド同期が有効です。", homeDesc: "> PC et スマホ間でデータはリアルタイムに自動同期されます。",
+                plannerDesc: "> 計画。", skillsTitle: "🌳 スキルツリー", skillsSubtitle: "命ノ星座", skillsDesc: "元素タイプ: 雷 (OS)",
+                questsTitle: "📜 クエスト", questsDesc: "> アクティブ任務。",
+                bsTitle: "🎮 BloxStrike", bsSubtitle: "[ 財務モニター ]", bsCurrentLabel: "現在:", bsGoalLabel: "目標:", bsProgressText: "完了",
+                journalTitle: "✍️ 日記帳", journalPlaceholder: "書き留める...", journalAddBtn: "追加", journalEmpty: "空です。", journalDeleteBtn: "削除", journalConfirmDelete: "消去しますか？",
+                journalDrawerBtn: "📁 引き出しを開ける", journalDrawerTitle: "🗄️ 記憶の引き出し", journalCloseDrawer: "閉じる",
+                node_unlocked: "有効化済み", node_locked: "ロック中",
+                node_core: "コア ⚛️", node_coding: "開発 💻", node_gaming: "ゲーム 🎮", node_fitness: "体力 🏃‍♂️", node_ai_mastery: "AI同期 🤖", node_esports: "戦術 🎯", node_discipline: "精神 🧠", node_apex_god: "覇王 👑"
             }
         };
 
-        let zoomScale = 0.85; let panX = 60; let panY = 20;
-        let isDragging = false; let startX, startY;
+        const langLocales = { ro: 'ro-RO', en: 'en-US', fr: 'fr-FR', ja: 'ja-JP' };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initClock();
-            initPanAndZoom();
-            loadCloudData();
-        });
-
-        // AUTENTIFICARE & NAVIGARE
-        function login() {
-            const val = document.getElementById('pass-input').value;
-            if(val === PAROLA) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('intro-screen').classList.remove('hidden');
-            } else {
-                document.getElementById('error').textContent = translations[currentLang].loginError || "Eroare";
-            }
-        }
-
-        function enterHQ() {
-            document.getElementById('intro-screen').classList.add('hidden');
-            document.getElementById('hq-interface').classList.remove('hidden');
-            switchPage('home', document.querySelector('.menu-btn'));
-        }
-
-        function toggleSidebar() {
-            const sb = document.getElementById('my-sidebar');
-            sb.classList.toggle('collapsed');
-            document.body.classList.toggle('menu-collapsed', sb.classList.contains('collapsed'));
-        }
-
-        function switchPage(pageId, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById(pageId).classList.add('active');
-            if(btn) btn.classList.add('active');
-
-            if(pageId === 'skills') {
-                renderTree();
-            }
-        }
-
-        // FUNCTIE SCHIMBARE INTRE COMPUTER SYSTEM SI COMBAT STYLE
-        function switchTreeCategory(category) {
-            activeTreeProfile = category;
-            
-            document.getElementById('subtag-os').classList.toggle('active', category === 'os');
-            document.getElementById('subtag-combat').classList.toggle('active', category === 'combat');
-            
-            const elementTxt = document.getElementById('element-text');
-            if(category === 'combat') {
-                elementTxt.textContent = "STIL: ARTE MARȚIALE / LUPTĂ";
-                elementTxt.style.color = "#ff4a4a";
-            } else {
-                elementTxt.textContent = "ELEMENT: ELECTRO (OS)";
-                elementTxt.style.color = "var(--electro-purple)";
-            }
-            
-            closeSkillDetails();
-            renderTree();
-        }
-
-        // GENERARE SKILL TREE DINAMIC
-        function renderTree() {
-            const canvas = document.getElementById('tree-canvas-board');
-            const svg = document.getElementById('tree-svg-canvas');
-            const layer = document.getElementById('nodes-layer');
-            
-            layer.innerHTML = "";
-            svg.innerHTML = "";
-            
-            const profile = skillTreeProfiles[activeTreeProfile];
-
-            // Render linii conexiuni
-            profile.connections.forEach(conn => {
-                const fromNode = profile.nodes[conn.from];
-                const toNode = profile.nodes[conn.to];
-                if(fromNode && toNode) {
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", fromNode.x);
-                    line.setAttribute("y1", fromNode.y);
-                    line.setAttribute("x2", toNode.x);
-                    line.setAttribute("y2", toNode.y);
+        function listenToCloud() {
+            if (!docRef) return;
+            docRef.onSnapshot((doc) => {
+                if (doc.exists()) {
+                    globalData = doc.data();
+                    if (!globalData.journalEntries) globalData.journalEntries = [];
+                    if (!globalData.skillsUnlocked) globalData.skillsUnlocked = { core: true };
                     
-                    const isUnlocked = globalData.skillsUnlocked[conn.to];
-                    line.setAttribute("class", `tree-line ${isUnlocked ? 'unlocked' : 'locked'}`);
-                    svg.appendChild(line);
+                    const curEl = document.getElementById("bs-current");
+                    const goEl = document.getElementById("bs-goal");
+                    if(curEl && document.activeElement !== curEl) curEl.value = globalData.bsCurrent || 0;
+                    if(goEl && document.activeElement !== goEl) goEl.value = globalData.bsGoal || 10000;
+                    
+                    calculateProgress();
+                    displayEntries();
+                    drawSkillTree();
+                    if (currentlySelectedNode) showSkillDetails(currentlySelectedNode);
                 }
+            }, (error) => {
+                console.error("Firebase Snapshot Error:", error);
+            });
+        }
+
+        function updateCloudData() {
+            if (!docRef) return;
+            const curEl = document.getElementById("bs-current");
+            const goEl = document.getElementById("bs-goal");
+            globalData.bsCurrent = curEl ? (parseFloat(curEl.value) || 0) : 0;
+            globalData.bsGoal = goEl ? (parseFloat(goEl.value) || 10000) : 10000;
+            
+            docRef.set(globalData).catch(err => console.error("Cloud error:", err));
+            calculateProgress();
+        }
+
+        function drawSkillTree() {
+            const nodesContainer = document.getElementById("nodes-layer");
+            const svgCanvas = document.getElementById("tree-svg-canvas");
+            if (!nodesContainer || !svgCanvas) return;
+
+            nodesContainer.innerHTML = "";
+            svgCanvas.innerHTML = "";
+
+            const unlocked = globalData.skillsUnlocked || { core: true };
+            const labels = translations[currentLang] || translations["ro"];
+
+            skillTreeStructure.connections.forEach(conn => {
+                const nodeFrom = skillTreeStructure.nodes[conn.from];
+                const nodeTo = skillTreeStructure.nodes[conn.to];
+                if (!nodeFrom || !nodeTo) return;
+
+                const isLineActive = unlocked[conn.from] && unlocked[conn.to];
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", nodeFrom.x);
+                line.setAttribute("y1", nodeFrom.y);
+                line.setAttribute("x2", nodeTo.x);
+                line.setAttribute("y2", nodeTo.y);
+                line.setAttribute("class", `tree-line ${isLineActive ? 'unlocked' : 'locked'}`);
+                svgCanvas.appendChild(line);
             });
 
-            // Render noduri ca romburi interactive
-            Object.keys(profile.nodes).forEach(id => {
-                const node = profile.nodes[id];
-                const isUnlocked = globalData.skillsUnlocked[id] || id === 'core' || id === 'stance';
-                
-                const div = document.createElement('div');
-                div.className = `skill-node ${isUnlocked ? 'unlocked' : 'locked'}`;
-                div.style.left = `${node.x}px`;
-                div.style.top = `${node.y}px`;
-                
-                div.innerHTML = `
-                    <div class="rhombus-outer" onclick="showSkillDetails('${id}')">
+            Object.keys(skillTreeStructure.nodes).forEach(key => {
+                const nodeData = skillTreeStructure.nodes[key];
+                const isUnlocked = !!unlocked[key];
+                const nodeDiv = document.createElement("div");
+                nodeDiv.className = `skill-node ${isUnlocked ? 'unlocked' : 'locked'}`;
+                nodeDiv.style.left = `${nodeData.x}px`;
+                nodeDiv.style.top = `${nodeData.y}px`;
+
+                const translatedName = labels["node_" + key] || nodeData.name;
+                const statusLabel = isUnlocked ? (labels.node_unlocked || "Unlocked") : (labels.node_locked || "Locked");
+
+                nodeDiv.innerHTML = `
+                    <div class="rhombus-outer" onclick="selectSkillNode('${key}')">
                         <div class="rhombus-inner">
-                            <span class="node-icon">${node.icon}</span>
-                            <span style="display:block;font-size:9px;">${node.name}</span>
-                            <span class="node-status-text">${isUnlocked ? 'Active' : 'Locked'}</span>
+                            <span class="node-icon">${nodeData.icon}</span>
+                            <span>${translatedName.split(' ')[0]}</span>
+                            <span class="node-status-text">${statusLabel}</span>
                         </div>
                     </div>
                 `;
-                layer.appendChild(div);
+                nodesContainer.appendChild(nodeDiv);
             });
-            
-            updateCanvasTransform();
+
+            applyPanZoomTransform();
         }
 
-        function showSkillDetails(id) {
-            const profile = skillTreeProfiles[activeTreeProfile];
-            const node = profile.nodes[id];
-            const panel = document.getElementById('skill-details-side');
-            const content = document.getElementById('skill-details-content');
+        function selectSkillNode(nodeId) {
+            const nodeData = skillTreeStructure.nodes[nodeId];
+            if (!nodeData) return;
+
+            zoomScale = 1.3;
+            const viewport = document.getElementById("tree-viewport-area");
+            if (viewport) {
+                const vWidth = viewport.clientWidth;
+                const vHeight = viewport.clientHeight;
+                panX = ((vWidth - 170) / 2) - (nodeData.x * zoomScale);
+                panY = (vHeight / 2) - (nodeData.y * zoomScale);
+            }
+
+            applyPanZoomTransform();
+            showSkillDetails(nodeId);
+        }
+
+        function showSkillDetails(nodeId) {
+            currentlySelectedNode = nodeId;
+            const nodeData = skillTreeStructure.nodes[nodeId];
+            if (!nodeData) return;
             
-            const isUnlocked = globalData.skillsUnlocked[id] || id === 'core' || id === 'stance';
-            
+            const isUnlocked = !!(globalData.skillsUnlocked && globalData.skillsUnlocked[nodeId]);
+            const panel = document.getElementById("skill-details-side");
+            const content = document.getElementById("skill-details-content");
+            if (!panel || !content) return;
+
+            const labels = translations[currentLang] || translations["ro"];
+            const translatedName = labels["node_" + nodeId] || nodeData.name;
+            const statusLabel = isUnlocked ? labels.node_unlocked : labels.node_locked;
+
             content.innerHTML = `
-                <h2 style="color:#fff;font-family:'Orbitron';margin-bottom:5px;">${node.icon} ${node.name}</h2>
-                <p style="font-size:11px;color:var(--text-dim);text-transform:uppercase;margin-top:0;">Status: ${isUnlocked ? 'Deblocat' : 'Blocat'}</p>
-                <hr style="border:0;border-top:1px solid #2a2a3a;margin:15px 0;">
-                <p style="font-size:14px;line-height:1.6;">${node.desc}</p>
-                ${!isUnlocked ? `<button class="custom-btn" style="margin-top:20px;width:100%;" onclick="unlockNode('${id}')">Deblochează Abilitate</button>` : ''}
+                <div style="text-align: center; margin-top: 10px;">
+                    <div style="font-size: 50px; margin-bottom: 12px; filter: drop-shadow(0 0 10px var(--electro-purple));">${nodeData.icon}</div>
+                    <h2 style="font-family: 'Orbitron', sans-serif; color: #fff; margin: 0 0 5px 0; font-size: 19px;">${translatedName}</h2>
+                    <p style="color: ${isUnlocked ? 'var(--electro-purple)' : 'var(--text-dim)'}; font-weight: bold; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0;">
+                        [ ${statusLabel} ]
+                    </p>
+                </div>
+                <hr style="border: 0; border-top: 1px solid rgba(138, 43, 226, 0.3); margin: 25px 0;">
+                <p style="font-size: 14px; line-height: 1.6; color: #d0cce0; font-family: 'Courier Prime', monospace;">
+                    ${getNodeDescription(nodeId)}
+                </p>
+                <div style="margin-top: 40px; text-align: center;">
+                    <button onclick="toggleNodeFromMenu('${nodeId}')" class="custom-btn" style="width: 100%; padding: 12px; margin: 0; box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);">
+                        ${isUnlocked ? (currentLang === 'ro' ? 'DEZACTIVEAZĂ' : 'DEACTIVATE') : (currentLang === 'ro' ? 'DEBLOCHEAZĂ' : 'UNLOCK')}
+                    </button>
+                </div>
             `;
-            panel.classList.add('open');
+            panel.classList.add("open");
         }
 
-        function unlockNode(id) {
-            globalData.skillsUnlocked[id] = true;
-            updateCloudData();
-            renderTree();
-            showSkillDetails(id);
+        function closeSkillDetails() {
+            const panel = document.getElementById("skill-details-side");
+            if (panel) panel.classList.remove("open");
+            currentlySelectedNode = null;
         }
 
-        function closeSkillDetails() { document.getElementById('skill-details-side').classList.remove('open'); }
+        function toggleNodeFromMenu(nodeId) {
+            if (nodeId === "core") return; 
+            if (!globalData.skillsUnlocked) globalData.skillsUnlocked = { core: true };
+            globalData.skillsUnlocked[nodeId] = !globalData.skillsUnlocked[nodeId];
+            if (docRef) {
+                docRef.set(globalData).then(() => {
+                    showSkillDetails(nodeId);
+                }).catch(err => console.error(err));
+            }
+        }
 
-        // COORDONARE DRAG / PAN / ZOOM CANVAS
-        function initPanAndZoom() {
-            const area = document.getElementById('tree-viewport-area');
-            area.addEventListener('mousedown', (e) => {
-                if(e.target.closest('.rhombus-outer') || e.target.closest('.hud-btn')) return;
+        function getNodeDescription(nodeId) {
+            const descriptions = {
+                ro: {
+                    core: "Nucleul central al sistemului tău OS. Reprezintă conexiunea principală cu baza de date Cloud și distribuția de energie Electro corporativă.",
+                    coding: "Abilitatea avansată de a structura și dezvolta algoritmi complecși. Crește exponențial eficiența în rezolvarea task-urilor tehnice.",
+                    gaming: "Reflexe sporite, analiză tactică în timp real și coordonare neuronală superioară în timpul sesiunilor intense de gameplay.",
+                    fitness: "Rezistență fizică și mentală superioară. Condiția optimă de bază necesară pentru a susține performanța ridicată pe termen lung.",
+                    ai_mastery: "Integrarea completă a rețelelor neurale artificiale în workflow-ul zilnic. Automatizare la nivel de expert.",
+                    esports: "Strategii competitive avansate de gaming și control absolut al stării de spirit sub presiune maximă.",
+                    discipline: "Control total asupra atenției și focusului tău. Elimină complet distragerile inutile pentru o productivitate maximă.",
+                    apex_god: "Nivelul suprem de control al vieții și carierei. Toate sectoarele rulează la randament maxim. Statut de Overlord deblocat."
+                },
+                en: {
+                    core: "The central core of your OS system. Represents the primary connection to the Cloud database and corporate Electro energy routing.",
+                    coding: "Advanced capability to structure and develop complex algorithms. Exponentially increases efficiency in handling technical tasks.",
+                    gaming: "Enhanced reflexes, real-time tactical analysis, and superior neural coordination during intense gameplay sessions.",
+                    fitness: "Superior physical and mental stamina. The optimal foundation required to sustain high-level performance over time.",
+                    ai_mastery: "Full integration of artificial neural networks into daily workflows. Expert-level workflow automation.",
+                    esports: "Advanced competitive gaming blueprints and absolute emotional control under peak pressure environments.",
+                    discipline: "Total mastery over attention and mental focus. Complete elimination of digital friction for ultimate productivity.",
+                    apex_god: "The apex tier of life and core operations management. All sectors active. Overlord server profile fully deployed."
+                }
+            };
+            const lang = descriptions[currentLang] ? currentLang : 'en';
+            return descriptions[lang][nodeId] || "Accessing encrypted mainframe data...";
+        }
+
+        function exitSkillTree() {
+            closeSkillDetails();
+            const homeBtn = document.querySelector('.menu-btn');
+            switchPage('home', homeBtn);
+        }
+
+        function setupZoomPanEngine() {
+            const viewport = document.getElementById("tree-viewport-area");
+            if (!viewport) return;
+
+            viewport.addEventListener("wheel", (e) => {
+                e.preventDefault();
+                const zoomFactor = 0.05;
+                zoomScale = e.deltaY < 0 ? Math.min(zoomScale + zoomFactor, 2.0) : Math.max(zoomScale - zoomFactor, 0.4);
+                applyPanZoomTransform();
+            }, { passive: false });
+
+            viewport.addEventListener("mousedown", (e) => {
                 isDragging = true;
                 startX = e.clientX - panX;
                 startY = e.clientY - panY;
             });
-            window.addEventListener('mousemove', (e) => {
+
+            window.addEventListener("mousemove", (e) => {
                 if (!isDragging) return;
                 panX = e.clientX - startX;
                 panY = e.clientY - startY;
-                updateCanvasTransform();
+                applyPanZoomTransform();
             });
-            window.addEventListener('mouseup', () => isDragging = false);
+
+            window.addEventListener("mouseup", () => { isDragging = false; });
+            
+            viewport.addEventListener("touchstart", (e) => {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX - panX;
+                    startY = e.touches[0].clientY - panY;
+                }
+            });
+            viewport.addEventListener("touchmove", (e) => {
+                if (!isDragging || e.touches.length !== 1) return;
+                panX = e.touches[0].clientX - startX;
+                panY = e.touches[0].clientY - startY;
+                applyPanZoomTransform();
+            });
+            viewport.addEventListener("touchend", () => { isDragging = false; });
         }
 
         function adjustZoom(amount) {
-            zoomScale = Math.max(0.4, Math.min(1.8, zoomScale + amount));
-            updateCanvasTransform();
+            zoomScale = Math.min(Math.max(zoomScale + amount, 0.4), 2.0);
+            applyPanZoomTransform();
         }
 
         function resetZoomAndPan() {
-            zoomScale = 0.85; panX = 60; panY = 20;
-            updateCanvasTransform();
+            zoomScale = 0.85; panX = 80; panY = 20;
+            applyPanZoomTransform();
         }
 
-        function updateCanvasTransform() {
-            const canvas = document.getElementById('tree-canvas-board');
-            if(canvas) canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`;
+        function applyPanZoomTransform() {
+            const canvas = document.getElementById("tree-canvas-board");
+            if (canvas) canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`;
         }
 
-        // FINANCIAR & BACKEND (BLOXSTRIKE)
-        function updateBloxStrikeUI() {
-            const curr = parseFloat(document.getElementById('bs-current').value) || 0;
-            const goal = parseFloat(document.getElementById('bs-goal').value) || 10000;
-            
-            globalData.bsCurrent = curr;
-            globalData.bsGoal = goal;
-
-            const percentage = Math.min(100, Math.max(0, (curr / goal) * 100));
-            document.getElementById('bs-progress-bar').style.width = `${percentage}%`;
-            document.getElementById('bs-progress-text').textContent = `${percentage.toFixed(1)}% Reușit`;
-        }
-
-        // JURNAL DE ABILITĂȚI
-        function toggleJournalDrawer(open) { document.getElementById('journal-drawer').classList.toggle('open', open); }
-        
-        function saveJournalEntry() {
-            const el = document.getElementById('journal-input');
-            const text = el.value.trim();
-            if(!text) return;
-
-            const entry = { text: text, date: new Date().toLocaleString() };
-            globalData.journalEntries.unshift(entry);
-            el.value = "";
-            updateCloudData();
-            renderJournalList();
-        }
-
-        function renderJournalList() {
-            const container = document.getElementById('entries-container');
-            container.innerHTML = "";
-            globalData.journalEntries.forEach((entry, idx) => {
-                const div = document.createElement('div');
-                div.className = "journal-entry";
-                div.innerHTML = `
-                    <div class="entry-date">${entry.date}</div>
-                    <div style="white-space:pre-wrap;">${entry.text}</div>
-                    <button class="delete-btn" onclick="deleteEntry(${idx})">Șterge</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function deleteEntry(idx) {
-            globalData.journalEntries.splice(idx, 1);
-            updateCloudData();
-            renderJournalList();
-        }
-
-        // CLOUD SYNC (FIREBASE)
-        function loadCloudData() {
-            if(!docRef) return;
-            docRef.get().then((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    globalData = { ...globalData, ...data };
-                    
-                    document.getElementById('bs-current').value = globalData.bsCurrent || 0;
-                    document.getElementById('bs-goal').value = globalData.bsGoal || 10000;
-                    
-                    updateBloxStrikeUI();
-                    renderJournalList();
-                }
-            }).catch(e => console.log("Eroare incarcare date Cloud:", e));
-        }
-
-        function updateCloudData() {
-            updateBloxStrikeUI();
-            if(!docRef) return;
-            docRef.set(globalData, { merge: true }).catch(e => console.error("Cloud Sync Error:", e));
-        }
-
-        // CEAS & LOCALIZARE
-        function initClock() {
+        function createElectroParticles() {
+            const bg = document.getElementById("electro-particles-bg");
+            if (!bg) return;
             setInterval(() => {
-                const now = new Date();
-                document.getElementById('live-time').textContent = now.toTimeString().split(' ')[0];
+                const skPage = document.getElementById("skills");
+                if (!skPage || !skPage.classList.contains("active")) return;
                 
-                const opțiuni = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                document.getElementById('live-date').textContent = now.toLocaleDateString('ro-RO', opțiuni).toUpperCase();
-            }, 1000);
+                const particle = document.createElement("div");
+                particle.className = "sparkle-particle";
+                particle.style.left = Math.random() * 100 + "%";
+                particle.style.bottom = "0px";
+                
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + "px";
+                particle.style.height = size + "px";
+                particle.style.animationDuration = (Math.random() * 4 + 4) + "s";
+                
+                bg.appendChild(particle);
+                setTimeout(() => { particle.remove(); }, 7000);
+            }, 350);
         }
 
         function changeLanguage(lang) {
+            if (!translations[lang]) lang = "ro";
             currentLang = lang;
-            const dict = translations[lang] || translations['ro'];
+            localStorage.setItem("hqLanguage", lang);
             
+            document.querySelectorAll('.change-lang-matrix').forEach(select => select.value = lang);
+            
+            const labels = translations[lang];
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if(dict[key]) el.textContent = dict[key];
+                if (labels && labels[key]) el.innerText = labels[key];
             });
-
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
-                if(dict[key]) el.setAttribute('placeholder', dict[key]);
+                if (labels && labels[key]) el.setAttribute('placeholder', labels[key]);
+            });
+            
+            calculateProgress();
+            displayEntries();
+            drawSkillTree();
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeEl = document.getElementById('live-time');
+            const dateEl = document.getElementById('live-date');
+            if(timeEl) timeEl.innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            try { if(dateEl) dateEl.innerText = now.toLocaleDateString(langLocales[currentLang] || 'ro-RO', options); } catch(e) {}
+        }
+
+        function toggleSidebar() {
+            const sb = document.getElementById("my-sidebar");
+            if(sb) sb.classList.toggle("collapsed");
+            document.body.classList.toggle("menu-collapsed");
+        }
+
+        function toggleJournalDrawer(open) {
+            const jd = document.getElementById("journal-drawer");
+            if(jd) jd.classList.toggle("open", open);
+        }
+
+        function login() {
+            const passInp = document.getElementById("pass-input");
+            if(passInp && passInp.value.trim() === PAROLA) {
+                const logScr = document.getElementById("login-screen");
+                const intScr = document.getElementById("intro-screen");
+                if(logScr) logScr.classList.add("hidden");
+                if(intScr) intScr.classList.remove("hidden");
+                listenToCloud(); 
+                window.addEventListener('keydown', handleIntroKeys);
+            } else {
+                const errEl = document.getElementById("error");
+                const labels = translations[currentLang] || translations["ro"];
+                if(errEl) errEl.innerText = labels.loginError || "Eroare";
+            }
+        }
+
+        function enterHQ() {
+            const intScr = document.getElementById("intro-screen");
+            const hqInt = document.getElementById("hq-interface");
+            if(intScr) intScr.classList.add("hidden");
+            if(hqInt) hqInt.classList.remove("hidden");
+            window.removeEventListener('keydown', handleIntroKeys);
+            setupZoomPanEngine();
+            createElectroParticles();
+        }
+
+        function handleIntroKeys(e) { if (e.key === " " || e.key === "Enter") enterHQ(); }
+
+        function switchPage(pageId, btn) {
+            toggleJournalDrawer(false);
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId);
+            if(targetPage) targetPage.classList.add('active');
+            if (btn) btn.classList.add('active');
+            if (window.innerWidth <= 768) toggleSidebar();
+            
+            const genshinContainer = document.querySelector(".genshin-container");
+            if (pageId === 'skills') {
+                if (genshinContainer) genshinContainer.classList.add("fullscreen-tree");
+                setTimeout(drawSkillTree, 50);
+            } else {
+                if (genshinContainer) genshinContainer.classList.remove("fullscreen-tree");
+                closeSkillDetails();
+            }
+        }
+
+        function calculateProgress() {
+            const currentEl = document.getElementById("bs-current");
+            const goalEl = document.getElementById("bs-goal");
+            const barEl = document.getElementById("bs-progress-bar");
+            const txtEl = document.getElementById("bs-progress-text");
+            
+            if(!currentEl || !goalEl || !barEl || !txtEl) return;
+
+            const current = parseFloat(currentEl.value) || 0;
+            const goal = parseFloat(goalEl.value) || 1;
+            let percentage = Math.min(Math.max(Math.round((current / goal) * 100), 0), 100);
+            barEl.style.width = percentage + "%";
+            
+            const labels = translations[currentLang] || translations["ro"];
+            txtEl.innerText = percentage + "% " + (labels.bsProgressText || "");
+        }
+
+        function saveJournalEntry() {
+            const tx = document.getElementById("journal-input");
+            if (!tx || tx.value.trim() === "") return;
+            
+            globalData.journalEntries.unshift({
+                id: Date.now(),
+                date: new Date().toLocaleString(langLocales[currentLang] || 'ro-RO'),
+                text: tx.value
+            });
+
+            if(docRef) {
+                docRef.set(globalData).then(() => {
+                    tx.value = "";
+                    toggleJournalDrawer(true);
+                }).catch(err => console.error("Cloud Error:", err));
+            }
+        }
+
+        function displayEntries() {
+            const container = document.getElementById("entries-container");
+            if (!container) return;
+            const entries = globalData.journalEntries || [];
+            const labels = translations[currentLang] || translations["ro"];
+            
+            container.innerHTML = entries.length === 0 ? `<p style="color: var(--text-dim); text-align: center;">${labels.journalEmpty || ''}</p>` : "";
+            entries.forEach(entry => {
+                container.innerHTML += `
+                    <div class="journal-entry">
+                        <div class="entry-date">📅 ${entry.date}</div>
+                        <div style="white-space: pre-wrap; font-size: 14px; color: #fff;">${entry.text}</div>
+                        <button class="delete-btn" onclick="deleteEntry(${entry.id})">${labels.journalDeleteBtn || 'Delete'}</button>
+                    </div>`;
             });
         }
+
+        function deleteEntry(id) {
+            const labels = translations[currentLang] || translations["ro"];
+            if (confirm(labels.journalConfirmDelete || "Stergi?")) {
+                globalData.journalEntries = globalData.journalEntries.filter(e => e.id !== id);
+                if(docRef) docRef.set(globalData);
+            }
+        }
+
+        window.onload = function() { 
+            changeLanguage(localStorage.getItem("hqLanguage") || "ro"); 
+            updateClock();
+            setInterval(updateClock, 1000);
+        };
     </script>
 </body>
 </html>
